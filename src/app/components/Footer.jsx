@@ -9,6 +9,7 @@ const quickLinks = [
   { href: '#menu', label: 'Menu & Flavors' },
   { href: '#gallery', label: 'Gallery' },
   { href: '#order', label: 'Order Now' },
+  { href: '/terms-and-conditions', label: 'Terms & Conditions' },
 ];
 
 const instagramUrl = 'https://www.instagram.com/cocoa_cherry_?igsh=dzIzaG43YTlqd3h2';

@@ -22,7 +22,7 @@ const features = [
   {
     icon: 'local_shipping',
     title: 'Safe Delivery',
-    description: 'Careful handling and delivery to ensure your cake arrives in pristine condition.',
+    description: 'We use Porter for safe and on-time delivery, ensuring your cake arrives in pristine condition.',
   },
 ];
 
