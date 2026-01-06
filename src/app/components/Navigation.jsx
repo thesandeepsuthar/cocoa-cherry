@@ -37,7 +37,7 @@ export default function Navigation() {
     >
       <div className="flex justify-center">
         <div className="px-4 md:px-10 py-3 w-full max-w-[1100px] flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo  test*/}
           <Link
             href="#"
             className="flex items-center gap-2 text-cocoa hover:opacity-90 transition-opacity"
