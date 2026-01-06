@@ -1,0 +1,12 @@
+export { default as Navigation } from './Navigation';
+export { default as Hero } from './Hero';
+export { default as Features } from './Features';
+export { default as Menu } from './Menu';
+export { default as RateList } from './RateList';
+export { default as Gallery } from './Gallery';
+export { default as Reels } from './Reels';
+export { default as Testimonials } from './Testimonials';
+export { default as Order } from './Order';
+export { default as Footer } from './Footer';
+export { default as Loader, LogoSVG, MiniLoader, CakeLoader } from './Loader';
+
