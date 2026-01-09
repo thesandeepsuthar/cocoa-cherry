@@ -16,14 +16,19 @@ const GallerySchema = new mongoose.Schema({
   order: {
     type: Number,
     default: 0,
+    index: true, // Add index for faster sorting
   },
   isActive: {
     type: Boolean,
     default: true,
+    index: true, // Add index for filtering
   },
 }, {
   timestamps: true,
 });
+
+// Compound index for the common query pattern
+GallerySchema.index({ isActive: 1, order: 1, createdAt: -1 });
 
 export default mongoose.models.Gallery || mongoose.model('Gallery', GallerySchema);
 

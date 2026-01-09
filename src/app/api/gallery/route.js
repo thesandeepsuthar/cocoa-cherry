@@ -8,11 +8,27 @@ import { sanitizeString, validateBase64Image, validateRequired } from '@/lib/sec
 export async function GET() {
   try {
     await connectDB();
-    const images = await Gallery.find({ isActive: true }).sort({ order: 1, createdAt: -1 });
+    
+    // First, get sorted IDs without loading imageData into memory
+    const sortedIds = await Gallery.find({ isActive: true })
+      .select('_id order createdAt')
+      .sort({ order: 1, createdAt: -1 })
+      .lean();
+    
+    // Then fetch full documents in the sorted order
+    const ids = sortedIds.map(doc => doc._id);
+    const imagesMap = new Map();
+    
+    // Fetch all images
+    const images = await Gallery.find({ _id: { $in: ids } }).lean();
+    images.forEach(img => imagesMap.set(img._id.toString(), img));
+    
+    // Return in sorted order
+    const sortedImages = ids.map(id => imagesMap.get(id.toString())).filter(Boolean);
     
     return NextResponse.json({
       success: true,
-      data: images,
+      data: sortedImages,
     });
   } catch (error) {
     console.error('Gallery GET error:', error);

@@ -45,10 +45,7 @@ export async function GET(request, { params }) {
 // PUT - Update rate list item (admin only)
 export async function PUT(request, { params }) {
   try {
-    const { searchParams } = new URL(request.url);
-    const adminKey = searchParams.get('key');
-    
-    if (!verifyAdminKey(adminKey)) {
+    if (!verifyAdminKey(request)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
@@ -133,10 +130,7 @@ export async function PUT(request, { params }) {
 // DELETE - Delete rate list item (admin only)
 export async function DELETE(request, { params }) {
   try {
-    const { searchParams } = new URL(request.url);
-    const adminKey = searchParams.get('key');
-    
-    if (!verifyAdminKey(adminKey)) {
+    if (!verifyAdminKey(request)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }

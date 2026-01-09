@@ -24,10 +24,7 @@ export async function GET() {
 // POST - Add new rate list item (admin only)
 export async function POST(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const adminKey = searchParams.get('key');
-    
-    if (!verifyAdminKey(adminKey)) {
+    if (!verifyAdminKey(request)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
