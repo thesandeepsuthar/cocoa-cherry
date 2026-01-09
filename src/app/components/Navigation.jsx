@@ -122,22 +122,15 @@ export default function Navigation() {
                 >
                   <Link
                     href={link.href}
-                    className="relative px-5 py-2.5 text-cream/80 text-sm font-medium tracking-wide 
-                             hover:text-cream transition-colors group"
+                    className="relative px-5 py-2.5 text-cream/80 text-sm font-medium tracking-wide hover:text-cream transition-colors group"
                   >
                     <span className="relative z-10">{link.label}</span>
                     
                     {/* Hover background */}
-                    <motion.span
-                      className="absolute inset-0 rounded-full bg-rose/0 group-hover:bg-rose/10 
-                               border border-transparent group-hover:border-rose/20 transition-all duration-300"
-                      layoutId="navHover"
-                    />
+                    <span className="absolute inset-0 rounded-full bg-rose/0 group-hover:bg-rose/10 border border-transparent group-hover:border-rose/20 transition-all duration-300" />
                     
                     {/* Underline effect */}
-                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 
-                                   bg-gradient-to-r from-rose to-gold rounded-full 
-                                   group-hover:w-3/4 transition-all duration-300" />
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-rose to-gold rounded-full group-hover:w-3/4 transition-all duration-300" />
                   </Link>
                 </motion.div>
               ))}
@@ -151,15 +144,11 @@ export default function Navigation() {
               >
                 <Link
                   href="#order"
-                  className="relative group flex items-center gap-2 px-6 py-2.5 rounded-full 
-                           bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm
-                           shadow-lg shadow-rose/20 hover:shadow-rose/40 
-                           transform hover:-translate-y-0.5 transition-all duration-300"
+                  className="relative group flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm shadow-lg shadow-rose/20 hover:shadow-rose/40 transform hover:-translate-y-0.5 transition-all duration-300"
                 >
                   {/* Shimmer effect */}
                   <span className="absolute inset-0 rounded-full overflow-hidden">
-                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                                   -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   </span>
                   
                   <span className="material-symbols-outlined text-lg">cake</span>
@@ -172,8 +161,7 @@ export default function Navigation() {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden relative w-12 h-12 flex items-center justify-center rounded-xl
-                       bg-noir-light/50 border border-rose/20 hover:border-rose/40 transition-colors"
+              className="lg:hidden relative w-12 h-12 flex items-center justify-center rounded-xl bg-noir-light/50 border border-rose/20 hover:border-rose/40 transition-colors"
             >
               <div className="flex flex-col items-center justify-center gap-1.5">
                 <motion.span
@@ -222,8 +210,7 @@ export default function Navigation() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-80 max-w-[85vw] bg-noir-light 
-                       border-l border-rose/20 lg:hidden overflow-y-auto"
+              className="fixed top-0 right-0 bottom-0 z-50 w-80 max-w-[85vw] bg-noir-light border-l border-rose/20 lg:hidden overflow-y-auto"
             >
               {/* Menu Header */}
               <div className="flex items-center justify-between p-6 border-b border-rose/10">
@@ -233,8 +220,7 @@ export default function Navigation() {
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsOpen(false)}
-                  className="w-10 h-10 rounded-full bg-rose/10 flex items-center justify-center
-                           hover:bg-rose/20 transition-colors"
+                  className="w-10 h-10 rounded-full bg-rose/10 flex items-center justify-center hover:bg-rose/20 transition-colors"
                 >
                   <span className="material-symbols-outlined text-rose">close</span>
                 </motion.button>
@@ -252,16 +238,13 @@ export default function Navigation() {
                     <Link
                       href={link.href}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-4 p-4 rounded-xl text-cream/80 
-                               hover:text-cream hover:bg-rose/10 transition-all group"
+                      className="flex items-center gap-4 p-4 rounded-xl text-cream/80 hover:text-cream hover:bg-rose/10 transition-all group"
                     >
-                      <span className="material-symbols-outlined text-rose/60 group-hover:text-rose 
-                                     transition-colors">
+                      <span className="material-symbols-outlined text-rose/60 group-hover:text-rose transition-colors">
                         {link.icon}
                       </span>
                       <span className="font-medium">{link.label}</span>
-                      <span className="material-symbols-outlined ml-auto text-cream/30 
-                                     group-hover:text-cream/60 group-hover:translate-x-1 transition-all">
+                      <span className="material-symbols-outlined ml-auto text-cream/30 group-hover:text-cream/60 group-hover:translate-x-1 transition-all">
                         chevron_right
                       </span>
                     </Link>
@@ -278,9 +261,7 @@ export default function Navigation() {
                   <Link
                     href="#order"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-3 w-full py-4 rounded-xl
-                             bg-gradient-to-r from-rose to-rose-dark text-noir font-bold
-                             shadow-lg shadow-rose/20"
+                    className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-gradient-to-r from-rose to-rose-dark text-noir font-bold shadow-lg shadow-rose/20"
                   >
                     <span className="material-symbols-outlined">cake</span>
                     <span>Order Your Cake</span>

@@ -44,13 +44,13 @@ Sent from Cocoa&Cherry Website`;
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const inputClass = (fieldName) => `
-    w-full bg-noir border rounded-xl px-4 py-3.5 text-cream
-    placeholder-cream-muted/50 transition-all duration-300
-    ${focusedField === fieldName 
+  const getInputClass = (fieldName) => {
+    const baseClass = 'w-full bg-noir border rounded-xl px-4 py-3.5 text-cream placeholder-cream-muted/50 transition-all duration-300';
+    const focusClass = focusedField === fieldName 
       ? 'border-rose shadow-lg shadow-rose/10' 
-      : 'border-rose/20 hover:border-rose/40'}
-  `;
+      : 'border-rose/20 hover:border-rose/40';
+    return `${baseClass} ${focusClass}`;
+  };
 
   return (
     <section 
@@ -60,10 +60,8 @@ Sent from Cocoa&Cherry Website`;
     >
       {/* Background decorations */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] 
-                      bg-rose/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] 
-                      bg-gold/5 rounded-full blur-[100px]" />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-rose/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-gold/5 rounded-full blur-[100px]" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-8">
@@ -171,7 +169,7 @@ Sent from Cocoa&Cherry Website`;
                     onChange={handleChange}
                     onFocus={() => setFocusedField('name')}
                     onBlur={() => setFocusedField(null)}
-                    className={inputClass('name')}
+                    className={getInputClass('name')}
                     placeholder="Jane Doe"
                     required
                   />
@@ -194,7 +192,7 @@ Sent from Cocoa&Cherry Website`;
                       onChange={handleChange}
                       onFocus={() => setFocusedField('date')}
                       onBlur={() => setFocusedField(null)}
-                      className={inputClass('date')}
+                      className={getInputClass('date')}
                       required
                     />
                   </motion.div>
@@ -212,7 +210,7 @@ Sent from Cocoa&Cherry Website`;
                       onChange={handleChange}
                       onFocus={() => setFocusedField('weight')}
                       onBlur={() => setFocusedField(null)}
-                      className={`${inputClass('weight')} appearance-none cursor-pointer`}
+                      className={`${getInputClass('weight')} appearance-none cursor-pointer`}
                       style={{ 
                         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
                         backgroundRepeat: 'no-repeat',
@@ -243,7 +241,7 @@ Sent from Cocoa&Cherry Website`;
                     onChange={handleChange}
                     onFocus={() => setFocusedField('flavor')}
                     onBlur={() => setFocusedField(null)}
-                    className={`${inputClass('flavor')} appearance-none cursor-pointer`}
+                    className={`${getInputClass('flavor')} appearance-none cursor-pointer`}
                     style={{ 
                       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
                       backgroundRepeat: 'no-repeat',
@@ -276,7 +274,7 @@ Sent from Cocoa&Cherry Website`;
                     onChange={handleChange}
                     onFocus={() => setFocusedField('message')}
                     onBlur={() => setFocusedField(null)}
-                    className={`${inputClass('message')} resize-none min-h-[100px]`}
+                    className={`${getInputClass('message')} resize-none min-h-[100px]`}
                     placeholder="Describe your dream cake..."
                   />
                 </motion.div>
@@ -290,16 +288,10 @@ Sent from Cocoa&Cherry Website`;
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={isSubmitting}
-                  className={`relative w-full py-4 rounded-xl font-bold text-base 
-                           flex items-center justify-center gap-3 overflow-hidden
-                           ${isSubmitting 
-                             ? 'bg-cream-muted/30 cursor-not-allowed' 
-                             : 'bg-gradient-to-r from-gold to-gold/80 text-noir'} 
-                           shadow-lg shadow-gold/20 transition-all`}
+                  className={`relative w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-3 overflow-hidden ${isSubmitting ? 'bg-cream-muted/30 cursor-not-allowed' : 'bg-gradient-to-r from-gold to-gold/80 text-noir'} shadow-lg shadow-gold/20 transition-all`}
                 >
                   {!isSubmitting && (
-                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                                   -translate-x-full hover:translate-x-full transition-transform duration-700" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700" />
                   )}
                   
                   {isSubmitting ? (

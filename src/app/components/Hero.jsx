@@ -69,13 +69,13 @@ Sent from Cocoa&Cherry Website`;
     }, 1000);
   };
 
-  const inputClass = (fieldName) => `
-    w-full bg-noir-light border rounded-xl px-4 py-3.5 text-cream
-    placeholder-cream-muted/50 transition-all duration-300
-    ${focusedField === fieldName 
-      ? 'border-rose shadow-lg shadow-rose/10' 
-      : 'border-rose/20 hover:border-rose/40'}
-  `;
+  const getInputClass = (fieldName) => {
+    const base = "w-full bg-noir-light border rounded-xl px-4 py-3.5 text-cream placeholder-cream-muted/50 transition-all duration-300";
+    const focused = focusedField === fieldName 
+      ? "border-rose shadow-lg shadow-rose/10" 
+      : "border-rose/20 hover:border-rose/40";
+    return `${base} ${focused}`;
+  };
 
   return (
     <motion.div
@@ -90,13 +90,11 @@ Sent from Cocoa&Cherry Website`;
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 100, scale: 0.95 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative bg-noir-light w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl 
-                 border border-rose/20 overflow-hidden max-h-[90vh] sm:max-h-[85vh]"
+        className="relative bg-noir-light w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl border border-rose/20 overflow-hidden max-h-[90vh] sm:max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Decorative glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] 
-                      bg-rose/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-rose/10 rounded-full blur-[100px] pointer-events-none" />
         
         {/* Header */}
         <div className="relative p-6 border-b border-rose/10">
@@ -107,8 +105,7 @@ Sent from Cocoa&Cherry Website`;
               <motion.div 
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose to-rose-dark 
-                         flex items-center justify-center shadow-lg shadow-rose/30"
+                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose to-rose-dark flex items-center justify-center shadow-lg shadow-rose/30"
               >
                 <span className="material-symbols-outlined text-noir text-2xl">cake</span>
               </motion.div>
@@ -123,8 +120,7 @@ Sent from Cocoa&Cherry Website`;
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-rose/10 hover:bg-rose/20 
-                       flex items-center justify-center transition-colors"
+              className="w-10 h-10 rounded-full bg-rose/10 hover:bg-rose/20 flex items-center justify-center transition-colors"
             >
               <span className="material-symbols-outlined text-cream">close</span>
             </motion.button>
@@ -147,7 +143,7 @@ Sent from Cocoa&Cherry Website`;
                 onBlur={() => setFocusedField(null)}
                 required
                 placeholder="Jane Doe"
-                className={inputClass('name')}
+                className={getInputClass('name')}
               />
             </div>
 
@@ -164,7 +160,7 @@ Sent from Cocoa&Cherry Website`;
                 onBlur={() => setFocusedField(null)}
                 required
                 placeholder="+91 97127 52469"
-                className={inputClass('phone')}
+                className={getInputClass('phone')}
               />
             </div>
 
@@ -182,7 +178,7 @@ Sent from Cocoa&Cherry Website`;
                   onBlur={() => setFocusedField(null)}
                   required
                   min={new Date().toISOString().split('T')[0]}
-                  className={inputClass('date')}
+                  className={getInputClass('date')}
                 />
               </div>
               <div>
@@ -195,7 +191,7 @@ Sent from Cocoa&Cherry Website`;
                   onChange={handleChange}
                   onFocus={() => setFocusedField('weight')}
                   onBlur={() => setFocusedField(null)}
-                  className={`${inputClass('weight')} appearance-none cursor-pointer`}
+                  className={`${getInputClass('weight')} appearance-none cursor-pointer`}
                   style={{ 
                     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
                     backgroundRepeat: 'no-repeat',
@@ -223,7 +219,7 @@ Sent from Cocoa&Cherry Website`;
                 onChange={handleChange}
                 onFocus={() => setFocusedField('flavor')}
                 onBlur={() => setFocusedField(null)}
-                className={`${inputClass('flavor')} appearance-none cursor-pointer`}
+                className={`${getInputClass('flavor')} appearance-none cursor-pointer`}
                 style={{ 
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat',
@@ -256,7 +252,7 @@ Sent from Cocoa&Cherry Website`;
                 onBlur={() => setFocusedField(null)}
                 rows={3}
                 placeholder="Describe your dream cake... (theme, colors, toppings, message on cake etc.)"
-                className={`${inputClass('message')} resize-none`}
+                className={`${getInputClass('message')} resize-none`}
               />
             </div>
 
@@ -265,16 +261,10 @@ Sent from Cocoa&Cherry Website`;
               disabled={isSubmitting}
               whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
               whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-              className={`relative w-full py-4 rounded-xl font-bold text-base 
-                       flex items-center justify-center gap-3 overflow-hidden
-                       ${isSubmitting 
-                         ? 'bg-cream-muted/30 cursor-not-allowed' 
-                         : 'bg-[#25D366] hover:bg-[#20BD5A]'} 
-                       text-white shadow-lg transition-all`}
+              className={`relative w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-3 overflow-hidden ${isSubmitting ? 'bg-cream-muted/30 cursor-not-allowed' : 'bg-[#25D366] hover:bg-[#20BD5A]'} text-white shadow-lg transition-all`}
             >
               {!isSubmitting && (
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
-                               -translate-x-full hover:translate-x-full transition-transform duration-700" />
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700" />
               )}
               
               {isSubmitting ? (
@@ -394,9 +384,9 @@ export default function Hero() {
         {/* Main content */}
         <motion.div 
           style={{ y, opacity, scale }}
-          className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20"
+          className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-20"
         >
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left: Text Content */}
             <div className="order-2 lg:order-1 text-center lg:text-left">
               {/* Badge */}
@@ -404,8 +394,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
-                         bg-rose/10 border border-rose/20 mb-6"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose/10 border border-rose/20 mb-6"
               >
                 <motion.span 
                   animate={{ rotate: [0, 10, -10, 0] }}
@@ -424,14 +413,14 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6"
+                className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-4 sm:mb-6"
                 style={{ fontFamily: 'var(--font-cinzel)' }}
               >
                 <span className="text-cream">Baked with </span>
-                <span className="relative">
+                <span className="relative inline-block">
                   <span className="gradient-text text-glow italic">Love</span>
                   <motion.span 
-                    className="absolute -top-2 -right-4 text-2xl"
+                    className="absolute -top-1 -right-3 sm:-top-2 sm:-right-4 text-lg sm:text-2xl"
                     animate={{ rotate: [0, 15, 0], scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
@@ -448,7 +437,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-cream-muted text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8"
+                className="text-cream-muted text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 mb-6 sm:mb-8"
               >
                 Premium custom cakes from a certified home studio. Experience the
                 artistry of handcrafted desserts inspired by 
@@ -460,30 +449,25 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-wrap gap-4 justify-center lg:justify-start"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
               >
                 <motion.button
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowOrderForm(true)}
-                  className="group relative flex items-center gap-3 px-8 py-4 rounded-full
-                           bg-gradient-to-r from-rose to-rose-dark text-noir font-bold
-                           shadow-xl shadow-rose/30 hover:shadow-rose/50 transition-shadow"
+                  className="group relative flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold shadow-xl shadow-rose/30 hover:shadow-rose/50 transition-shadow text-sm sm:text-base"
                 >
                   <span className="absolute inset-0 rounded-full overflow-hidden">
-                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                                   -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   </span>
-                  <span className="material-symbols-outlined text-xl relative">chat</span>
+                  <span className="material-symbols-outlined text-lg sm:text-xl relative">chat</span>
                   <span className="relative">Order on WhatsApp</span>
                 </motion.button>
 
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     href="#menu"
-                    className="group flex items-center gap-3 px-8 py-4 rounded-full
-                             border-2 border-gold/50 text-cream font-bold
-                             hover:bg-gold/10 hover:border-gold transition-all"
+                    className="group flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-full border-2 border-gold/50 text-cream font-bold hover:bg-gold/10 hover:border-gold transition-all text-sm sm:text-base"
                   >
                     <span className="text-gold">✦</span>
                     <span>View Creations</span>
@@ -505,8 +489,7 @@ export default function Hero() {
                   {[1, 2, 3, 4].map((i) => (
                     <div 
                       key={i}
-                      className="w-10 h-10 rounded-full border-2 border-noir bg-noir-light 
-                               flex items-center justify-center text-rose/60"
+                      className="w-10 h-10 rounded-full border-2 border-noir bg-noir-light flex items-center justify-center text-rose/60"
                     >
                       <span className="material-symbols-outlined text-lg">person</span>
                     </div>
@@ -544,13 +527,11 @@ export default function Hero() {
               <div className="relative">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="relative aspect-[4/5] sm:aspect-square rounded-[2.5rem] overflow-hidden
-                           border border-rose/20 shadow-2xl shadow-black/50"
+                  className="relative aspect-[4/5] sm:aspect-square rounded-[2.5rem] overflow-hidden border border-rose/20 shadow-2xl shadow-black/50"
                 >
                   {/* Image */}
                   <div
-                    className="absolute inset-0 bg-cover bg-center transform hover:scale-110 
-                             transition-transform duration-700"
+                    className="absolute inset-0 bg-cover bg-center transform hover:scale-110 transition-transform duration-700"
                     style={{
                       backgroundImage:
                         "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_')",
@@ -566,16 +547,14 @@ export default function Hero() {
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6, type: 'spring' }}
-                  className="absolute -bottom-4 -left-4 sm:left-4 glass px-5 py-3 rounded-2xl
-                           flex items-center gap-3"
+                  className="absolute -bottom-2 left-2 sm:-bottom-4 sm:left-4 glass px-3 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl flex items-center gap-2 sm:gap-3"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-gold/60 
-                               flex items-center justify-center">
-                    <span className="material-symbols-outlined text-noir">workspace_premium</span>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-gold to-gold/60 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-noir text-sm sm:text-base">workspace_premium</span>
                   </div>
                   <div>
-                    <p className="text-cream font-bold text-sm">Premium Quality</p>
-                    <p className="text-cream-muted text-xs">Belgian Chocolate</p>
+                    <p className="text-cream font-bold text-xs sm:text-sm">Premium Quality</p>
+                    <p className="text-cream-muted text-[10px] sm:text-xs">Belgian Chocolate</p>
                   </div>
                 </motion.div>
 
@@ -584,10 +563,10 @@ export default function Hero() {
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.7, type: 'spring' }}
-                  className="absolute -top-4 -right-4 sm:right-4 glass px-5 py-3 rounded-2xl"
+                  className="absolute -top-2 right-2 sm:-top-4 sm:right-4 glass px-3 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl"
                 >
-                  <p className="text-3xl font-bold gradient-text">2+</p>
-                  <p className="text-cream-muted text-xs">Years Experience</p>
+                  <p className="text-2xl sm:text-3xl font-bold gradient-text">2+</p>
+                  <p className="text-cream-muted text-[10px] sm:text-xs">Years Experience</p>
                 </motion.div>
               </div>
             </motion.div>

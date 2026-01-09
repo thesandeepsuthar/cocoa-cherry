@@ -71,19 +71,19 @@ function PriceDisplay({ price, discountPrice, priceUnit }) {
   if (!price && price !== 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
       {hasDiscount ? (
         <>
-          <span className="text-rose font-bold text-xl">₹{discountPrice}</span>
-          <span className="text-cream-muted line-through text-sm">₹{price}</span>
-          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400">
+          <span className="text-rose font-bold text-lg sm:text-xl">₹{discountPrice}</span>
+          <span className="text-cream-muted line-through text-xs sm:text-sm">₹{price}</span>
+          <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-500/20 text-emerald-400">
             {discountPercentage}% OFF
           </span>
         </>
       ) : (
-        <span className="text-rose font-bold text-xl">₹{price}</span>
+        <span className="text-rose font-bold text-lg sm:text-xl">₹{price}</span>
       )}
-      {priceUnit && <span className="text-cream-muted text-xs">/{priceUnit.replace('per ', '')}</span>}
+      {priceUnit && <span className="text-cream-muted text-[10px] sm:text-xs">/{priceUnit.replace('per ', '')}</span>}
     </div>
   );
 }
@@ -105,14 +105,13 @@ function MenuCard({ flavor, index }) {
       <div className="card-noir overflow-hidden h-full">
         {/* Discount Badge */}
         {hasDiscount && (
-          <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full 
-                        bg-emerald-500 text-white text-xs font-bold shadow-lg">
+          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500 text-white text-[10px] sm:text-xs font-bold shadow-lg">
             {Math.round(((flavor.price - flavor.discountPrice) / flavor.price) * 100)}% OFF
           </div>
         )}
 
         {/* Image Container */}
-        <div className="relative h-52 overflow-hidden">
+        <div className="relative h-40 sm:h-48 md:h-52 overflow-hidden">
           {/* Glow effect */}
           <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent z-10" />
           
@@ -129,9 +128,7 @@ function MenuCard({ flavor, index }) {
               initial={{ scale: 0 }}
               animate={isInView ? { scale: 1 } : {}}
               transition={{ delay: 0.3, type: 'spring' }}
-              className="absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full 
-                       bg-gradient-to-r from-rose to-rose-dark text-white text-xs font-bold
-                       shadow-lg shadow-rose/30"
+              className="absolute top-3 sm:top-4 left-3 sm:left-4 z-10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-rose to-rose-dark text-white text-[10px] sm:text-xs font-bold shadow-lg shadow-rose/30"
             >
               {flavor.badge}
             </motion.div>
@@ -139,14 +136,14 @@ function MenuCard({ flavor, index }) {
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          <h3 className="text-xl font-bold text-cream mb-2" style={{ fontFamily: 'var(--font-cinzel)' }}>
+        <div className="p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-bold text-cream mb-1.5 sm:mb-2" style={{ fontFamily: 'var(--font-cinzel)' }}>
             {flavor.name}
           </h3>
-          <p className="text-cream-muted text-sm mb-4 line-clamp-2">{flavor.description}</p>
+          <p className="text-cream-muted text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{flavor.description}</p>
           
           {/* Price */}
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4">
             <PriceDisplay 
               price={flavor.price} 
               discountPrice={flavor.discountPrice} 
@@ -158,11 +155,10 @@ function MenuCard({ flavor, index }) {
           <motion.a
             href="#order"
             whileHover={{ x: 5 }}
-            className="inline-flex items-center gap-2 text-rose font-bold text-sm 
-                     hover:text-rose-glow transition-colors group/link"
+            className="inline-flex items-center gap-1.5 sm:gap-2 text-rose font-bold text-xs sm:text-sm hover:text-rose-glow transition-colors group/link"
           >
             <span>Order Now</span>
-            <span className="material-symbols-outlined text-base group-hover/link:translate-x-1 transition-transform">
+            <span className="material-symbols-outlined text-sm sm:text-base group-hover/link:translate-x-1 transition-transform">
               arrow_forward
             </span>
           </motion.a>
@@ -213,36 +209,35 @@ export default function Menu() {
                       bg-gold/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-16"
+          className="text-center max-w-2xl mx-auto mb-10 sm:mb-16"
         >
           {/* Label */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
-                     bg-gold/10 border border-gold/20 mb-6"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gold/10 border border-gold/20 mb-4 sm:mb-6"
           >
-            <span className="material-symbols-outlined text-gold text-sm">restaurant_menu</span>
-            <span className="text-gold text-xs font-bold uppercase tracking-widest">
+            <span className="material-symbols-outlined text-gold text-xs sm:text-sm">restaurant_menu</span>
+            <span className="text-gold text-[10px] sm:text-xs font-bold uppercase tracking-widest">
               Our Menu
             </span>
           </motion.div>
 
           <h2 
-            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             <span className="text-cream">Signature </span>
             <span className="gradient-text">Flavors</span>
           </h2>
           
-          <p className="text-cream-muted text-lg">
+          <p className="text-cream-muted text-sm sm:text-base md:text-lg px-4 sm:px-0">
             From timeless classics to adventurous new pairings, explore our most loved
             flavor combinations.
           </p>
@@ -250,20 +245,20 @@ export default function Menu() {
 
         {/* Menu Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="card-noir overflow-hidden">
-                <div className="h-52 skeleton" />
-                <div className="p-6 space-y-3">
-                  <div className="h-6 skeleton w-3/4" />
-                  <div className="h-4 skeleton" />
-                  <div className="h-4 skeleton w-1/2" />
+                <div className="h-40 sm:h-48 md:h-52 skeleton" />
+                <div className="p-4 sm:p-6 space-y-2 sm:space-y-3">
+                  <div className="h-5 sm:h-6 skeleton w-3/4" />
+                  <div className="h-3 sm:h-4 skeleton" />
+                  <div className="h-3 sm:h-4 skeleton w-1/2" />
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             {flavors.map((flavor, index) => (
               <MenuCard key={flavor._id} flavor={flavor} index={index} />
             ))}
@@ -275,20 +270,18 @@ export default function Menu() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.5 }}
-          className="text-center mt-12"
+          className="text-center mt-8 sm:mt-12"
         >
-          <p className="text-cream-muted text-sm mb-4">
+          <p className="text-cream-muted text-xs sm:text-sm mb-3 sm:mb-4 px-4 sm:px-0">
             Don&apos;t see your favorite flavor? We can create custom flavors too!
           </p>
           <motion.a
             href="#order"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-full
-                     border-2 border-rose/50 text-cream font-bold
-                     hover:bg-rose/10 hover:border-rose transition-all"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-rose/50 text-cream font-bold text-sm sm:text-base hover:bg-rose/10 hover:border-rose transition-all"
           >
-            <span className="material-symbols-outlined">add_circle</span>
+            <span className="material-symbols-outlined text-base sm:text-lg">add_circle</span>
             <span>Request Custom Flavor</span>
           </motion.a>
         </motion.div>

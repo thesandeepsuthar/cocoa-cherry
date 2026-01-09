@@ -54,21 +54,18 @@ const FeatureCard = ({ feature, index }) => {
         </div>
 
         {/* Corner accent */}
-        <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${feature.gradient} 
-                       opacity-10 blur-2xl group-hover:opacity-20 transition-opacity`} />
+        <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${feature.gradient} opacity-10 blur-2xl group-hover:opacity-20 transition-opacity`} />
 
         {/* Icon */}
         <motion.div
           whileHover={{ rotate: 360, scale: 1.1 }}
           transition={{ duration: 0.5 }}
-          className={`relative w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} 
-                     flex items-center justify-center mb-5 shadow-lg`}
+          className={`relative w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 shadow-lg`}
         >
           <span className="material-symbols-outlined text-white text-2xl">{feature.icon}</span>
           
           {/* Icon glow */}
-          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} 
-                         blur-xl opacity-50 -z-10`} />
+          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} blur-xl opacity-50 -z-10`} />
         </motion.div>
 
         {/* Content */}
@@ -103,15 +100,13 @@ export default function Features() {
     >
       {/* Background decorations */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-0 w-[400px] h-[400px] 
-                      bg-rose/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] 
-                      bg-gold/5 rounded-full blur-[80px]" />
+        <div className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-rose/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-gold/5 rounded-full blur-[80px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Section Header */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start mb-16 md:mb-20">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center mb-12 sm:mb-16 md:mb-20">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -122,37 +117,37 @@ export default function Features() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
-                       bg-rose/10 border border-rose/20 mb-6"
+              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-rose/10 border border-rose/20 mb-4 sm:mb-6"
             >
-              <span className="w-2 h-2 rounded-full bg-rose animate-pulse" />
-              <span className="text-rose text-xs font-bold uppercase tracking-widest">
+              <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-rose animate-pulse" />
+              <span className="text-rose text-[10px] sm:text-xs font-bold uppercase tracking-widest">
                 Why Choose Us
               </span>
             </motion.div>
 
             {/* Heading */}
             <h2 
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-cream 
-                       leading-tight mb-6"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-cream leading-tight mb-4 sm:mb-6"
               style={{ fontFamily: 'var(--font-cinzel)' }}
             >
-              Why Choose{' '}
-              <span className="relative">
-                <span className="gradient-text">Cocoa</span>
+              <span className="block sm:inline">Why Choose </span>
+              <span className="relative inline-block">
+                <span className="whitespace-nowrap">
+                  <span className="gradient-text">Cocoa</span>
+                  <span className="text-rose">&</span>
+                  <span className="text-gold">Cherry</span>
+                </span>
                 <motion.span 
-                  className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-rose to-gold rounded-full"
+                  className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 h-0.5 sm:h-1 bg-gradient-to-r from-rose to-gold rounded-full"
                   initial={{ scaleX: 0 }}
                   animate={isInView ? { scaleX: 1 } : {}}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 />
               </span>
-              <br />
-              <span className="text-rose">&</span>
-              <span className="text-gold">Cherry?</span>
+              <span className="text-cream">?</span>
             </h2>
 
-            <p className="text-cream-muted text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 mb-8">
+            <p className="text-cream-muted text-sm sm:text-base md:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 mb-6 sm:mb-8">
               We don&apos;t just bake cakes; we craft edible centerpieces for your most
               cherished moments. Using only the finest ingredients, every slice is a
               testament to quality and passion.
@@ -160,8 +155,7 @@ export default function Features() {
 
             <Link
               href="#menu"
-              className="group inline-flex items-center gap-2 text-rose font-bold 
-                       hover:text-rose-glow transition-colors"
+              className="group inline-flex items-center gap-2 text-rose font-bold hover:text-rose-glow transition-colors"
             >
               <span>Explore our creations</span>
               <motion.span
@@ -179,26 +173,29 @@ export default function Features() {
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="grid grid-cols-2 gap-4"
+            className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-5 self-center"
           >
             {[
-              { number: '500+', label: 'Happy Customers' },
-              { number: '5+', label: 'Years Experience' },
-              { number: '1000+', label: 'Cakes Delivered' },
-              { number: '100%', label: 'Satisfaction Rate' },
+              { number: '500+', label: 'Happy Customers', icon: 'groups' },
+              { number: '5+', label: 'Years Experience', icon: 'workspace_premium' },
+              { number: '1000+', label: 'Cakes Delivered', icon: 'cake' },
+              { number: '100%', label: 'Satisfaction Rate', icon: 'thumb_up' },
             ].map((stat, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: 0.3 + index * 0.1 }}
-                className="card-glass p-6 text-center group hover:border-rose/30"
+                whileHover={{ scale: 1.03, y: -4 }}
+                className="card-glass p-3 sm:p-5 lg:p-6 text-center group hover:border-rose/30 transition-all duration-300"
               >
-                <p className="text-3xl md:text-4xl font-bold gradient-text mb-1" 
-                   style={{ fontFamily: 'var(--font-cinzel)' }}>
+                <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
+                  <span className="material-symbols-outlined text-rose/60 text-base sm:text-xl">{stat.icon}</span>
+                </div>
+                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold gradient-text mb-0.5 sm:mb-1" style={{ fontFamily: 'var(--font-cinzel)' }}>
                   {stat.number}
                 </p>
-                <p className="text-cream-muted text-sm">{stat.label}</p>
+                <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm">{stat.label}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -216,17 +213,16 @@ export default function Features() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.6 }}
-          className="mt-16 text-center"
+          className="mt-10 sm:mt-16 text-center"
         >
-          <div className="inline-flex items-center gap-4 px-6 py-4 rounded-2xl 
-                        bg-noir-light border border-rose/10">
-            <div className="flex items-center gap-1 text-gold">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-noir-light border border-rose/10">
+            <div className="flex items-center gap-0.5 sm:gap-1 text-gold">
               {[1, 2, 3, 4, 5].map((i) => (
-                <span key={i} className="material-symbols-outlined text-lg filled">star</span>
+                <span key={i} className="material-symbols-outlined text-base sm:text-lg filled">star</span>
               ))}
             </div>
-            <div className="h-6 w-px bg-rose/20" />
-            <p className="text-cream-muted text-sm">
+            <div className="hidden sm:block h-6 w-px bg-rose/20" />
+            <p className="text-cream-muted text-xs sm:text-sm">
               Rated <span className="text-cream font-bold">5.0</span> by our customers
             </p>
           </div>

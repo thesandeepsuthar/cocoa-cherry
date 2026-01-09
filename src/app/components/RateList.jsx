@@ -98,7 +98,7 @@ export default function RateList() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-20 md:py-32 bg-noir overflow-hidden" 
+      className="relative py-16 sm:py-20 md:py-32 bg-noir overflow-hidden" 
       id="rate-list"
     >
       {/* Background decorations */}
@@ -109,35 +109,34 @@ export default function RateList() {
                       bg-gold/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
         >
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
-                     bg-gold/10 border border-gold/20 mb-6"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gold/10 border border-gold/20 mb-4 sm:mb-6"
           >
-            <span className="material-symbols-outlined text-gold text-sm">payments</span>
-            <span className="text-gold text-xs font-bold uppercase tracking-widest">
+            <span className="material-symbols-outlined text-gold text-xs sm:text-sm">payments</span>
+            <span className="text-gold text-[10px] sm:text-xs font-bold uppercase tracking-widest">
               Transparent Pricing
             </span>
           </motion.div>
 
           <h2 
-            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             <span className="text-cream">Our </span>
             <span className="gradient-text">Rate List</span>
           </h2>
           
-          <p className="text-cream-muted text-lg max-w-2xl mx-auto">
+          <p className="text-cream-muted text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4 sm:px-0">
             Quality ingredients, artisanal craftsmanship, and love in every bite. 
             Here&apos;s our complete pricing guide.
           </p>
@@ -149,7 +148,7 @@ export default function RateList() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-2 mb-12"
+            className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-12"
           >
             {categories.map((category) => (
               <motion.button
@@ -157,7 +156,7 @@ export default function RateList() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveCategory(category)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all capitalize ${
+                className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all capitalize ${
                   activeCategory === category
                     ? 'bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30'
                     : 'bg-noir-light text-cream border border-rose/20 hover:border-rose/40'
@@ -190,28 +189,26 @@ export default function RateList() {
                 {/* Category Header - Clickable */}
                 <button
                   onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
-                  className="w-full flex items-center justify-between p-5 md:p-6 
-                           hover:bg-rose/5 transition-colors text-left"
+                  className="w-full flex items-center justify-between p-4 sm:p-5 md:p-6 hover:bg-rose/5 transition-colors text-left"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose to-rose-dark 
-                                  flex items-center justify-center shadow-lg shadow-rose/20">
-                      <span className="material-symbols-outlined text-white text-2xl">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-rose to-rose-dark flex items-center justify-center shadow-lg shadow-rose/20">
+                      <span className="material-symbols-outlined text-white text-xl sm:text-2xl">
                         {getCategoryIcon(category)}
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-lg md:text-xl font-bold text-cream capitalize"
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-cream capitalize"
                           style={{ fontFamily: 'var(--font-cinzel)' }}>
                         {category}
                       </h3>
-                      <p className="text-cream-muted text-sm">{categoryItems.length} items</p>
+                      <p className="text-cream-muted text-xs sm:text-sm">{categoryItems.length} items</p>
                     </div>
                   </div>
                   
                   <motion.span
                     animate={{ rotate: expandedCategory === category ? 180 : 0 }}
-                    className="material-symbols-outlined text-rose text-2xl"
+                    className="material-symbols-outlined text-rose text-xl sm:text-2xl"
                   >
                     expand_more
                   </motion.span>
@@ -355,12 +352,11 @@ export default function RateList() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.5 }}
-          className="mt-12 text-center"
+          className="mt-8 sm:mt-12 text-center"
         >
-          <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl 
-                        bg-noir-light border border-rose/10">
-            <span className="material-symbols-outlined text-rose">info</span>
-            <p className="text-sm text-cream-muted">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-noir-light border border-rose/10">
+            <span className="material-symbols-outlined text-rose text-lg sm:text-base">info</span>
+            <p className="text-xs sm:text-sm text-cream-muted text-center">
               Prices may vary based on customization. Contact us for custom orders!
             </p>
           </div>
