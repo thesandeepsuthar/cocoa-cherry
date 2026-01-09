@@ -9,6 +9,7 @@ const navLinks = [
   { href: '#about', label: 'About', icon: 'info' },
   { href: '#menu', label: 'Menu', icon: 'restaurant_menu' },
   { href: '#gallery', label: 'Gallery', icon: 'photo_library' },
+  { href: '#faq', label: 'FAQ', icon: 'help' },
   { href: '#contact', label: 'Contact', icon: 'mail' },
 ];
 

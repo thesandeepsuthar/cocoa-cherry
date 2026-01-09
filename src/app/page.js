@@ -7,23 +7,35 @@ import {
   Gallery,
   Reels,
   Testimonials,
+  SpecialOffer,
+  FAQ,
   Order,
   Footer,
+  FloatingActions,
+  PageLoader,
+  MouseGlow,
 } from './components';
 
 export default function Home() {
   return (
-    <main className="relative">
-      <Navigation />
-      <Hero />
-      <Features />
-      <Menu />
-      <RateList />
-      <Gallery />
-      <Reels />
-      <Testimonials />
-      <Order />
-      <Footer />
+    <>
+      <PageLoader />
+      <MouseGlow />
+      <main className="relative">
+        <Navigation />
+        <Hero />
+        <Features />
+        <Menu />
+        <RateList />
+        <Gallery />
+        <Reels />
+        <Testimonials />
+        <SpecialOffer />
+        <FAQ />
+        <Order />
+        <Footer />
+        <FloatingActions />
       </main>
+    </>
   );
 }

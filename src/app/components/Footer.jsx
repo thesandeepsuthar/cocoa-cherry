@@ -9,6 +9,7 @@ const quickLinks = [
   { href: '#about', label: 'About Us' },
   { href: '#menu', label: 'Menu & Flavors' },
   { href: '#gallery', label: 'Gallery' },
+  { href: '#faq', label: 'FAQ' },
   { href: '#order', label: 'Order Now' },
   { href: '/terms-and-conditions', label: 'Terms & Conditions' },
 ];
