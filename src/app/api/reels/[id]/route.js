@@ -95,12 +95,49 @@ export async function PUT(request, { params }) {
       updateData.caption = sanitizeString(body.caption).slice(0, 200);
     }
 
-    if (typeof body.order === 'number') {
-      updateData.order = body.order;
-    }
-
     if (typeof body.isActive === 'boolean') {
       updateData.isActive = body.isActive;
+    }
+
+    // Handle order swapping
+    let swappedWith = null;
+    if (typeof body.order === 'number') {
+      const targetOrder = body.order;
+      
+      const currentItem = await Reel.findById(id);
+      if (!currentItem) {
+        return NextResponse.json(
+          { success: false, error: 'Reel not found' },
+          { status: 404 }
+        );
+      }
+
+      const currentOrder = currentItem.order;
+
+      if (currentOrder !== targetOrder) {
+        const itemWithTargetOrder = await Reel.findOne({ 
+          order: targetOrder, 
+          _id: { $ne: id }
+        });
+
+        if (itemWithTargetOrder) {
+          await Reel.findByIdAndUpdate(
+            itemWithTargetOrder._id,
+            { order: currentOrder, updatedAt: new Date() }
+          );
+          
+          swappedWith = {
+            id: itemWithTargetOrder._id,
+            caption: itemWithTargetOrder.caption,
+            oldOrder: targetOrder,
+            newOrder: currentOrder,
+          };
+          
+          console.log(`🔄 Order swapped: "${currentItem.caption}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.caption}" (${targetOrder}→${currentOrder})`);
+        }
+      }
+
+      updateData.order = targetOrder;
     }
 
     const updatedReel = await Reel.findByIdAndUpdate(
@@ -119,7 +156,10 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedReel,
-      message: 'Reel updated successfully',
+      swappedWith: swappedWith,
+      message: swappedWith 
+        ? `Order swapped with "${swappedWith.caption}"` 
+        : 'Reel updated successfully',
     });
   } catch (error) {
     console.error('Reel PUT error:', error);

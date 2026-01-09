@@ -100,8 +100,47 @@ export async function PUT(request, { params }) {
       updateData.isAvailable = body.isAvailable;
     }
 
+    // Handle order swapping
+    let swappedWith = null;
     if (typeof body.order === 'number') {
-      updateData.order = body.order;
+      const targetOrder = body.order;
+      
+      const currentItem = await RateList.findById(id);
+      if (!currentItem) {
+        return NextResponse.json(
+          { success: false, error: 'Item not found' },
+          { status: 404 }
+        );
+      }
+
+      const currentOrder = currentItem.order;
+
+      if (currentOrder !== targetOrder) {
+        // For RateList, also match by category when swapping
+        const itemWithTargetOrder = await RateList.findOne({ 
+          order: targetOrder, 
+          category: currentItem.category, // Same category
+          _id: { $ne: id }
+        });
+
+        if (itemWithTargetOrder) {
+          await RateList.findByIdAndUpdate(
+            itemWithTargetOrder._id,
+            { order: currentOrder, updatedAt: new Date() }
+          );
+          
+          swappedWith = {
+            id: itemWithTargetOrder._id,
+            item: itemWithTargetOrder.item,
+            oldOrder: targetOrder,
+            newOrder: currentOrder,
+          };
+          
+          console.log(`🔄 Order swapped: "${currentItem.item}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.item}" (${targetOrder}→${currentOrder})`);
+        }
+      }
+
+      updateData.order = targetOrder;
     }
 
     const item = await RateList.findByIdAndUpdate(
@@ -117,7 +156,14 @@ export async function PUT(request, { params }) {
       );
     }
 
-    return NextResponse.json({ success: true, data: item });
+    return NextResponse.json({ 
+      success: true, 
+      data: item,
+      swappedWith: swappedWith,
+      message: swappedWith 
+        ? `Order swapped with "${swappedWith.item}"` 
+        : 'Item updated successfully',
+    });
   } catch (error) {
     console.error('Error updating rate list item:', error);
     return NextResponse.json(

@@ -5,6 +5,10 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 
+// Configuration
+const INITIAL_DISPLAY_COUNT = 6; // Show 6 images initially
+const LOAD_MORE_COUNT = 6; // Load 6 more each time
+
 // Default fallback images
 const defaultGalleryImages = [
   {
@@ -103,9 +107,7 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="absolute top-4 right-4 z-10 w-12 h-12 rounded-full 
-                 bg-rose/10 border border-rose/20 hover:bg-rose/20 
-                 transition-colors flex items-center justify-center"
+        className="absolute top-4 right-4 z-10 w-12 h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors flex items-center justify-center"
         onClick={onClose}
       >
         <span className="material-symbols-outlined text-cream text-2xl">close</span>
@@ -116,9 +118,7 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full 
-                 bg-rose/10 border border-rose/20 hover:bg-rose/20 
-                 transition-colors hidden md:flex items-center justify-center"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors hidden md:flex items-center justify-center"
         onClick={(e) => { e.stopPropagation(); onPrev(); }}
       >
         <span className="material-symbols-outlined text-cream text-2xl">chevron_left</span>
@@ -128,9 +128,7 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full 
-                 bg-rose/10 border border-rose/20 hover:bg-rose/20 
-                 transition-colors hidden md:flex items-center justify-center"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors hidden md:flex items-center justify-center"
         onClick={(e) => { e.stopPropagation(); onNext(); }}
       >
         <span className="material-symbols-outlined text-cream text-2xl">chevron_right</span>
@@ -151,8 +149,7 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="relative max-w-5xl w-full max-h-[70vh] aspect-square md:aspect-video
-                     rounded-2xl overflow-hidden border border-rose/20 shadow-2xl shadow-black/50"
+            className="relative max-w-5xl w-full max-h-[70vh] aspect-square md:aspect-video rounded-2xl overflow-hidden border border-rose/20 shadow-2xl shadow-black/50"
           >
             <Image
               src={currentImage.imageData}
@@ -179,7 +176,7 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         <p className="text-cream-muted text-sm">{currentIndex + 1} / {images.length}</p>
       </motion.div>
 
-      {/* Thumbnails */}
+      {/* Thumbnails - Scrollable */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -187,15 +184,14 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         className="pb-6 px-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-center gap-2 overflow-x-auto hide-scrollbar py-2">
+        <div className="flex justify-start md:justify-center gap-2 overflow-x-auto hide-scrollbar py-2 max-w-4xl mx-auto">
           {images.map((image, index) => (
             <motion.button
               key={image._id}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setCurrentIndex(index)}
-              className={`relative w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden flex-shrink-0 
-                       transition-all duration-300 border-2 ${
+              className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl overflow-hidden flex-shrink-0 transition-all duration-300 border-2 ${
                 index === currentIndex
                   ? 'border-rose scale-110 shadow-lg shadow-rose/30'
                   : 'border-transparent opacity-50 hover:opacity-80'
@@ -225,11 +221,53 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
   );
 }
 
+// Gallery Image Card Component
+function GalleryCard({ image, index, onClick, isInView }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 0.5, delay: Math.min(index * 0.1, 0.5) }}
+      onClick={onClick}
+      className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer border border-rose/10 hover:border-rose/30 shadow-lg hover:shadow-xl transition-all"
+    >
+      {/* Image */}
+      <Image
+        src={image.imageData}
+        alt={image.alt || image.caption}
+        fill
+        className="object-cover transition-transform duration-700 group-hover:scale-110"
+        unoptimized
+      />
+      
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      {/* Zoom icon */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          className="w-14 h-14 rounded-full bg-rose/80 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-rose/30"
+        >
+          <span className="material-symbols-outlined text-white text-2xl">zoom_in</span>
+        </motion.div>
+      </div>
+      
+      {/* Caption */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+        <p className="text-cream text-sm font-medium">{image.caption}</p>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Gallery() {
   const [galleryImages, setGalleryImages] = useState(defaultGalleryImages);
+  const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -250,10 +288,27 @@ export default function Gallery() {
     fetchGallery();
   }, []);
 
+  // Get currently displayed images
+  const displayedImages = galleryImages.slice(0, displayCount);
+  const hasMore = displayCount < galleryImages.length;
+  const remainingCount = galleryImages.length - displayCount;
+
+  const loadMore = useCallback(() => {
+    setLoadingMore(true);
+    // Simulate a slight delay for smooth UX
+    setTimeout(() => {
+      setDisplayCount(prev => Math.min(prev + LOAD_MORE_COUNT, galleryImages.length));
+      setLoadingMore(false);
+    }, 300);
+  }, [galleryImages.length]);
+
   const openLightbox = useCallback((index) => {
-    setCurrentIndex(index);
+    // Find the actual index in the full gallery array
+    const image = displayedImages[index];
+    const fullIndex = galleryImages.findIndex(img => img._id === image._id);
+    setCurrentIndex(fullIndex);
     setLightboxOpen(true);
-  }, []);
+  }, [displayedImages, galleryImages]);
 
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
@@ -276,10 +331,8 @@ export default function Gallery() {
       >
         {/* Background decorations */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-1/4 w-[400px] h-[400px] 
-                        bg-rose/5 rounded-full blur-[100px]" />
-          <div className="absolute bottom-1/4 left-0 w-[300px] h-[300px] 
-                        bg-gold/5 rounded-full blur-[80px]" />
+          <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-rose/5 rounded-full blur-[100px]" />
+          <div className="absolute bottom-1/4 left-0 w-[300px] h-[300px] bg-gold/5 rounded-full blur-[80px]" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 md:px-8">
@@ -293,8 +346,7 @@ export default function Gallery() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
-                       bg-rose/10 border border-rose/20 mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose/10 border border-rose/20 mb-6"
             >
               <span className="material-symbols-outlined text-rose text-sm">photo_library</span>
               <span className="text-rose text-xs font-bold uppercase tracking-widest">
@@ -309,15 +361,25 @@ export default function Gallery() {
               <span className="gradient-text">Gallery</span>
             </h2>
             
-            <p className="text-cream-muted text-lg italic mb-4">
+            <p className="text-cream-muted text-lg italic mb-2">
               Real Cakes. Real Celebrations.
             </p>
+
+            {/* Image count badge */}
+            {!loading && (
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-cream-muted/60 text-sm mb-4"
+              >
+                {galleryImages.length} masterpieces in our collection
+              </motion.p>
+            )}
 
             <Link
               href="https://www.instagram.com/cocoa_cherry_"
               target="_blank"
-              className="inline-flex items-center gap-2 text-rose font-bold 
-                       hover:text-rose-glow transition-colors group"
+              className="inline-flex items-center gap-2 text-rose font-bold hover:text-rose-glow transition-colors group"
             >
               <span>Follow us on Instagram</span>
               <motion.span
@@ -338,82 +400,100 @@ export default function Gallery() {
               ))}
             </div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"
-            >
-              {galleryImages.map((image, index) => (
-                <motion.div
-                  key={image._id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  onClick={() => openLightbox(index)}
-                  className="group relative aspect-square rounded-2xl overflow-hidden 
-                           cursor-pointer border border-rose/10 hover:border-rose/30
-                           shadow-lg hover:shadow-xl transition-all"
-                >
-                  {/* Image */}
-                  <Image
-                    src={image.imageData}
-                    alt={image.alt || image.caption}
-                    fill
-                    className="object-cover transition-transform duration-700 
-                             group-hover:scale-110"
-                    unoptimized
-                  />
-                  
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent 
-                               opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  {/* Zoom icon */}
-                  <div className="absolute inset-0 flex items-center justify-center 
-                               opacity-0 group-hover:opacity-100 transition-opacity">
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      className="w-14 h-14 rounded-full bg-rose/80 backdrop-blur-sm 
-                               flex items-center justify-center shadow-lg shadow-rose/30"
-                    >
-                      <span className="material-symbols-outlined text-white text-2xl">zoom_in</span>
-                    </motion.div>
-                  </div>
-                  
-                  {/* Caption */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 
-                               translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <p className="text-cream text-sm font-medium">{image.caption}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"
+              >
+                <AnimatePresence>
+                  {displayedImages.map((image, index) => (
+                    <GalleryCard
+                      key={image._id}
+                      image={image}
+                      index={index}
+                      onClick={() => openLightbox(index)}
+                      isInView={isInView}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
 
-          {/* View All Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.5 }}
-            className="text-center mt-12"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => openLightbox(0)}
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-full
-                       bg-gradient-to-r from-rose to-rose-dark text-noir font-bold
-                       shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
-            >
-              <span className="material-symbols-outlined">photo_library</span>
-              <span>View All Photos</span>
-            </motion.button>
-          </motion.div>
+              {/* Load More / View All Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.5 }}
+                className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12"
+              >
+                {/* Load More Button - Only show if there are more images */}
+                {hasMore && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    className="inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-rose/50 text-cream font-bold hover:bg-rose/10 hover:border-rose transition-all disabled:opacity-50"
+                  >
+                    {loadingMore ? (
+                      <>
+                        <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                        <span>Loading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined">add</span>
+                        <span>Load More</span>
+                        <span className="px-2 py-0.5 rounded-full bg-rose/20 text-rose text-sm">
+                          +{Math.min(LOAD_MORE_COUNT, remainingCount)}
+                        </span>
+                      </>
+                    )}
+                  </motion.button>
+                )}
+
+                {/* View All in Lightbox Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setCurrentIndex(0);
+                    setLightboxOpen(true);
+                  }}
+                  className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
+                >
+                  <span className="material-symbols-outlined">photo_library</span>
+                  <span>View All ({galleryImages.length})</span>
+                </motion.button>
+              </motion.div>
+
+              {/* Progress indicator */}
+              {galleryImages.length > INITIAL_DISPLAY_COUNT && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-8 flex flex-col items-center gap-2"
+                >
+                  <div className="w-48 h-1 bg-rose/20 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-rose to-gold rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(displayCount / galleryImages.length) * 100}%` }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  </div>
+                  <p className="text-cream-muted/60 text-xs">
+                    Showing {displayCount} of {galleryImages.length} images
+                  </p>
+                </motion.div>
+              )}
+            </>
+          )}
         </div>
       </section>
 
-      {/* Lightbox */}
+      {/* Lightbox - Shows ALL images for full browsing */}
       <AnimatePresence>
         {lightboxOpen && (
           <Lightbox

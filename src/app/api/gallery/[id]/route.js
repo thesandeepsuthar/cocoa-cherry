@@ -106,12 +106,53 @@ export async function PUT(request, { params }) {
       updateData.alt = sanitizeString(body.alt).slice(0, 200);
     }
 
-    if (typeof body.order === 'number') {
-      updateData.order = body.order;
-    }
-
     if (typeof body.isActive === 'boolean') {
       updateData.isActive = body.isActive;
+    }
+
+    // Handle order swapping
+    let swappedWith = null;
+    if (typeof body.order === 'number') {
+      const targetOrder = body.order;
+      
+      // Get current item to find its current order
+      const currentItem = await Gallery.findById(id);
+      if (!currentItem) {
+        return NextResponse.json(
+          { success: false, error: 'Image not found' },
+          { status: 404 }
+        );
+      }
+
+      const currentOrder = currentItem.order;
+
+      // Only swap if order is actually changing
+      if (currentOrder !== targetOrder) {
+        // Find the item that currently has the target order
+        const itemWithTargetOrder = await Gallery.findOne({ 
+          order: targetOrder, 
+          _id: { $ne: id } // Exclude current item
+        });
+
+        if (itemWithTargetOrder) {
+          // Swap: Give the other item our current order
+          await Gallery.findByIdAndUpdate(
+            itemWithTargetOrder._id,
+            { order: currentOrder, updatedAt: new Date() }
+          );
+          
+          swappedWith = {
+            id: itemWithTargetOrder._id,
+            caption: itemWithTargetOrder.caption,
+            oldOrder: targetOrder,
+            newOrder: currentOrder,
+          };
+          
+          console.log(`🔄 Order swapped: "${currentItem.caption}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.caption}" (${targetOrder}→${currentOrder})`);
+        }
+      }
+
+      updateData.order = targetOrder;
     }
 
     const updatedImage = await Gallery.findByIdAndUpdate(
@@ -131,7 +172,10 @@ export async function PUT(request, { params }) {
       success: true,
       data: updatedImage,
       compression: compressionInfo,
-      message: 'Image updated successfully',
+      swappedWith: swappedWith,
+      message: swappedWith 
+        ? `Order swapped with "${swappedWith.caption}"` 
+        : 'Image updated successfully',
     });
   } catch (error) {
     console.error('Gallery PUT error:', error);

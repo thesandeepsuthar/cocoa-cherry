@@ -105,12 +105,49 @@ export async function PUT(request, { params }) {
       updateData.priceUnit = body.priceUnit;
     }
 
-    if (typeof body.order === 'number') {
-      updateData.order = body.order;
-    }
-
     if (typeof body.isActive === 'boolean') {
       updateData.isActive = body.isActive;
+    }
+
+    // Handle order swapping
+    let swappedWith = null;
+    if (typeof body.order === 'number') {
+      const targetOrder = body.order;
+      
+      const currentItem = await Menu.findById(id);
+      if (!currentItem) {
+        return NextResponse.json(
+          { success: false, error: 'Menu item not found' },
+          { status: 404 }
+        );
+      }
+
+      const currentOrder = currentItem.order;
+
+      if (currentOrder !== targetOrder) {
+        const itemWithTargetOrder = await Menu.findOne({ 
+          order: targetOrder, 
+          _id: { $ne: id }
+        });
+
+        if (itemWithTargetOrder) {
+          await Menu.findByIdAndUpdate(
+            itemWithTargetOrder._id,
+            { order: currentOrder, updatedAt: new Date() }
+          );
+          
+          swappedWith = {
+            id: itemWithTargetOrder._id,
+            name: itemWithTargetOrder.name,
+            oldOrder: targetOrder,
+            newOrder: currentOrder,
+          };
+          
+          console.log(`🔄 Order swapped: "${currentItem.name}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.name}" (${targetOrder}→${currentOrder})`);
+        }
+      }
+
+      updateData.order = targetOrder;
     }
 
     const updatedMenuItem = await Menu.findByIdAndUpdate(
@@ -129,7 +166,10 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedMenuItem,
-      message: 'Menu item updated successfully',
+      swappedWith: swappedWith,
+      message: swappedWith 
+        ? `Order swapped with "${swappedWith.name}"` 
+        : 'Menu item updated successfully',
     });
   } catch (error) {
     console.error('Menu PUT error:', error);
