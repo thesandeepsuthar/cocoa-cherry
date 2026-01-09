@@ -80,7 +80,7 @@ export default function SpecialOffer() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-16 md:py-24 overflow-hidden"
+      className="relative py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden"
       id="offer"
     >
       {/* Animated gradient background */}

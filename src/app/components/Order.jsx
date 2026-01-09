@@ -55,7 +55,7 @@ Sent from Cocoa&Cherry Website`;
   return (
     <section 
       ref={sectionRef}
-      className="relative py-20 md:py-32 bg-noir overflow-hidden" 
+      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir overflow-hidden" 
       id="order"
     >
       {/* Background decorations */}

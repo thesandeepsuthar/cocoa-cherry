@@ -361,7 +361,7 @@ export default function Testimonials() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-20 md:py-32 bg-noir-light overflow-hidden" 
+      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light overflow-hidden" 
       id="reviews"
     >
       {/* Background */}

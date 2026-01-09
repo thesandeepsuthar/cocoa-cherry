@@ -98,7 +98,7 @@ export default function RateList() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-16 sm:py-20 md:py-32 bg-noir overflow-hidden" 
+      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir overflow-hidden" 
       id="rate-list"
     >
       {/* Background decorations */}

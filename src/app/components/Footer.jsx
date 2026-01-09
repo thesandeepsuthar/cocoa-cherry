@@ -50,7 +50,7 @@ export default function Footer() {
         <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-gold/5 rounded-full blur-[80px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-20">
+      <div className="relative max-w-7xl mx-auto px-4 md:px-8 py-10 sm:py-14 md:py-16 lg:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           {/* Brand Column */}
           <motion.div
