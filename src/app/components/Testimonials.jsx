@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Slider from 'react-slick';
 
 // Default fallback testimonials
@@ -33,31 +33,18 @@ const defaultTestimonials = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.2 },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
-
 // Star Rating Component
 function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }) {
   const [hoverRating, setHoverRating] = useState(0);
   
   const sizeClasses = {
-    sm: 'text-base sm:text-lg',
-    md: 'text-xl sm:text-2xl',
-    lg: 'text-2xl sm:text-3xl md:text-4xl',
+    sm: 'text-base',
+    md: 'text-xl',
+    lg: 'text-2xl md:text-3xl',
   };
 
   return (
-    <div className="flex gap-0.5 sm:gap-1">
+    <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
         <motion.button
           key={star}
@@ -67,12 +54,12 @@ function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }
           onClick={() => interactive && onRatingChange?.(star)}
           onMouseEnter={() => interactive && setHoverRating(star)}
           onMouseLeave={() => interactive && setHoverRating(0)}
-          className={`${interactive ? 'cursor-pointer' : 'cursor-default'} transition-colors p-0.5 sm:p-1`}
+          className={`${interactive ? 'cursor-pointer' : 'cursor-default'} transition-colors`}
           disabled={!interactive}
         >
           <span
             className={`material-symbols-outlined ${sizeClasses[size]} ${
-              star <= (hoverRating || rating) ? 'text-yellow-400' : 'text-gray-300'
+              star <= (hoverRating || rating) ? 'text-gold' : 'text-cream-muted/30'
             }`}
             style={{
               fontVariationSettings: star <= (hoverRating || rating) ? "'FILL' 1" : "'FILL' 0",
@@ -145,33 +132,35 @@ function ReviewForm({ onClose, onSubmit }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="text-center py-8 sm:py-12 px-4"
+        className="text-center py-12"
       >
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 10 }}
-          className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4"
         >
-          <span className="material-symbols-outlined text-3xl sm:text-4xl text-green-500">check_circle</span>
+          <span className="material-symbols-outlined text-4xl text-emerald-400">check_circle</span>
         </motion.div>
-        <h3 className="text-xl sm:text-2xl font-bold text-cocoa mb-2 font-serif">Thank You!</h3>
-        <p className="text-accent text-sm sm:text-base">Your review has been submitted and will be visible after approval.</p>
+        <h3 className="text-2xl font-bold text-cream mb-2" style={{ fontFamily: 'var(--font-cinzel)' }}>
+          Thank You!
+        </h3>
+        <p className="text-cream-muted">Your review has been submitted and will be visible after approval.</p>
       </motion.div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm">
           {error}
         </div>
       )}
 
       {/* Rating */}
-      <div className="text-center py-2 sm:py-4 bg-secondary/30 rounded-xl -mx-2 sm:mx-0 px-2 sm:px-4">
-        <label className="block text-xs sm:text-sm font-bold text-cocoa mb-2 sm:mb-3">
+      <div className="text-center py-4 bg-noir rounded-2xl">
+        <label className="block text-sm font-medium text-cream mb-4">
           How would you rate your experience?
         </label>
         <div className="flex justify-center">
@@ -188,7 +177,7 @@ function ReviewForm({ onClose, onSubmit }) {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="text-primary font-medium mt-2 text-sm sm:text-base"
+              className="text-rose font-medium mt-3"
             >
               {formData.rating === 5 && '🎉 Excellent!'}
               {formData.rating === 4 && '😊 Great!'}
@@ -201,10 +190,10 @@ function ReviewForm({ onClose, onSubmit }) {
       </div>
 
       {/* Name & Email */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
-            Your Name <span className="text-primary">*</span>
+          <label className="block text-sm font-medium text-cream mb-2">
+            Your Name <span className="text-rose">*</span>
           </label>
           <input
             type="text"
@@ -213,12 +202,14 @@ function ReviewForm({ onClose, onSubmit }) {
             onChange={handleChange}
             required
             placeholder="Jane Doe"
-            className="w-full h-11 sm:h-12 rounded-lg border border-secondary bg-background-light px-3 sm:px-4 text-sm sm:text-base focus:border-primary focus:ring-primary text-cocoa"
+            className="w-full bg-noir border border-rose/20 rounded-xl px-4 py-3 
+                     text-cream placeholder-cream-muted/50 focus:border-rose 
+                     focus:ring-1 focus:ring-rose/30 transition-all"
           />
         </div>
         <div>
-          <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
-            Email Address <span className="text-primary">*</span>
+          <label className="block text-sm font-medium text-cream mb-2">
+            Email <span className="text-rose">*</span>
           </label>
           <input
             type="email"
@@ -227,20 +218,29 @@ function ReviewForm({ onClose, onSubmit }) {
             onChange={handleChange}
             required
             placeholder="jane@example.com"
-            className="w-full h-11 sm:h-12 rounded-lg border border-secondary bg-background-light px-3 sm:px-4 text-sm sm:text-base focus:border-primary focus:ring-primary text-cocoa"
+            className="w-full bg-noir border border-rose/20 rounded-xl px-4 py-3 
+                     text-cream placeholder-cream-muted/50 focus:border-rose 
+                     focus:ring-1 focus:ring-rose/30 transition-all"
           />
         </div>
       </div>
 
       {/* Cake Type */}
       <div>
-        <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">What did you order?</label>
+        <label className="block text-sm font-medium text-cream mb-2">What did you order?</label>
         <select
           name="cakeType"
           value={formData.cakeType}
           onChange={handleChange}
-          className="w-full h-11 sm:h-12 rounded-lg border border-secondary bg-background-light px-3 sm:px-4 text-sm sm:text-base focus:border-primary focus:ring-primary text-cocoa appearance-none"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23974e5a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '20px' }}
+          className="w-full bg-noir border border-rose/20 rounded-xl px-4 py-3 
+                   text-cream focus:border-rose focus:ring-1 focus:ring-rose/30 
+                   transition-all appearance-none cursor-pointer"
+          style={{ 
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'right 12px center',
+            backgroundSize: '20px'
+          }}
         >
           <option value="">Select cake type</option>
           <option value="Birthday Cake">Birthday Cake</option>
@@ -254,17 +254,19 @@ function ReviewForm({ onClose, onSubmit }) {
 
       {/* Review Text */}
       <div>
-        <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
-          Your Review <span className="text-primary">*</span>
+        <label className="block text-sm font-medium text-cream mb-2">
+          Your Review <span className="text-rose">*</span>
         </label>
         <textarea
           name="review"
           value={formData.review}
           onChange={handleChange}
           required
-          rows={3}
+          rows={4}
           placeholder="Tell us about your experience..."
-          className="w-full rounded-lg border border-secondary bg-background-light px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:border-primary focus:ring-primary text-cocoa resize-none min-h-[100px] sm:min-h-[120px]"
+          className="w-full bg-noir border border-rose/20 rounded-xl px-4 py-3 
+                   text-cream placeholder-cream-muted/50 focus:border-rose 
+                   focus:ring-1 focus:ring-rose/30 transition-all resize-none"
         />
       </div>
 
@@ -274,27 +276,27 @@ function ReviewForm({ onClose, onSubmit }) {
         disabled={isSubmitting}
         whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
         whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-        className={`w-full h-11 sm:h-12 rounded-lg font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 shadow-lg ${
+        className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 
+                 transition-all ${
           isSubmitting
-            ? 'bg-gray-400 text-white cursor-not-allowed'
-            : 'text-white hover:opacity-90'
+            ? 'bg-cream-muted/30 cursor-not-allowed'
+            : 'bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30'
         }`}
-        style={!isSubmitting ? { backgroundColor: '#c9a86c' } : {}}
       >
         {isSubmitting ? (
           <>
             <motion.span
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="material-symbols-outlined text-base sm:text-lg"
+              className="material-symbols-outlined"
             >
               progress_activity
             </motion.span>
-            <span className="text-sm sm:text-base">Submitting...</span>
+            <span className="text-cream">Submitting...</span>
           </>
         ) : (
           <>
-            <span className="material-symbols-outlined text-base sm:text-lg">send</span>
+            <span className="material-symbols-outlined">send</span>
             <span>Submit Review</span>
           </>
         )}
@@ -307,6 +309,8 @@ export default function Testimonials() {
   const [testimonials, setTestimonials] = useState(defaultTestimonials);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -348,7 +352,6 @@ export default function Testimonials() {
     arrows: false,
   };
 
-  // Get avatar - use avatarData if available, otherwise generate initials
   const getAvatar = (item) => {
     if (item.avatarData) {
       return { type: 'image', value: item.avatarData };
@@ -357,156 +360,199 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-white scroll-mt-20" id="reviews">
-      <div className="flex flex-col items-center px-4 sm:px-6 md:px-10">
-        <div className="max-w-[1100px] w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-8 sm:mb-12"
+    <section 
+      ref={sectionRef}
+      className="relative py-20 md:py-32 bg-noir-light overflow-hidden" 
+      id="reviews"
+    >
+      {/* Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] 
+                      bg-rose/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] 
+                      bg-gold/5 rounded-full blur-[80px]" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
+                     bg-gold/10 border border-gold/20 mb-6"
           >
-            <span className="font-bold tracking-widest uppercase text-xs mb-2 block" style={{ color: '#c9a86c' }}>
-              ⭐ Customer Reviews
+            <span className="material-symbols-outlined text-gold text-sm filled">star</span>
+            <span className="text-gold text-xs font-bold uppercase tracking-widest">
+              Customer Reviews
             </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-cocoa font-serif mb-3 sm:mb-4">Love Notes</h2>
-            <p className="text-accent text-sm sm:text-base max-w-md mx-auto px-4">
-              See what our happy customers have to say about their sweet experiences.
-            </p>
           </motion.div>
 
-          {loading ? (
-            <div className="hidden md:grid grid-cols-3 gap-8 mb-12">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-background-light p-8 rounded-2xl border border-secondary animate-pulse">
-                  <div className="h-4 bg-secondary rounded w-24 mb-4" />
-                  <div className="space-y-2 mb-6">
-                    <div className="h-4 bg-secondary rounded" />
-                    <div className="h-4 bg-secondary rounded w-5/6" />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-secondary rounded-full" />
-                    <div className="space-y-1">
-                      <div className="h-4 bg-secondary rounded w-24" />
-                      <div className="h-3 bg-secondary rounded w-16" />
-                    </div>
+          <h2 
+            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            <span className="text-cream">Love </span>
+            <span className="gradient-text">Notes</span>
+          </h2>
+          
+          <p className="text-cream-muted text-lg max-w-md mx-auto">
+            See what our happy customers have to say about their sweet experiences.
+          </p>
+        </motion.div>
+
+        {/* Testimonials Grid */}
+        {loading ? (
+          <div className="hidden md:grid grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="card-noir p-8">
+                <div className="h-5 skeleton w-24 mb-4" />
+                <div className="space-y-2 mb-6">
+                  <div className="h-4 skeleton" />
+                  <div className="h-4 skeleton w-5/6" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 skeleton rounded-full" />
+                  <div className="space-y-1">
+                    <div className="h-4 skeleton w-24" />
+                    <div className="h-3 skeleton w-16" />
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <>
-              {/* Desktop Grid */}
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12"
-              >
-                {testimonials.slice(0, 3).map((item, index) => {
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* Desktop Grid */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+            >
+              {testimonials.slice(0, 3).map((item, index) => {
+                const avatar = getAvatar(item);
+                return (
+                  <motion.div
+                    key={item._id}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -10 }}
+                    className={`card-noir p-8 relative ${
+                      item.isFeatured ? 'md:-translate-y-4 glow-rose' : ''
+                    }`}
+                  >
+                    {/* Quote icon */}
+                    <span className="material-symbols-outlined text-4xl text-rose/20 absolute top-4 right-4">
+                      format_quote
+                    </span>
+
+                    {/* Rating */}
+                    <div className="mb-4">
+                      <StarRating rating={item.rating || 5} size="sm" />
+                    </div>
+
+                    {/* Review text */}
+                    <p className="text-cream-muted italic mb-6 leading-relaxed">
+                      &ldquo;{item.review}&rdquo;
+                    </p>
+
+                    {/* Author */}
+                    <div className="flex items-center gap-3">
+                      {avatar.type === 'image' ? (
+                        <div
+                          className="w-12 h-12 rounded-full bg-cover bg-center 
+                                   border-2 border-rose/30"
+                          style={{ backgroundImage: `url('${avatar.value}')` }}
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                                      flex items-center justify-center text-noir font-bold text-lg">
+                          {avatar.value}
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-cream font-bold">{item.name}</p>
+                        <p className="text-cream-muted text-sm">{item.cakeType || 'Cake Order'}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+
+            {/* Mobile Slider */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              className="md:hidden mb-12 -mx-2"
+            >
+              <Slider {...sliderSettings}>
+                {testimonials.map((item) => {
                   const avatar = getAvatar(item);
                   return (
-                    <motion.div
-                      key={item._id}
-                      variants={cardVariants}
-                      whileHover={{ y: -5 }}
-                      className={`bg-background-light p-6 lg:p-8 rounded-2xl border border-secondary text-left relative ${
-                        item.isFeatured ? 'transform md:-translate-y-4 shadow-lg' : ''
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-3xl lg:text-4xl text-primary/20 absolute top-4 right-4">
-                        format_quote
-                      </span>
-                      <div className="mb-4">
-                        <StarRating rating={item.rating || 5} size="sm" />
-                      </div>
-                      <p className="text-accent mb-6 italic text-sm lg:text-base">&ldquo;{item.review}&rdquo;</p>
-                      <div className="flex items-center gap-3">
-                        {avatar.type === 'image' ? (
-                          <div
-                            className="size-10 rounded-full bg-gray-200 bg-cover bg-center flex-shrink-0"
-                            style={{ backgroundImage: `url('${avatar.value}')` }}
-                          />
-                        ) : (
-                          <div className="size-10 rounded-full bg-primary flex items-center justify-center text-white font-bold flex-shrink-0">
-                            {avatar.value}
+                    <div key={item._id} className="px-2">
+                      <div className="card-noir p-6 relative mx-1">
+                        <span className="material-symbols-outlined text-3xl text-rose/20 absolute top-3 right-3">
+                          format_quote
+                        </span>
+                        <div className="mb-3">
+                          <StarRating rating={item.rating || 5} size="sm" />
+                        </div>
+                        <p className="text-cream-muted italic mb-5 text-sm leading-relaxed">
+                          &ldquo;{item.review}&rdquo;
+                        </p>
+                        <div className="flex items-center gap-3">
+                          {avatar.type === 'image' ? (
+                            <div
+                              className="w-10 h-10 rounded-full bg-cover bg-center 
+                                       border-2 border-rose/30"
+                              style={{ backgroundImage: `url('${avatar.value}')` }}
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                                          flex items-center justify-center text-noir font-bold">
+                              {avatar.value}
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-cream font-bold text-sm">{item.name}</p>
+                            <p className="text-cream-muted text-xs">{item.cakeType || 'Cake Order'}</p>
                           </div>
-                        )}
-                        <div>
-                          <p className="text-cocoa font-bold text-sm">{item.name}</p>
-                          <p className="text-accent text-xs">{item.cakeType || 'Cake Order'}</p>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })}
-              </motion.div>
+              </Slider>
+            </motion.div>
+          </>
+        )}
 
-              {/* Mobile Slider */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="md:hidden mb-8 sm:mb-12 -mx-2"
-              >
-                <Slider {...sliderSettings}>
-                  {testimonials.map((item) => {
-                    const avatar = getAvatar(item);
-                    return (
-                      <div key={item._id} className="px-2">
-                        <div className="bg-background-light p-5 sm:p-6 rounded-2xl border border-secondary text-left relative mx-1">
-                          <span className="material-symbols-outlined text-3xl text-primary/20 absolute top-3 right-3">
-                            format_quote
-                          </span>
-                          <div className="mb-3">
-                            <StarRating rating={item.rating || 5} size="sm" />
-                          </div>
-                          <p className="text-accent mb-5 italic text-sm leading-relaxed">&ldquo;{item.review}&rdquo;</p>
-                          <div className="flex items-center gap-3">
-                            {avatar.type === 'image' ? (
-                              <div
-                                className="size-9 sm:size-10 rounded-full bg-gray-200 bg-cover bg-center flex-shrink-0"
-                                style={{ backgroundImage: `url('${avatar.value}')` }}
-                              />
-                            ) : (
-                              <div className="size-9 sm:size-10 rounded-full bg-primary flex items-center justify-center text-white font-bold flex-shrink-0">
-                                {avatar.value}
-                              </div>
-                            )}
-                            <div>
-                              <p className="text-cocoa font-bold text-sm">{item.name}</p>
-                              <p className="text-accent text-xs">{item.cakeType || 'Cake Order'}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </Slider>
-              </motion.div>
-            </>
-          )}
-
-          {/* Write Review Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
+        {/* Write Review Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.4 }}
+          className="text-center"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowReviewForm(true)}
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-full
+                     bg-gradient-to-r from-rose to-rose-dark text-noir font-bold
+                     shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
           >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowReviewForm(true)}
-              className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-primary text-white font-bold text-sm sm:text-base rounded-full hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl active:bg-red-800"
-            >
-              <span className="material-symbols-outlined text-lg sm:text-xl">rate_review</span>
-              Write a Review
-            </motion.button>
-          </motion.div>
-        </div>
+            <span className="material-symbols-outlined">rate_review</span>
+            <span>Write a Review</span>
+          </motion.button>
+        </motion.div>
       </div>
 
       {/* Review Form Modal */}
@@ -516,42 +562,48 @@ export default function Testimonials() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-cocoa/60 backdrop-blur-sm flex items-end sm:items-center justify-center"
+            className="fixed inset-0 z-[9999] bg-noir/90 backdrop-blur-xl 
+                     flex items-end sm:items-center justify-center"
             onClick={() => setShowReviewForm(false)}
           >
             <motion.div
-              initial={{ opacity: 0, y: '100%' }}
+              initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="bg-white w-full sm:max-w-lg sm:mx-4 sm:rounded-3xl rounded-t-3xl shadow-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col"
+              exit={{ opacity: 0, y: 100 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-noir-light w-full sm:max-w-lg sm:mx-4 sm:rounded-3xl rounded-t-3xl 
+                       border border-rose/20 shadow-2xl max-h-[95vh] sm:max-h-[90vh] 
+                       overflow-hidden flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="sticky top-0 bg-white border-b border-secondary px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-300 rounded-full sm:hidden" />
+              <div className="sticky top-0 bg-noir-light border-b border-rose/10 
+                           px-6 py-4 flex items-center justify-between z-10">
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 
+                             bg-rose/30 rounded-full sm:hidden" />
                 
-                <div className="pt-2 sm:pt-0">
-                  <h3 className="text-lg sm:text-xl font-bold text-cocoa font-serif">Share Your Experience</h3>
-                  <p className="text-accent text-xs sm:text-sm">We&apos;d love to hear from you!</p>
+                <div className="pt-3 sm:pt-0">
+                  <h3 className="text-xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                    Share Your Experience
+                  </h3>
+                  <p className="text-cream-muted text-sm">We&apos;d love to hear from you!</p>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setShowReviewForm(false)}
-                  className="w-10 h-10 rounded-full hover:bg-secondary transition-colors flex items-center justify-center"
+                  className="w-10 h-10 rounded-full bg-rose/10 hover:bg-rose/20 
+                           flex items-center justify-center transition-colors"
                 >
-                  <span className="material-symbols-outlined text-cocoa text-xl">close</span>
+                  <span className="material-symbols-outlined text-cream">close</span>
                 </motion.button>
               </div>
 
               {/* Modal Body */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-safe">
+              <div className="flex-1 overflow-y-auto p-6 pb-safe">
                 <ReviewForm
                   onClose={() => setShowReviewForm(false)}
-                  onSubmit={(data) => {
-                    console.log('Review submitted:', data);
-                  }}
+                  onSubmit={(data) => console.log('Review submitted:', data)}
                 />
               </div>
             </motion.div>

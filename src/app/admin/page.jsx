@@ -21,7 +21,7 @@ function FormError({ error }) {
     <motion.p
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-red-500 text-xs mt-1"
+      className="text-red-400 text-xs mt-1"
     >
       {error}
     </motion.p>
@@ -51,10 +51,10 @@ function ImageUpload({ value, onChange, label, error, required }) {
 
   return (
     <div>
-      <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1.5 sm:mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label className="block text-xs sm:text-sm font-bold text-cream mb-1.5 sm:mb-2">
+        {label} {required && <span className="text-rose">*</span>}
       </label>
-      <div className={`border-2 border-dashed rounded-xl p-3 sm:p-4 text-center hover:border-primary transition-colors ${error ? 'border-red-400' : 'border-secondary'}`}>
+      <div className={`border-2 border-dashed rounded-xl p-3 sm:p-4 text-center transition-colors ${error ? 'border-red-400' : 'border-cream/20 hover:border-rose/50'}`}>
         {value ? (
           <div className="relative">
             <Image
@@ -75,9 +75,9 @@ function ImageUpload({ value, onChange, label, error, required }) {
           </div>
         ) : (
           <label className="cursor-pointer block py-6 sm:py-8">
-            <span className="material-symbols-outlined text-3xl sm:text-4xl text-accent mb-2">cloud_upload</span>
-            <p className="text-accent text-xs sm:text-sm">Tap to upload image</p>
-            <p className="text-gray-400 text-xs mt-1">Max: 5MB</p>
+            <span className="material-symbols-outlined text-3xl sm:text-4xl text-rose mb-2">cloud_upload</span>
+            <p className="text-rose text-xs sm:text-sm">Tap to upload image</p>
+            <p className="text-cream/40 text-xs mt-1">Max: 5MB</p>
             <input
               type="file"
               accept="image/*"
@@ -96,8 +96,8 @@ function ImageUpload({ value, onChange, label, error, required }) {
 function InputField({ label, type = 'text', value, onChange, placeholder, required, error, min, max, step }) {
   return (
     <div>
-      <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+        {label} {required && <span className="text-rose">*</span>}
       </label>
       <input
         type={type}
@@ -107,7 +107,9 @@ function InputField({ label, type = 'text', value, onChange, placeholder, requir
         min={min}
         max={max}
         step={step}
-        className={`w-full h-10 sm:h-11 rounded-lg border px-3 text-sm focus:ring-2 focus:ring-primary/20 ${error ? 'border-red-400' : 'border-secondary'}`}
+        className={`w-full h-10 sm:h-11 rounded-lg border px-3 text-sm focus:ring-2 focus:ring-rose/20 
+                   bg-noir-light text-cream placeholder:text-cream/40 
+                   ${error ? 'border-red-400' : 'border-cream/10 focus:border-rose'}`}
       />
       <FormError error={error} />
     </div>
@@ -199,8 +201,10 @@ function GalleryTab({ adminKey }) {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-cocoa">Gallery ({items.length})</h2>
-        <button onClick={() => { closeForm(); setShowForm(true); }} className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 text-white rounded-lg hover:opacity-90 text-sm font-medium shadow-md" style={{ backgroundColor: '#c9a86c' }}>
+        <h2 className="text-xl sm:text-2xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>Gallery ({items.length})</h2>
+        <button onClick={() => { closeForm(); setShowForm(true); }} 
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg hover:opacity-90 
+                         text-sm font-medium shadow-md bg-gradient-to-r from-rose to-rose-dark text-noir">
           <span className="material-symbols-outlined text-lg">add</span>
           Add Image
         </button>
@@ -318,8 +322,10 @@ function ReelsTab({ adminKey }) {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-cocoa">Reels ({items.length})</h2>
-        <button onClick={() => { closeForm(); setShowForm(true); }} className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 text-white rounded-lg hover:opacity-90 text-sm font-medium shadow-md" style={{ backgroundColor: '#c9a86c' }}>
+        <h2 className="text-xl sm:text-2xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>Reels ({items.length})</h2>
+        <button onClick={() => { closeForm(); setShowForm(true); }} 
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg hover:opacity-90 
+                         text-sm font-medium shadow-md bg-gradient-to-r from-rose to-rose-dark text-noir">
           <span className="material-symbols-outlined text-lg">add</span>
           Add Reel
         </button>
@@ -341,16 +347,16 @@ function ReelsTab({ adminKey }) {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {items.map((item) => (
-          <div key={item._id} className="bg-white rounded-xl overflow-hidden shadow-md">
+          <div key={item._id} className="card-noir rounded-xl overflow-hidden">
             <div className="relative aspect-[9/16]">
               <Image src={item.thumbnailData} alt={item.caption} fill className="object-cover" unoptimized />
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                <span className="material-symbols-outlined text-white text-3xl sm:text-4xl">play_circle</span>
+              <div className="absolute inset-0 bg-noir/40 flex items-center justify-center">
+                <span className="material-symbols-outlined text-cream text-3xl sm:text-4xl">play_circle</span>
               </div>
             </div>
             <div className="p-2.5 sm:p-3">
-              <p className="text-xs sm:text-sm font-medium text-cocoa truncate">{item.caption}</p>
-              <a href={item.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline truncate block mb-2 sm:mb-3">
+              <p className="text-xs sm:text-sm font-medium text-cream truncate">{item.caption}</p>
+              <a href={item.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-rose hover:underline truncate block mb-2 sm:mb-3">
                 View Video →
               </a>
               <ActionButtons onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item._id)} />
@@ -460,8 +466,10 @@ function MenuTab({ adminKey }) {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-cocoa">Menu ({items.length})</h2>
-        <button onClick={() => { closeForm(); setShowForm(true); }} className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 text-white rounded-lg hover:opacity-90 text-sm font-medium shadow-md" style={{ backgroundColor: '#c9a86c' }}>
+        <h2 className="text-xl sm:text-2xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>Menu ({items.length})</h2>
+        <button onClick={() => { closeForm(); setShowForm(true); }} 
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg hover:opacity-90 
+                         text-sm font-medium shadow-md bg-gradient-to-r from-rose to-rose-dark text-noir">
           <span className="material-symbols-outlined text-lg">add</span>
           Add Item
         </button>
@@ -473,29 +481,33 @@ function MenuTab({ adminKey }) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <InputField label="Name" value={formData.name} onChange={(e) => { setFormData({ ...formData, name: e.target.value }); setErrors({ ...errors, name: '' }); }} placeholder="Belgian Truffle" required error={errors.name} />
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">Description <span className="text-red-500">*</span></label>
-                <textarea value={formData.description} onChange={(e) => { setFormData({ ...formData, description: e.target.value }); setErrors({ ...errors, description: '' }); }} className={`w-full rounded-lg border px-3 py-2 resize-none text-sm ${errors.description ? 'border-red-400' : 'border-secondary'}`} rows={3} placeholder="Rich chocolate cake..." />
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">Description <span className="text-rose">*</span></label>
+                <textarea value={formData.description} onChange={(e) => { setFormData({ ...formData, description: e.target.value }); setErrors({ ...errors, description: '' }); }} 
+                          className={`w-full rounded-lg border px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40 
+                                    ${errors.description ? 'border-red-400' : 'border-cream/10 focus:border-rose'}`} 
+                          rows={3} placeholder="Rich chocolate cake..." />
                 <FormError error={errors.description} />
               </div>
               <ImageUpload value={formData.imageData} onChange={(v) => { setFormData({ ...formData, imageData: v }); setErrors({ ...errors, imageData: '' }); }} label="Image" error={errors.imageData} required />
               
               {/* Pricing Section */}
-              <div className="bg-secondary/30 rounded-xl p-3 sm:p-4 space-y-3">
-                <h4 className="font-bold text-cocoa text-xs sm:text-sm">💰 Pricing</h4>
+              <div className="bg-noir-light rounded-xl p-3 sm:p-4 space-y-3 border border-cream/10">
+                <h4 className="font-bold text-cream text-xs sm:text-sm">💰 Pricing</h4>
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <InputField label="Price (₹)" type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} placeholder="850" min="0" error={errors.price} />
                   <InputField label="Discount (₹)" type="number" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value })} placeholder="Optional" min="0" error={errors.discountPrice} />
                 </div>
                 {getDiscountPercentage() > 0 && (
-                  <div className="flex items-center gap-2 bg-green-50 p-2 rounded-lg text-xs sm:text-sm">
+                  <div className="flex items-center gap-2 bg-green-900/30 p-2 rounded-lg text-xs sm:text-sm border border-green-500/20">
                     <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs font-bold">{getDiscountPercentage()}% OFF</span>
-                    <span className="line-through text-gray-400">₹{formData.price}</span>
-                    <span className="text-green-600 font-bold">₹{formData.discountPrice}</span>
+                    <span className="line-through text-cream/40">₹{formData.price}</span>
+                    <span className="text-green-400 font-bold">₹{formData.discountPrice}</span>
                   </div>
                 )}
                 <div>
-                  <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">Unit</label>
-                  <select value={formData.priceUnit} onChange={(e) => setFormData({ ...formData, priceUnit: e.target.value })} className="w-full h-10 rounded-lg border border-secondary px-3 text-sm">
+                  <label className="block text-xs sm:text-sm font-bold text-cream mb-1">Unit</label>
+                  <select value={formData.priceUnit} onChange={(e) => setFormData({ ...formData, priceUnit: e.target.value })} 
+                          className="w-full h-10 rounded-lg border border-cream/10 px-3 text-sm bg-noir-light text-cream">
                     <option value="per kg">Per Kg</option>
                     <option value="per piece">Per Piece</option>
                     <option value="per box">Per Box</option>
@@ -505,8 +517,9 @@ function MenuTab({ adminKey }) {
 
               <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <div>
-                  <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">Badge</label>
-                  <select value={formData.badge} onChange={(e) => setFormData({ ...formData, badge: e.target.value })} className="w-full h-10 rounded-lg border border-secondary px-3 text-sm">
+                  <label className="block text-xs sm:text-sm font-bold text-cream mb-1">Badge</label>
+                  <select value={formData.badge} onChange={(e) => setFormData({ ...formData, badge: e.target.value })} 
+                          className="w-full h-10 rounded-lg border border-cream/10 px-3 text-sm bg-noir-light text-cream">
                     <option value="">None</option>
                     <option value="Best Seller">Best Seller</option>
                     <option value="New">New</option>
@@ -527,27 +540,27 @@ function MenuTab({ adminKey }) {
           const discountPercent = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
           
           return (
-            <div key={item._id} className="bg-white rounded-xl overflow-hidden shadow-md">
+            <div key={item._id} className="card-noir rounded-xl overflow-hidden">
               <div className="relative h-32 sm:h-40">
                 <Image src={item.imageData} alt={item.name} fill className="object-cover" unoptimized />
                 <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
-                  {item.badge && <span className="bg-primary text-white text-xs px-2 py-0.5 rounded">{item.badge}</span>}
-                  {hasDiscount && <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded">{discountPercent}% OFF</span>}
+                  {item.badge && <span className="bg-rose text-noir text-xs px-2 py-0.5 rounded font-bold">{item.badge}</span>}
+                  {hasDiscount && <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded font-bold">{discountPercent}% OFF</span>}
                 </div>
               </div>
               <div className="p-3 sm:p-4">
-                <h3 className="font-bold text-cocoa text-sm sm:text-base mb-1">{item.name}</h3>
-                <p className="text-xs sm:text-sm text-accent line-clamp-2 mb-2">{item.description}</p>
+                <h3 className="font-bold text-cream text-sm sm:text-base mb-1">{item.name}</h3>
+                <p className="text-xs sm:text-sm text-cream-muted line-clamp-2 mb-2">{item.description}</p>
                 <div className="flex items-center gap-2 mb-3 text-sm">
                   {hasDiscount ? (
                     <>
-                      <span className="text-primary font-bold">₹{item.discountPrice}</span>
-                      <span className="text-gray-400 line-through text-xs">₹{item.price}</span>
+                      <span className="text-rose font-bold">₹{item.discountPrice}</span>
+                      <span className="text-cream/40 line-through text-xs">₹{item.price}</span>
                     </>
                   ) : item.price ? (
-                    <span className="text-primary font-bold">₹{item.price}</span>
+                    <span className="text-rose font-bold">₹{item.price}</span>
                   ) : null}
-                  {item.priceUnit && <span className="text-xs text-accent">/{item.priceUnit.replace('per ', '')}</span>}
+                  {item.priceUnit && <span className="text-xs text-cream-muted">/{item.priceUnit.replace('per ', '')}</span>}
                 </div>
                 <ActionButtons onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item._id)} />
               </div>
@@ -690,8 +703,10 @@ function RateListTab({ adminKey }) {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-cocoa">Rate List ({items.length})</h2>
-        <button onClick={() => { closeForm(); setShowForm(true); }} className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 text-white rounded-lg hover:opacity-90 text-sm font-medium shadow-md" style={{ backgroundColor: '#c9a86c' }}>
+        <h2 className="text-xl sm:text-2xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>Rate List ({items.length})</h2>
+        <button onClick={() => { closeForm(); setShowForm(true); }} 
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg hover:opacity-90 
+                         text-sm font-medium shadow-md bg-gradient-to-r from-rose to-rose-dark text-noir">
           <span className="material-symbols-outlined text-lg">add</span>
           Add Item
         </button>
@@ -706,8 +721,8 @@ function RateListTab({ adminKey }) {
               onClick={() => setActiveCategory(cat)} 
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium capitalize whitespace-nowrap transition-all ${
                 activeCategory === cat 
-                  ? 'bg-primary text-white' 
-                  : 'bg-secondary text-cocoa hover:bg-primary/10'
+                  ? 'bg-gradient-to-r from-rose to-rose-dark text-noir' 
+                  : 'bg-noir-light text-cream border border-cream/10 hover:border-rose/50'
               }`}
             >
               {cat}
@@ -722,8 +737,8 @@ function RateListTab({ adminKey }) {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Category */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
-                  Category <span className="text-red-500">*</span>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                  Category <span className="text-rose">*</span>
                 </label>
                 <div className="flex gap-2">
                   <select 
@@ -734,7 +749,7 @@ function RateListTab({ adminKey }) {
                         setErrors({ ...errors, category: '' });
                       }
                     }} 
-                    className="flex-1 h-10 rounded-lg border border-secondary px-3 text-sm"
+                    className="flex-1 h-10 rounded-lg border border-cream/10 px-3 text-sm bg-noir-light text-cream"
                   >
                     <option value="">Select category</option>
                     {predefinedCategories.map((cat) => (
@@ -749,7 +764,7 @@ function RateListTab({ adminKey }) {
                     value={formData.category}
                     onChange={(e) => { setFormData({ ...formData, category: e.target.value }); setErrors({ ...errors, category: '' }); }}
                     placeholder="Enter custom category"
-                    className={`w-full h-10 rounded-lg border px-3 text-sm mt-2 ${errors.category ? 'border-red-400' : 'border-secondary'}`}
+                    className={`w-full h-10 rounded-lg border px-3 text-sm mt-2 bg-noir-light text-cream placeholder:text-cream/40 ${errors.category ? 'border-red-400' : 'border-cream/10'}`}
                   />
                 )}
                 <FormError error={errors.category} />
@@ -758,27 +773,30 @@ function RateListTab({ adminKey }) {
               <InputField label="Item Name" value={formData.item} onChange={(e) => { setFormData({ ...formData, item: e.target.value }); setErrors({ ...errors, item: '' }); }} placeholder="Chocolate Truffle Cake" required error={errors.item} />
               
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">Description</label>
-                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-secondary px-3 py-2 resize-none text-sm" rows={2} placeholder="Rich chocolate layers with truffle frosting..." />
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">Description</label>
+                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+                          className="w-full rounded-lg border border-cream/10 px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40" 
+                          rows={2} placeholder="Rich chocolate layers with truffle frosting..." />
               </div>
 
               {/* Pricing Section */}
-              <div className="bg-secondary/30 rounded-xl p-3 sm:p-4 space-y-3">
-                <h4 className="font-bold text-cocoa text-xs sm:text-sm">💰 Pricing</h4>
+              <div className="bg-noir-light rounded-xl p-3 sm:p-4 space-y-3 border border-cream/10">
+                <h4 className="font-bold text-cream text-xs sm:text-sm">💰 Pricing</h4>
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <InputField label="Price (₹)" type="number" value={formData.price} onChange={(e) => { setFormData({ ...formData, price: e.target.value }); setErrors({ ...errors, price: '' }); }} placeholder="500" min="0" required error={errors.price} />
                   <InputField label="Discount Price (₹)" type="number" value={formData.discountPrice} onChange={(e) => { setFormData({ ...formData, discountPrice: e.target.value }); setErrors({ ...errors, discountPrice: '' }); }} placeholder="Optional" min="0" error={errors.discountPrice} />
                 </div>
                 {getDiscountPercentage() > 0 && (
-                  <div className="flex items-center gap-2 bg-green-50 p-2 rounded-lg text-xs sm:text-sm">
+                  <div className="flex items-center gap-2 bg-green-900/30 p-2 rounded-lg text-xs sm:text-sm border border-green-500/20">
                     <span className="bg-green-500 text-white px-2 py-0.5 rounded text-xs font-bold">{getDiscountPercentage()}% OFF</span>
-                    <span className="line-through text-gray-400">₹{formData.price}</span>
-                    <span className="text-green-600 font-bold">₹{formData.discountPrice}</span>
+                    <span className="line-through text-cream/40">₹{formData.price}</span>
+                    <span className="text-green-400 font-bold">₹{formData.discountPrice}</span>
                   </div>
                 )}
                 <div>
-                  <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">Unit</label>
-                  <select value={formData.unit} onChange={(e) => setFormData({ ...formData, unit: e.target.value })} className="w-full h-10 rounded-lg border border-secondary px-3 text-sm">
+                  <label className="block text-xs sm:text-sm font-bold text-cream mb-1">Unit</label>
+                  <select value={formData.unit} onChange={(e) => setFormData({ ...formData, unit: e.target.value })} 
+                          className="w-full h-10 rounded-lg border border-cream/10 px-3 text-sm bg-noir-light text-cream">
                     <option value="per kg">Per Kg</option>
                     <option value="per piece">Per Piece</option>
                     <option value="per box">Per Box</option>
@@ -791,8 +809,9 @@ function RateListTab({ adminKey }) {
 
               <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <div>
-                  <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">Availability</label>
-                  <select value={formData.isAvailable ? 'yes' : 'no'} onChange={(e) => setFormData({ ...formData, isAvailable: e.target.value === 'yes' })} className="w-full h-10 rounded-lg border border-secondary px-3 text-sm">
+                  <label className="block text-xs sm:text-sm font-bold text-cream mb-1">Availability</label>
+                  <select value={formData.isAvailable ? 'yes' : 'no'} onChange={(e) => setFormData({ ...formData, isAvailable: e.target.value === 'yes' })} 
+                          className="w-full h-10 rounded-lg border border-cream/10 px-3 text-sm bg-noir-light text-cream">
                     <option value="yes">Available</option>
                     <option value="no">Not Available</option>
                   </select>
@@ -807,61 +826,61 @@ function RateListTab({ adminKey }) {
       </AnimatePresence>
 
       {/* Rate List Table - Desktop */}
-      <div className="hidden md:block bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="hidden md:block card-noir rounded-xl overflow-hidden">
         <table className="w-full">
-          <thead className="bg-secondary/50">
+          <thead className="bg-noir-light">
             <tr>
-              <th className="text-left px-4 py-3 text-xs font-bold text-cocoa">Category</th>
-              <th className="text-left px-4 py-3 text-xs font-bold text-cocoa">Item</th>
-              <th className="text-left px-4 py-3 text-xs font-bold text-cocoa">Description</th>
-              <th className="text-center px-4 py-3 text-xs font-bold text-cocoa">Unit</th>
-              <th className="text-right px-4 py-3 text-xs font-bold text-cocoa">Price</th>
-              <th className="text-center px-4 py-3 text-xs font-bold text-cocoa">Actions</th>
+              <th className="text-left px-4 py-3 text-xs font-bold text-cream">Category</th>
+              <th className="text-left px-4 py-3 text-xs font-bold text-cream">Item</th>
+              <th className="text-left px-4 py-3 text-xs font-bold text-cream">Description</th>
+              <th className="text-center px-4 py-3 text-xs font-bold text-cream">Unit</th>
+              <th className="text-right px-4 py-3 text-xs font-bold text-cream">Price</th>
+              <th className="text-center px-4 py-3 text-xs font-bold text-cream">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-secondary">
+          <tbody className="divide-y divide-cream/10">
             {filteredItems.map((item, index) => {
               const hasDiscount = item.discountPrice && item.discountPrice < item.price;
               const discountPercent = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
 
               return (
-                <tr key={item._id} className={`hover:bg-secondary/30 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-secondary/10'}`}>
+                <tr key={item._id} className={`hover:bg-cream/5 transition-colors ${index % 2 === 0 ? 'bg-noir' : 'bg-noir-light/30'}`}>
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-rose/10 text-rose border border-rose/20">
                       {item.category}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-cocoa text-sm">{item.item}</span>
+                      <span className="font-medium text-cream text-sm">{item.item}</span>
                       {hasDiscount && (
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-600 font-bold">{discountPercent}% OFF</span>
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-green-900/30 text-green-400 font-bold border border-green-500/20">{discountPercent}% OFF</span>
                       )}
                       {!item.isAvailable && (
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">Unavailable</span>
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-cream/10 text-cream/50 border border-cream/20">Unavailable</span>
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-accent max-w-[200px] truncate">{item.description || '-'}</td>
+                  <td className="px-4 py-3 text-xs text-cream-muted max-w-[200px] truncate">{item.description || '-'}</td>
                   <td className="px-4 py-3 text-center">
-                    <span className="text-xs text-accent">{item.unit}</span>
+                    <span className="text-xs text-cream-muted">{item.unit}</span>
                   </td>
                   <td className="px-4 py-3 text-right">
                     {hasDiscount ? (
                       <div className="flex items-center justify-end gap-2">
-                        <span className="text-gray-400 line-through text-xs">₹{item.price}</span>
-                        <span className="font-bold text-primary">₹{item.discountPrice}</span>
+                        <span className="text-cream/40 line-through text-xs">₹{item.price}</span>
+                        <span className="font-bold text-rose">₹{item.discountPrice}</span>
                       </div>
                     ) : (
-                      <span className="font-bold text-cocoa">₹{item.price}</span>
+                      <span className="font-bold text-cream">₹{item.price}</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-center gap-1">
-                      <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg bg-secondary text-cocoa hover:bg-primary hover:text-white transition-colors">
+                      <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg bg-cream/10 text-cream hover:bg-rose hover:text-noir transition-colors">
                         <span className="material-symbols-outlined text-sm">edit</span>
                       </button>
-                      <button onClick={() => handleDelete(item._id)} className="p-1.5 rounded-lg bg-red-100 text-red-600 hover:bg-red-500 hover:text-white transition-colors">
+                      <button onClick={() => handleDelete(item._id)} className="p-1.5 rounded-lg bg-red-900/30 text-red-400 hover:bg-red-500 hover:text-white transition-colors">
                         <span className="material-symbols-outlined text-sm">delete</span>
                       </button>
                     </div>
@@ -872,7 +891,7 @@ function RateListTab({ adminKey }) {
           </tbody>
         </table>
         {filteredItems.length === 0 && (
-          <div className="text-center py-8 text-accent">
+          <div className="text-center py-8 text-cream-muted">
             <span className="material-symbols-outlined text-4xl mb-2">payments</span>
             <p>No items in this category</p>
           </div>
@@ -886,40 +905,40 @@ function RateListTab({ adminKey }) {
           const discountPercent = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
 
           return (
-            <div key={item._id} className={`bg-white rounded-xl p-3 shadow-md ${!item.isAvailable ? 'opacity-60' : ''}`}>
+            <div key={item._id} className={`card-noir rounded-xl p-3 ${!item.isAvailable ? 'opacity-60' : ''}`}>
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary mb-1.5">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose/10 text-rose border border-rose/20 mb-1.5">
                     {item.category}
                   </span>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="font-semibold text-cocoa text-sm">{item.item}</h4>
+                    <h4 className="font-semibold text-cream text-sm">{item.item}</h4>
                     {hasDiscount && (
-                      <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-600 font-bold">{discountPercent}% OFF</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-green-900/30 text-green-400 font-bold">{discountPercent}% OFF</span>
                     )}
                   </div>
                   {item.description && (
-                    <p className="text-xs text-accent mt-1 line-clamp-2">{item.description}</p>
+                    <p className="text-xs text-cream-muted mt-1 line-clamp-2">{item.description}</p>
                   )}
                 </div>
                 <div className="text-right ml-3">
                   {hasDiscount ? (
                     <div className="flex flex-col items-end">
-                      <span className="text-gray-400 line-through text-xs">₹{item.price}</span>
-                      <span className="font-bold text-primary text-lg">₹{item.discountPrice}</span>
+                      <span className="text-cream/40 line-through text-xs">₹{item.price}</span>
+                      <span className="font-bold text-rose text-lg">₹{item.discountPrice}</span>
                     </div>
                   ) : (
-                    <span className="font-bold text-cocoa text-lg">₹{item.price}</span>
+                    <span className="font-bold text-cream text-lg">₹{item.price}</span>
                   )}
-                  <span className="text-xs text-accent block">{item.unit}</span>
+                  <span className="text-xs text-cream-muted block">{item.unit}</span>
                 </div>
               </div>
-              <div className="flex gap-2 mt-3 pt-3 border-t border-secondary">
-                <button onClick={() => handleEdit(item)} className="flex-1 flex items-center justify-center gap-1 py-2 bg-secondary text-cocoa rounded-lg hover:bg-primary hover:text-white transition-colors text-xs font-medium">
+              <div className="flex gap-2 mt-3 pt-3 border-t border-cream/10">
+                <button onClick={() => handleEdit(item)} className="flex-1 flex items-center justify-center gap-1 py-2 bg-cream/10 text-cream rounded-lg hover:bg-rose hover:text-noir transition-colors text-xs font-medium">
                   <span className="material-symbols-outlined text-base">edit</span>
                   Edit
                 </button>
-                <button onClick={() => handleDelete(item._id)} className="flex-1 flex items-center justify-center gap-1 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-500 hover:text-white transition-colors text-xs font-medium">
+                <button onClick={() => handleDelete(item._id)} className="flex-1 flex items-center justify-center gap-1 py-2 bg-red-900/30 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-colors text-xs font-medium">
                   <span className="material-symbols-outlined text-base">delete</span>
                   Delete
                 </button>
@@ -991,9 +1010,9 @@ function ReviewsTab({ adminKey }) {
     <div>
       <div className="flex flex-col gap-3 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-cocoa">Reviews ({items.length})</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>Reviews ({items.length})</h2>
           {pendingCount > 0 && (
-            <p className="text-xs sm:text-sm text-orange-500 flex items-center gap-1 mt-1">
+            <p className="text-xs sm:text-sm text-orange-400 flex items-center gap-1 mt-1">
               <span className="material-symbols-outlined text-sm">warning</span>
               {pendingCount} pending
             </p>
@@ -1001,7 +1020,12 @@ function ReviewsTab({ adminKey }) {
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {['all', 'pending', 'approved'].map((f) => (
-            <button key={f} onClick={() => setFilter(f)} className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium capitalize whitespace-nowrap ${filter === f ? 'bg-primary text-white' : 'bg-secondary text-cocoa'}`}>
+            <button key={f} onClick={() => setFilter(f)} 
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium capitalize whitespace-nowrap transition-all ${
+                      filter === f 
+                        ? 'bg-gradient-to-r from-rose to-rose-dark text-noir' 
+                        : 'bg-noir-light text-cream border border-cream/10'
+                    }`}>
               {f} {f === 'pending' && pendingCount > 0 && `(${pendingCount})`}
             </button>
           ))}
@@ -1010,19 +1034,19 @@ function ReviewsTab({ adminKey }) {
 
       <div className="space-y-3 sm:space-y-4">
         {filteredItems.map((item) => (
-          <div key={item._id} className={`bg-white rounded-xl p-3 sm:p-4 shadow-md ${!item.isApproved ? 'border-l-4 border-orange-400' : ''} ${item.isFeatured ? 'ring-2 ring-primary' : ''}`}>
+          <div key={item._id} className={`card-noir rounded-xl p-3 sm:p-4 ${!item.isApproved ? 'border-l-4 border-orange-400' : ''} ${item.isFeatured ? 'ring-2 ring-rose' : ''}`}>
             <div className="flex flex-col gap-3">
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h3 className="font-bold text-cocoa text-sm sm:text-base">{item.name}</h3>
-                    {item.isFeatured && <span className="text-xs bg-primary text-white px-1.5 py-0.5 rounded">Featured</span>}
-                    {!item.isApproved && <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">Pending</span>}
+                    <h3 className="font-bold text-cream text-sm sm:text-base">{item.name}</h3>
+                    {item.isFeatured && <span className="text-xs bg-rose text-noir px-1.5 py-0.5 rounded font-bold">Featured</span>}
+                    {!item.isApproved && <span className="text-xs bg-orange-900/30 text-orange-400 px-1.5 py-0.5 rounded border border-orange-500/20">Pending</span>}
                   </div>
-                  <p className="text-xs text-accent truncate">{item.email}</p>
+                  <p className="text-xs text-cream-muted truncate">{item.email}</p>
                 </div>
-                <div className="flex gap-0.5 text-yellow-400 flex-shrink-0">
+                <div className="flex gap-0.5 text-gold flex-shrink-0">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className="material-symbols-outlined text-sm" style={{ fontVariationSettings: i < item.rating ? "'FILL' 1" : "'FILL' 0" }}>star</span>
                   ))}
@@ -1030,20 +1054,27 @@ function ReviewsTab({ adminKey }) {
               </div>
               
               {/* Review Text */}
-              <p className="text-xs sm:text-sm text-accent italic">&ldquo;{item.review}&rdquo;</p>
-              <p className="text-xs text-gray-400">{item.cakeType || 'General'} • {new Date(item.createdAt).toLocaleDateString()}</p>
+              <p className="text-xs sm:text-sm text-cream-muted italic">&ldquo;{item.review}&rdquo;</p>
+              <p className="text-xs text-cream/40">{item.cakeType || 'General'} • {new Date(item.createdAt).toLocaleDateString()}</p>
               
               {/* Actions */}
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => handleAction(item._id, 'isApproved', !item.isApproved)} className={`flex-1 min-w-[100px] flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs sm:text-sm ${item.isApproved ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>
+                <button onClick={() => handleAction(item._id, 'isApproved', !item.isApproved)} 
+                        className={`flex-1 min-w-[100px] flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs sm:text-sm transition-colors ${
+                          item.isApproved ? 'bg-green-900/30 text-green-400 border border-green-500/20' : 'bg-orange-900/30 text-orange-400 border border-orange-500/20'
+                        }`}>
                   <span className="material-symbols-outlined text-sm">{item.isApproved ? 'check_circle' : 'pending'}</span>
                   {item.isApproved ? 'Approved' : 'Approve'}
                 </button>
-                <button onClick={() => handleAction(item._id, 'isFeatured', !item.isFeatured)} className={`flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs sm:text-sm ${item.isFeatured ? 'bg-primary text-white' : 'bg-secondary text-cocoa'}`}>
+                <button onClick={() => handleAction(item._id, 'isFeatured', !item.isFeatured)} 
+                        className={`flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs sm:text-sm transition-colors ${
+                          item.isFeatured ? 'bg-rose text-noir' : 'bg-cream/10 text-cream border border-cream/20'
+                        }`}>
                   <span className="material-symbols-outlined text-sm">star</span>
                   Feature
                 </button>
-                <button onClick={() => handleDelete(item._id)} className="flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs sm:text-sm bg-red-100 text-red-600">
+                <button onClick={() => handleDelete(item._id)} 
+                        className="flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs sm:text-sm bg-red-900/30 text-red-400 border border-red-500/20 hover:bg-red-500 hover:text-white transition-colors">
                   <span className="material-symbols-outlined text-sm">delete</span>
                   Delete
                 </button>
@@ -1070,16 +1101,16 @@ function LoadingSpinner() {
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
       >
-        {/* Cake body - brand burgundy */}
-        <rect x="12" y="28" width="40" height="24" rx="4" fill="#8b4a5c"/>
-        <rect x="16" y="20" width="32" height="12" rx="3" fill="#c9a86c"/>
+        {/* Cake body - brand rose */}
+        <rect x="12" y="28" width="40" height="24" rx="4" fill="#e4a0a0"/>
+        <rect x="16" y="20" width="32" height="12" rx="3" fill="#d4a574"/>
         
         {/* Frosting - brand gold */}
         <path d="M12 40 Q18 46 24 40 Q30 46 36 40 Q42 46 48 40 Q52 46 52 40" 
-              fill="none" stroke="#c9a86c" strokeWidth="3" strokeLinecap="round"/>
+              fill="none" stroke="#d4a574" strokeWidth="3" strokeLinecap="round"/>
         
         {/* Candle */}
-        <rect x="29" y="8" width="6" height="14" rx="2" fill="#c9a86c"/>
+        <rect x="29" y="8" width="6" height="14" rx="2" fill="#d4a574"/>
         
         {/* Flame */}
         <motion.ellipse 
@@ -1093,7 +1124,7 @@ function LoadingSpinner() {
       {/* Shadow */}
       <motion.div
         className="w-10 h-1.5 rounded-full"
-        style={{ backgroundColor: 'rgba(139, 74, 92, 0.3)' }}
+        style={{ backgroundColor: 'rgba(228, 160, 160, 0.3)' }}
         animate={{ scale: [1, 0.7, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
       />
@@ -1101,7 +1132,7 @@ function LoadingSpinner() {
       <motion.p
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 1.5, repeat: Infinity }}
-        className="text-accent text-sm"
+        className="text-cream-muted text-sm"
       >
         Loading...
       </motion.p>
@@ -1111,8 +1142,8 @@ function LoadingSpinner() {
 
 function EmptyState({ icon, text }) {
   return (
-    <div className="text-center py-12 text-accent">
-      <span className="material-symbols-outlined text-4xl sm:text-5xl mb-2">{icon}</span>
+    <div className="text-center py-12 text-cream-muted">
+      <span className="material-symbols-outlined text-4xl sm:text-5xl mb-2 text-rose/50">{icon}</span>
       <p className="text-sm sm:text-base">{text}</p>
     </div>
   );
@@ -1120,20 +1151,22 @@ function EmptyState({ icon, text }) {
 
 function FormModal({ title, onClose, children, wide }) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4" onClick={onClose}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+                className="fixed inset-0 bg-noir/80 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4" 
+                onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, y: '100%' }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className={`bg-white w-full sm:rounded-2xl rounded-t-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto ${wide ? 'sm:max-w-lg' : 'sm:max-w-md'}`}
+        className={`card-noir w-full sm:rounded-2xl rounded-t-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto ${wide ? 'sm:max-w-lg' : 'sm:max-w-md'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto sm:hidden absolute top-2 left-1/2 -translate-x-1/2" />
-          <h3 className="text-lg sm:text-xl font-bold text-cocoa">{title}</h3>
-          <button onClick={onClose} className="w-9 h-9 rounded-full hover:bg-secondary flex items-center justify-center">
-            <span className="material-symbols-outlined text-cocoa">close</span>
+          <div className="w-10 h-1 bg-cream/20 rounded-full mx-auto sm:hidden absolute top-2 left-1/2 -translate-x-1/2" />
+          <h3 className="text-lg sm:text-xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>{title}</h3>
+          <button onClick={onClose} className="w-9 h-9 rounded-full hover:bg-cream/10 flex items-center justify-center transition-colors">
+            <span className="material-symbols-outlined text-cream">close</span>
           </button>
         </div>
         {children}
@@ -1145,8 +1178,12 @@ function FormModal({ title, onClose, children, wide }) {
 function FormButtons({ onCancel, submitting, submitText }) {
   return (
     <div className="flex gap-2 sm:gap-3 pt-2">
-      <button type="button" onClick={onCancel} className="flex-1 py-2.5 border border-secondary rounded-lg hover:bg-secondary text-sm font-medium" disabled={submitting}>Cancel</button>
-      <button type="submit" className="flex-1 py-2.5 bg-primary text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-medium" disabled={submitting}>
+      <button type="button" onClick={onCancel} 
+              className="flex-1 py-2.5 border border-cream/20 rounded-lg hover:bg-cream/10 text-sm font-medium text-cream transition-colors" 
+              disabled={submitting}>Cancel</button>
+      <button type="submit" 
+              className="flex-1 py-2.5 bg-gradient-to-r from-rose to-rose-dark text-noir rounded-lg hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-medium" 
+              disabled={submitting}>
         {submitting && <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>}
         {submitText}
       </button>
@@ -1157,11 +1194,11 @@ function FormButtons({ onCancel, submitting, submitText }) {
 function ActionButtons({ onEdit, onDelete }) {
   return (
     <div className="flex gap-2">
-      <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1 py-2 bg-secondary text-cocoa rounded-lg hover:bg-primary hover:text-white transition-colors text-xs sm:text-sm font-medium">
+      <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1 py-2 bg-cream/10 text-cream rounded-lg hover:bg-rose hover:text-noir transition-colors text-xs sm:text-sm font-medium">
         <span className="material-symbols-outlined text-base">edit</span>
         <span className="hidden xs:inline">Edit</span>
       </button>
-      <button onClick={onDelete} className="flex-1 flex items-center justify-center gap-1 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-500 hover:text-white transition-colors text-xs sm:text-sm font-medium">
+      <button onClick={onDelete} className="flex-1 flex items-center justify-center gap-1 py-2 bg-red-900/30 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-colors text-xs sm:text-sm font-medium">
         <span className="material-symbols-outlined text-base">delete</span>
         <span className="hidden xs:inline">Delete</span>
       </button>
@@ -1171,13 +1208,13 @@ function ActionButtons({ onEdit, onDelete }) {
 
 function ItemCard({ image, title, subtitle, onEdit, onDelete, aspectRatio = 'square' }) {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-md">
+    <div className="card-noir rounded-xl overflow-hidden">
       <div className={`relative ${aspectRatio === 'square' ? 'aspect-square' : 'aspect-video'}`}>
         <Image src={image} alt={title} fill className="object-cover" unoptimized />
       </div>
       <div className="p-2.5 sm:p-3">
-        <p className="text-xs sm:text-sm font-medium text-cocoa truncate">{title}</p>
-        {subtitle && <p className="text-xs text-accent mb-2 sm:mb-3">{subtitle}</p>}
+        <p className="text-xs sm:text-sm font-medium text-cream truncate">{title}</p>
+        {subtitle && <p className="text-xs text-cream-muted mb-2 sm:mb-3">{subtitle}</p>}
         <ActionButtons onEdit={onEdit} onDelete={onDelete} />
       </div>
     </div>
@@ -1191,7 +1228,6 @@ function AdminContent() {
   const [activeTab, setActiveTab] = useState('gallery');
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (adminKey) setIsAuthorized(true);
@@ -1200,7 +1236,7 @@ function AdminContent() {
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-background-light flex items-center justify-center">
+      <div className="min-h-screen bg-noir flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -1208,51 +1244,41 @@ function AdminContent() {
 
   if (!isAuthorized || !adminKey) {
     return (
-      <div className="min-h-screen bg-background-light flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl max-w-sm w-full text-center">
-          <span className="material-symbols-outlined text-5xl sm:text-6xl text-red-500 mb-4">lock</span>
-          <h1 className="text-xl sm:text-2xl font-bold text-cocoa mb-2">Access Denied</h1>
-          <p className="text-accent text-sm mb-4">Valid admin key required</p>
-          <code className="bg-secondary px-2 py-1 rounded text-xs break-all">/admin?key=YOUR_KEY</code>
+      <div className="min-h-screen bg-noir flex items-center justify-center p-4">
+        <div className="card-noir rounded-2xl p-6 sm:p-8 shadow-xl max-w-sm w-full text-center">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-red-900/30 flex items-center justify-center">
+            <span className="material-symbols-outlined text-5xl sm:text-6xl text-red-400">lock</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-cream mb-2" style={{ fontFamily: 'var(--font-cinzel)' }}>Access Denied</h1>
+          <p className="text-cream-muted text-sm mb-4">Valid admin key required</p>
+          <code className="bg-noir-light px-3 py-2 rounded-lg text-xs break-all text-rose block border border-cream/10">/admin?key=YOUR_KEY</code>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background-light">
+    <div className="min-h-screen bg-noir">
       {/* Header */}
-      <header className="bg-white border-b border-secondary sticky top-0 z-40">
+      <header className="glass-strong border-b border-rose/10 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Mini Logo */}
-            <div className="w-9 h-9 sm:w-10 sm:h-10">
-              <svg viewBox="0 0 200 200" className="w-full h-full">
-                <circle cx="100" cy="100" r="98" fill="#8b4a5c"/>
-                <g fill="none" stroke="#c9a86c" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="82" y1="52" x2="82" y2="62"/>
-                  <line x1="100" y1="52" x2="100" y2="62"/>
-                  <line x1="118" y1="52" x2="118" y2="62"/>
-                  <ellipse cx="82" cy="48" rx="3" ry="4" fill="#c9a86c"/>
-                  <ellipse cx="100" cy="48" rx="3" ry="4" fill="#c9a86c"/>
-                  <ellipse cx="118" cy="48" rx="3" ry="4" fill="#c9a86c"/>
-                  <rect x="72" y="62" width="56" height="12" rx="1"/>
-                  <path d="M72 74 Q80 80 88 74 Q96 80 104 74 Q112 80 120 74 L128 74"/>
-                  <rect x="66" y="78" width="68" height="14" rx="1"/>
-                </g>
-                <line x1="25" y1="85" x2="62" y2="85" stroke="#c9a86c" strokeWidth="2"/>
-                <line x1="138" y1="85" x2="175" y2="85" stroke="#c9a86c" strokeWidth="2"/>
-                <rect x="30" y="108" width="140" height="42" fill="none" stroke="#c9a86c" strokeWidth="2"/>
-                <text x="100" y="136" textAnchor="middle" fontFamily="Georgia, serif" fontSize="24" fontWeight="500" fill="#c9a86c">C&amp;C</text>
-                <line x1="25" y1="160" x2="175" y2="160" stroke="#c9a86c" strokeWidth="2"/>
-              </svg>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 relative">
+              <Image
+                src="/logo.svg"
+                alt="Cocoa&Cherry Logo"
+                width={40}
+                height={40}
+                className="w-full h-full"
+              />
             </div>
             <div>
-              <h1 className="text-base sm:text-xl font-bold" style={{ color: '#8b4a5c' }}>Admin Panel</h1>
-              <p className="text-xs text-accent hidden sm:block">Cocoa&amp;cherry</p>
+              <h1 className="text-base sm:text-xl font-bold text-rose" style={{ fontFamily: 'var(--font-cinzel)' }}>Admin Panel</h1>
+              <p className="text-xs text-cream-muted hidden sm:block">Cocoa&amp;Cherry</p>
             </div>
           </div>
-          <a href="/" className="flex items-center gap-1 text-xs sm:text-sm hover:opacity-80 px-3 py-1.5 rounded-lg transition-all" style={{ color: '#c9a86c', backgroundColor: 'rgba(201, 168, 108, 0.1)' }}>
+          <a href="/" className="flex items-center gap-1 text-xs sm:text-sm hover:opacity-80 px-3 py-1.5 rounded-lg transition-all text-gold bg-gold/10 border border-gold/20">
             <span className="material-symbols-outlined text-sm">open_in_new</span>
             <span className="hidden sm:inline">View Site</span>
           </a>
@@ -1260,7 +1286,7 @@ function AdminContent() {
       </header>
 
       {/* Tabs - Responsive design */}
-      <div className="bg-white border-b border-secondary">
+      <div className="glass-strong border-b border-rose/10">
         <div className="max-w-7xl mx-auto px-2 sm:px-4">
           {/* Mobile: Equal width tabs with icons */}
           <div className="flex sm:hidden">
@@ -1270,11 +1296,12 @@ function AdminContent() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs font-medium border-b-2 transition-all ${
                   activeTab === tab.id 
-                    ? 'border-primary text-primary bg-primary/5' 
-                    : 'border-transparent text-accent hover:text-cocoa hover:bg-secondary/50'
+                    ? 'border-rose text-rose bg-rose/5' 
+                    : 'border-transparent text-cream-muted hover:text-cream hover:bg-cream/5'
                 }`}
               >
-                <span className={`material-symbols-outlined text-xl transition-transform ${activeTab === tab.id ? 'scale-110' : ''}`} style={{ fontVariationSettings: activeTab === tab.id ? "'FILL' 1" : "'FILL' 0" }}>{tab.icon}</span>
+                <span className={`material-symbols-outlined text-xl transition-transform ${activeTab === tab.id ? 'scale-110' : ''}`} 
+                      style={{ fontVariationSettings: activeTab === tab.id ? "'FILL' 1" : "'FILL' 0" }}>{tab.icon}</span>
                 <span className="truncate max-w-full">{tab.label}</span>
               </button>
             ))}
@@ -1288,8 +1315,8 @@ function AdminContent() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium border-b-2 transition-all rounded-t-lg ${
                   activeTab === tab.id 
-                    ? 'border-primary text-primary bg-primary/5' 
-                    : 'border-transparent text-accent hover:text-cocoa hover:bg-secondary/50'
+                    ? 'border-rose text-rose bg-rose/5' 
+                    : 'border-transparent text-cream-muted hover:text-cream hover:bg-cream/5'
                 }`}
               >
                 <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: activeTab === tab.id ? "'FILL' 1" : "'FILL' 0" }}>{tab.icon}</span>
@@ -1317,7 +1344,7 @@ export default function AdminPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-background-light flex items-center justify-center">
+        <div className="min-h-screen bg-noir flex items-center justify-center">
           <LoadingSpinner />
         </div>
       }

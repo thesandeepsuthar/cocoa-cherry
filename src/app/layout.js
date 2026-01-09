@@ -1,14 +1,15 @@
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { Cinzel, Work_Sans } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+const workSans = Work_Sans({
+  variable: "--font-work-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -232,7 +233,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" className="dark">
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -244,15 +245,19 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {/* Additional SEO Meta Tags */}
-        <meta name="theme-color" content="#722F37" />
-        <meta name="msapplication-TileColor" content="#722F37" />
+        <meta name="theme-color" content="#0d0a0b" />
+        <meta name="msapplication-TileColor" content="#0d0a0b" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body
-        className={`${playfair.variable} ${jakarta.variable} antialiased`}
+        className={`${cinzel.variable} ${workSans.variable} antialiased bg-noir overflow-x-hidden`}
       >
-        {/* Grain Texture Overlay */}
-        <div className="grain-overlay" />
+        {/* Subtle background grid */}
+        <div className="fixed inset-0 bg-grid pointer-events-none opacity-50" />
+        
+        {/* Ambient glow effect */}
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-radial-glow pointer-events-none opacity-30" />
+        
         {children}
       </body>
     </html>

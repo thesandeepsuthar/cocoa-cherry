@@ -1,21 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 40 },
-  animate: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
+// Floating particle component
+const FloatingParticle = ({ delay, duration, size, startX, startY }) => (
+  <motion.div
+    className="absolute rounded-full bg-rose/30"
+    style={{ width: size, height: size, left: startX, top: startY }}
+    animate={{
+      y: [0, -100, 0],
+      x: [0, 20, 0],
+      opacity: [0, 0.6, 0],
+      scale: [0.5, 1, 0.5],
+    }}
+    transition={{
+      duration,
+      delay,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }}
+  />
+);
 
 // Order Form Modal Component
 function OrderFormModal({ onClose }) {
@@ -28,6 +35,7 @@ function OrderFormModal({ onClose }) {
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,7 +45,6 @@ function OrderFormModal({ onClose }) {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Construct WhatsApp message
     const whatsappMessage = `🎂 *New Cake Order Inquiry*
 
 👤 *Name:* ${formData.name}
@@ -50,9 +57,8 @@ function OrderFormModal({ onClose }) {
 ${formData.message || 'No additional details'}
 
 ---
-Sent from Cocoa&cherry Website`;
+Sent from Cocoa&Cherry Website`;
 
-    // Open WhatsApp with pre-filled message
     const phoneNumber = '919712752469';
     const encodedMessage = encodeURIComponent(whatsappMessage);
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
@@ -63,107 +69,139 @@ Sent from Cocoa&cherry Website`;
     }, 1000);
   };
 
+  const inputClass = (fieldName) => `
+    w-full bg-noir-light border rounded-xl px-4 py-3.5 text-cream
+    placeholder-cream-muted/50 transition-all duration-300
+    ${focusedField === fieldName 
+      ? 'border-rose shadow-lg shadow-rose/10' 
+      : 'border-rose/20 hover:border-rose/40'}
+  `;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
+      className="fixed inset-0 bg-noir/90 backdrop-blur-xl flex items-end sm:items-center justify-center z-50"
       onClick={onClose}
     >
       <motion.div
-        initial={{ opacity: 0, y: '100%', scale: 0.95 }}
+        initial={{ opacity: 0, y: 100, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: '100%', scale: 0.95 }}
+        exit={{ opacity: 0, y: 100, scale: 0.95 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-3xl overflow-hidden max-h-[90vh] sm:max-h-[85vh]"
+        className="relative bg-noir-light w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl 
+                 border border-rose/20 overflow-hidden max-h-[90vh] sm:max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Decorative glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] 
+                      bg-rose/10 rounded-full blur-[100px] pointer-events-none" />
+        
         {/* Header */}
-        <div className="relative p-4 sm:p-6 border-b border-secondary" style={{ background: 'linear-gradient(135deg, #8b4a5c 0%, #6d3a47 100%)' }}>
-          {/* Mobile drag indicator */}
-          <div className="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-3 sm:hidden" />
+        <div className="relative p-6 border-b border-rose/10">
+          <div className="w-12 h-1.5 bg-rose/30 rounded-full mx-auto mb-4 sm:hidden" />
           
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(201, 168, 108, 0.2)' }}>
-                <span className="material-symbols-outlined text-xl" style={{ color: '#c9a86c' }}>cake</span>
-              </div>
+            <div className="flex items-center gap-4">
+              <motion.div 
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose to-rose-dark 
+                         flex items-center justify-center shadow-lg shadow-rose/30"
+              >
+                <span className="material-symbols-outlined text-noir text-2xl">cake</span>
+              </motion.div>
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white">Order Your Cake</h3>
-                <p className="text-white/70 text-xs sm:text-sm">We&apos;ll connect on WhatsApp</p>
+                <h3 className="text-xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                  Order Your Cake
+                </h3>
+                <p className="text-cream-muted text-sm">We&apos;ll connect on WhatsApp</p>
               </div>
             </div>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+              className="w-10 h-10 rounded-full bg-rose/10 hover:bg-rose/20 
+                       flex items-center justify-center transition-colors"
             >
-              <span className="material-symbols-outlined text-white">close</span>
-            </button>
+              <span className="material-symbols-outlined text-cream">close</span>
+            </motion.button>
           </div>
         </div>
 
         {/* Form */}
-        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-100px)] sm:max-h-[calc(85vh-100px)]">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
+        <div className="relative p-6 overflow-y-auto max-h-[calc(90vh-140px)] sm:max-h-[calc(85vh-140px)]">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
-                Your Name <span className="text-primary">*</span>
+              <label className="block text-sm font-medium text-cream mb-2">
+                Your Name <span className="text-rose">*</span>
               </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                onFocus={() => setFocusedField('name')}
+                onBlur={() => setFocusedField(null)}
                 required
-                placeholder="e.g. Jane Doe"
-                className="w-full h-11 sm:h-12 rounded-xl border border-secondary bg-background-light px-4 text-sm sm:text-base focus:border-primary text-cocoa"
+                placeholder="Jane Doe"
+                className={inputClass('name')}
               />
             </div>
 
-            {/* Phone */}
             <div>
-              <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
-                Phone Number <span className="text-primary">*</span>
+              <label className="block text-sm font-medium text-cream mb-2">
+                Phone Number <span className="text-rose">*</span>
               </label>
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
+                onFocus={() => setFocusedField('phone')}
+                onBlur={() => setFocusedField(null)}
                 required
                 placeholder="+91 97127 52469"
-                className="w-full h-11 sm:h-12 rounded-xl border border-secondary bg-background-light px-4 text-sm sm:text-base focus:border-primary text-cocoa"
+                className={inputClass('phone')}
               />
             </div>
 
-            {/* Date and Weight */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
-                  Date Required <span className="text-primary">*</span>
+                <label className="block text-sm font-medium text-cream mb-2">
+                  Date Required <span className="text-rose">*</span>
                 </label>
                 <input
                   type="date"
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
+                  onFocus={() => setFocusedField('date')}
+                  onBlur={() => setFocusedField(null)}
                   required
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full h-11 sm:h-12 rounded-xl border border-secondary bg-background-light px-3 text-sm sm:text-base focus:border-primary text-cocoa"
+                  className={inputClass('date')}
                 />
               </div>
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
+                <label className="block text-sm font-medium text-cream mb-2">
                   Weight
                 </label>
                 <select
                   name="weight"
                   value={formData.weight}
                   onChange={handleChange}
-                  className="w-full h-11 sm:h-12 rounded-xl border border-secondary bg-background-light px-3 text-sm sm:text-base focus:border-primary text-cocoa appearance-none"
-                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b4a5c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', backgroundSize: '18px' }}
+                  onFocus={() => setFocusedField('weight')}
+                  onBlur={() => setFocusedField(null)}
+                  className={`${inputClass('weight')} appearance-none cursor-pointer`}
+                  style={{ 
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 12px center',
+                    backgroundSize: '18px'
+                  }}
                 >
                   <option value="0.5 kg">0.5 kg</option>
                   <option value="1 kg">1 kg</option>
@@ -175,17 +213,23 @@ Sent from Cocoa&cherry Website`;
               </div>
             </div>
 
-            {/* Flavor */}
             <div>
-              <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
+              <label className="block text-sm font-medium text-cream mb-2">
                 Flavor Preference
               </label>
               <select
                 name="flavor"
                 value={formData.flavor}
                 onChange={handleChange}
-                className="w-full h-11 sm:h-12 rounded-xl border border-secondary bg-background-light px-4 text-sm sm:text-base focus:border-primary text-cocoa appearance-none"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b4a5c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '18px' }}
+                onFocus={() => setFocusedField('flavor')}
+                onBlur={() => setFocusedField(null)}
+                className={`${inputClass('flavor')} appearance-none cursor-pointer`}
+                style={{ 
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 12px center',
+                  backgroundSize: '18px'
+                }}
               >
                 <option value="">Select a flavor</option>
                 <option value="Belgian Truffle">Belgian Truffle</option>
@@ -200,55 +244,61 @@ Sent from Cocoa&cherry Website`;
               </select>
             </div>
 
-            {/* Message */}
             <div>
-              <label className="block text-xs sm:text-sm font-bold text-cocoa mb-1">
+              <label className="block text-sm font-medium text-cream mb-2">
                 Theme / Special Instructions
               </label>
               <textarea
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
+                onFocus={() => setFocusedField('message')}
+                onBlur={() => setFocusedField(null)}
                 rows={3}
                 placeholder="Describe your dream cake... (theme, colors, toppings, message on cake etc.)"
-                className="w-full rounded-xl border border-secondary bg-background-light px-4 py-3 text-sm sm:text-base focus:border-primary text-cocoa resize-none"
+                className={`${inputClass('message')} resize-none`}
               />
             </div>
 
-            {/* Submit Button */}
             <motion.button
               type="submit"
               disabled={isSubmitting}
               whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
               whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-              className={`w-full h-12 sm:h-14 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 shadow-lg ${
-                isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'hover:opacity-90'
-              }`}
-              style={!isSubmitting ? { backgroundColor: '#25D366' } : {}}
+              className={`relative w-full py-4 rounded-xl font-bold text-base 
+                       flex items-center justify-center gap-3 overflow-hidden
+                       ${isSubmitting 
+                         ? 'bg-cream-muted/30 cursor-not-allowed' 
+                         : 'bg-[#25D366] hover:bg-[#20BD5A]'} 
+                       text-white shadow-lg transition-all`}
             >
+              {!isSubmitting && (
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
+                               -translate-x-full hover:translate-x-full transition-transform duration-700" />
+              )}
+              
               {isSubmitting ? (
                 <>
                   <motion.span
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="material-symbols-outlined text-lg"
+                    className="material-symbols-outlined"
                   >
                     progress_activity
                   </motion.span>
-                  <span className="text-white">Opening WhatsApp...</span>
+                  <span>Opening WhatsApp...</span>
                 </>
               ) : (
                 <>
-                  <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                   </svg>
-                  <span className="text-white">Send to WhatsApp</span>
+                  <span>Send to WhatsApp</span>
                 </>
               )}
             </motion.button>
 
-            {/* Note */}
-            <p className="text-center text-xs text-accent mt-3">
+            <p className="text-center text-xs text-cream-muted">
               💬 We typically respond within 30 minutes during business hours
             </p>
           </form>
@@ -260,8 +310,16 @@ Sent from Cocoa&cherry Website`;
 
 export default function Hero() {
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"]
+  });
 
-  // Lock body scroll when modal is open
+  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
+
   useEffect(() => {
     if (showOrderForm) {
       document.body.style.overflow = 'hidden';
@@ -275,96 +333,287 @@ export default function Hero() {
 
   return (
     <>
-      <section className="relative overflow-hidden py-10 sm:py-14 md:py-20 lg:py-28 scroll-mt-20" id="home">
-        <div className="flex justify-center px-4 sm:px-6 md:px-10">
-          <div className="max-w-[1100px] w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 items-center">
-            {/* Content */}
-            <motion.div
-              variants={staggerContainer}
-              initial="initial"
-              animate="animate"
-              className="flex flex-col gap-4 sm:gap-6 lg:pr-10 order-2 lg:order-1 text-center lg:text-left"
-            >
+      <section 
+        ref={containerRef}
+        className="relative min-h-screen flex items-center overflow-hidden bg-noir" 
+        id="home"
+      >
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Large gradient orb */}
+          <motion.div 
+            className="absolute -top-1/4 -right-1/4 w-[800px] h-[800px] rounded-full opacity-30"
+            style={{
+              background: 'radial-gradient(circle, rgba(228,160,160,0.3) 0%, transparent 70%)',
+            }}
+            animate={{ 
+              scale: [1, 1.2, 1],
+              rotate: [0, 180, 360],
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          />
+          
+          {/* Secondary orb */}
+          <motion.div 
+            className="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] rounded-full opacity-20"
+            style={{
+              background: 'radial-gradient(circle, rgba(212,165,116,0.3) 0%, transparent 70%)',
+            }}
+            animate={{ 
+              scale: [1.2, 1, 1.2],
+              rotate: [360, 180, 0],
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          />
+
+          {/* Floating particles */}
+          {[...Array(6)].map((_, i) => (
+            <FloatingParticle 
+              key={i}
+              delay={i * 2}
+              duration={10 + i * 2}
+              size={4 + i * 2}
+              startX={`${20 + i * 15}%`}
+              startY={`${60 + (i % 3) * 20}%`}
+            />
+          ))}
+
+          {/* Decorative rings */}
+          <motion.div 
+            className="absolute top-1/4 right-1/4 w-40 h-40 rounded-full border border-rose/10"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div 
+            className="absolute bottom-1/3 left-1/4 w-24 h-24 rounded-full border border-gold/10"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          />
+        </div>
+
+        {/* Main content */}
+        <motion.div 
+          style={{ y, opacity, scale }}
+          className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20"
+        >
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left: Text Content */}
+            <div className="order-2 lg:order-1 text-center lg:text-left">
+              {/* Badge */}
               <motion.div
-                variants={fadeInUp}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary w-fit mx-auto lg:mx-0"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
+                         bg-rose/10 border border-rose/20 mb-6"
               >
-                <span className="material-symbols-outlined text-primary text-sm">verified</span>
-                <span className="text-accent text-xs font-bold uppercase tracking-wide">
+                <motion.span 
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="material-symbols-outlined text-rose text-sm"
+                >
+                  verified
+                </motion.span>
+                <span className="text-rose text-xs font-bold uppercase tracking-widest">
                   FSSAI Certified Studio
                 </span>
               </motion.div>
 
+              {/* Main Heading */}
               <motion.h1
-                variants={fadeInUp}
-                transition={{ duration: 0.6 }}
-                className="text-cocoa text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
               >
-                Baked with{' '}
-                <span className="text-primary italic font-serif">Love</span>,{' '}
+                <span className="text-cream">Baked with </span>
+                <span className="relative">
+                  <span className="gradient-text text-glow italic">Love</span>
+                  <motion.span 
+                    className="absolute -top-2 -right-4 text-2xl"
+                    animate={{ rotate: [0, 15, 0], scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    ✨
+                  </motion.span>
+                </span>
                 <br />
-                Styled for Memories
+                <span className="text-cream">Styled for </span>
+                <span className="text-gold text-glow-gold">Memories</span>
               </motion.h1>
 
+              {/* Subtitle */}
               <motion.p
-                variants={fadeInUp}
-                transition={{ duration: 0.6 }}
-                className="text-accent text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-lg mx-auto lg:mx-0"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-cream-muted text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8"
               >
                 Premium custom cakes from a certified home studio. Experience the
-                artistry of handcrafted desserts inspired by Parisian elegance.
+                artistry of handcrafted desserts inspired by 
+                <span className="text-rose"> Parisian elegance</span>.
               </motion.p>
 
+              {/* CTA Buttons */}
               <motion.div
-                variants={fadeInUp}
-                transition={{ duration: 0.6 }}
-                className="flex flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start mt-2 sm:mt-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex flex-wrap gap-4 justify-center lg:justify-start"
               >
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowOrderForm(true)}
-                  className="flex items-center gap-2 h-12 px-8 bg-primary text-white text-base font-bold rounded-full shadow-lg hover:opacity-90 transition-all hover:shadow-primary/30"
+                  className="group relative flex items-center gap-3 px-8 py-4 rounded-full
+                           bg-gradient-to-r from-rose to-rose-dark text-noir font-bold
+                           shadow-xl shadow-rose/30 hover:shadow-rose/50 transition-shadow"
                 >
-                  <span className="material-symbols-outlined text-[20px]">chat</span>
-                  Order on WhatsApp
+                  <span className="absolute inset-0 rounded-full overflow-hidden">
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                                   -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  </span>
+                  <span className="material-symbols-outlined text-xl relative">chat</span>
+                  <span className="relative">Order on WhatsApp</span>
                 </motion.button>
+
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     href="#menu"
-                    className="flex items-center gap-2 h-12 px-8 border-2 text-cocoa text-base font-bold rounded-full hover:bg-secondary transition-all"
-                    style={{ borderColor: '#c9a86c', backgroundColor: 'rgba(201, 168, 108, 0.1)' }}
+                    className="group flex items-center gap-3 px-8 py-4 rounded-full
+                             border-2 border-gold/50 text-cream font-bold
+                             hover:bg-gold/10 hover:border-gold transition-all"
                   >
-                    <span style={{ color: '#c9a86c' }}>✦</span>
-                    View Creations
+                    <span className="text-gold">✦</span>
+                    <span>View Creations</span>
+                    <span className="material-symbols-outlined text-gold/60 group-hover:translate-x-1 transition-transform">
+                      arrow_forward
+                    </span>
                   </Link>
                 </motion.div>
               </motion.div>
-            </motion.div>
 
-            {/* Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="order-1 lg:order-2 relative group w-full max-w-md mx-auto lg:max-w-none"
-            >
+              {/* Trust indicators */}
               <motion.div
-                animate={{ rotate: [3, 6, 3] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute inset-0 bg-primary/5 rounded-[2rem] transform scale-95"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="flex items-center gap-6 mt-10 justify-center lg:justify-start"
+              >
+                <div className="flex -space-x-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div 
+                      key={i}
+                      className="w-10 h-10 rounded-full border-2 border-noir bg-noir-light 
+                               flex items-center justify-center text-rose/60"
+                    >
+                      <span className="material-symbols-outlined text-lg">person</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-left">
+                  <div className="flex items-center gap-1 text-gold">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <span key={i} className="material-symbols-outlined text-sm filled">star</span>
+                    ))}
+                  </div>
+                  <p className="text-cream-muted text-sm">500+ Happy Customers</p>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right: Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, x: 50 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="order-1 lg:order-2 relative"
+            >
+              {/* Glow behind image */}
+              <div className="absolute inset-0 bg-rose/20 rounded-[3rem] blur-[60px]" />
+              
+              {/* Decorative frame */}
+              <motion.div 
+                className="absolute -inset-4 rounded-[3rem] border border-rose/20"
+                animate={{ rotate: [0, 5, 0, -5, 0] }}
+                transition={{ duration: 10, repeat: Infinity }}
               />
-              <div
-                className="relative w-full aspect-[4/5] sm:aspect-square bg-center bg-cover bg-secondary rounded-[2rem] shadow-2xl"
-                style={{
-                  backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_')",
-                }}
-              />
+
+              {/* Main image container */}
+              <div className="relative">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="relative aspect-[4/5] sm:aspect-square rounded-[2.5rem] overflow-hidden
+                           border border-rose/20 shadow-2xl shadow-black/50"
+                >
+                  {/* Image */}
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transform hover:scale-110 
+                             transition-transform duration-700"
+                    style={{
+                      backgroundImage:
+                        "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_')",
+                    }}
+                  />
+                  
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-noir/60 via-transparent to-transparent" />
+                </motion.div>
+
+                {/* Floating badge */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6, type: 'spring' }}
+                  className="absolute -bottom-4 -left-4 sm:left-4 glass px-5 py-3 rounded-2xl
+                           flex items-center gap-3"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-gold/60 
+                               flex items-center justify-center">
+                    <span className="material-symbols-outlined text-noir">workspace_premium</span>
+                  </div>
+                  <div>
+                    <p className="text-cream font-bold text-sm">Premium Quality</p>
+                    <p className="text-cream-muted text-xs">Belgian Chocolate</p>
+                  </div>
+                </motion.div>
+
+                {/* Stats badge */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.7, type: 'spring' }}
+                  className="absolute -top-4 -right-4 sm:right-4 glass px-5 py-3 rounded-2xl"
+                >
+                  <p className="text-3xl font-bold gradient-text">2+</p>
+                  <p className="text-cream-muted text-xs">Years Experience</p>
+                </motion.div>
+              </div>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        >
+          <span className="text-cream-muted text-xs uppercase tracking-widest">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="w-6 h-10 rounded-full border-2 border-rose/30 flex items-start justify-center pt-2"
+          >
+            <motion.div 
+              className="w-1.5 h-1.5 rounded-full bg-rose"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Order Form Modal */}
