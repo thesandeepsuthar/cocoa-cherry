@@ -288,7 +288,7 @@ Sent from Cocoa&Cherry Website`;
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={isSubmitting}
-                  className={`relative w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-3 overflow-hidden ${isSubmitting ? 'bg-cream-muted/30 cursor-not-allowed' : 'bg-gradient-to-r from-gold to-gold/80 text-noir'} shadow-lg shadow-gold/20 transition-all`}
+                  className={`relative w-full py-3 md:py-4 rounded-xl font-bold text-sm md:text-base flex items-center justify-center gap-2 md:gap-3 overflow-hidden ${isSubmitting ? 'bg-cream-muted/30 cursor-not-allowed' : 'bg-gradient-to-r from-gold to-gold/80 text-noir'} shadow-lg shadow-gold/20 transition-all`}
                 >
                   {!isSubmitting && (
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700" />
@@ -299,7 +299,7 @@ Sent from Cocoa&Cherry Website`;
                       <motion.span
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="material-symbols-outlined text-cream"
+                        className="material-symbols-outlined text-cream text-lg md:text-xl"
                       >
                         progress_activity
                       </motion.span>
@@ -308,7 +308,7 @@ Sent from Cocoa&Cherry Website`;
                   ) : (
                     <>
                       <span className="relative">Send to WhatsApp</span>
-                      <span className="material-symbols-outlined text-lg relative">send</span>
+                      <span className="material-symbols-outlined text-base md:text-lg relative">send</span>
                     </>
                   )}
                 </motion.button>

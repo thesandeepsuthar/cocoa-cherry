@@ -276,8 +276,7 @@ function ReviewForm({ onClose, onSubmit }) {
         disabled={isSubmitting}
         whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
         whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-        className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 
-                 transition-all ${
+        className={`w-full py-3 md:py-4 rounded-xl font-bold text-sm md:text-base flex items-center justify-center gap-2 transition-all ${
           isSubmitting
             ? 'bg-cream-muted/30 cursor-not-allowed'
             : 'bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30'
@@ -288,7 +287,7 @@ function ReviewForm({ onClose, onSubmit }) {
             <motion.span
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="material-symbols-outlined"
+              className="material-symbols-outlined text-lg md:text-xl"
             >
               progress_activity
             </motion.span>
@@ -296,7 +295,7 @@ function ReviewForm({ onClose, onSubmit }) {
           </>
         ) : (
           <>
-            <span className="material-symbols-outlined">send</span>
+            <span className="material-symbols-outlined text-lg md:text-xl">send</span>
             <span>Submit Review</span>
           </>
         )}
@@ -545,11 +544,9 @@ export default function Testimonials() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowReviewForm(true)}
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full
-                     bg-gradient-to-r from-rose to-rose-dark text-noir font-bold
-                     shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
+            className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
           >
-            <span className="material-symbols-outlined">rate_review</span>
+            <span className="material-symbols-outlined text-lg md:text-xl">rate_review</span>
             <span>Write a Review</span>
           </motion.button>
         </motion.div>

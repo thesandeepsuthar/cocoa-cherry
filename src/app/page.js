@@ -30,7 +30,7 @@ export default function Home() {
         <Gallery />
         <Reels />
         <Testimonials />
-        <SpecialOffer />
+        {/* <SpecialOffer /> */}
         <FAQ />
         <Order />
         <Footer />

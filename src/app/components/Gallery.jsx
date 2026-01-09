@@ -107,10 +107,10 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="absolute top-4 right-4 z-10 w-12 h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors flex items-center justify-center"
+        className="absolute top-3 right-3 md:top-4 md:right-4 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors flex items-center justify-center"
         onClick={onClose}
       >
-        <span className="material-symbols-outlined text-cream text-2xl">close</span>
+        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">close</span>
       </motion.button>
 
       {/* Navigation buttons */}
@@ -118,20 +118,20 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors hidden md:flex items-center justify-center"
+        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors hidden md:flex items-center justify-center"
         onClick={(e) => { e.stopPropagation(); onPrev(); }}
       >
-        <span className="material-symbols-outlined text-cream text-2xl">chevron_left</span>
+        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">chevron_left</span>
       </motion.button>
 
       <motion.button
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors hidden md:flex items-center justify-center"
+        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors hidden md:flex items-center justify-center"
         onClick={(e) => { e.stopPropagation(); onNext(); }}
       >
-        <span className="material-symbols-outlined text-cream text-2xl">chevron_right</span>
+        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">chevron_right</span>
       </motion.button>
 
       {/* Main image */}
@@ -181,17 +181,17 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="pb-6 px-4"
+        className="pb-4 md:pb-6 px-3 md:px-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-start md:justify-center gap-2 overflow-x-auto hide-scrollbar py-2 max-w-4xl mx-auto">
+        <div className="flex justify-start md:justify-center gap-1.5 md:gap-2 overflow-x-auto hide-scrollbar py-2 max-w-4xl mx-auto">
           {images.map((image, index) => (
             <motion.button
               key={image._id}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setCurrentIndex(index)}
-              className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl overflow-hidden flex-shrink-0 transition-all duration-300 border-2 ${
+              className={`relative w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl overflow-hidden flex-shrink-0 transition-all duration-300 border-2 ${
                 index === currentIndex
                   ? 'border-rose scale-110 shadow-lg shadow-rose/30'
                   : 'border-transparent opacity-50 hover:opacity-80'
@@ -425,7 +425,7 @@ export default function Gallery() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.5 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12"
+                className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mt-8 md:mt-12"
               >
                 {/* Load More Button - Only show if there are more images */}
                 {hasMore && (
@@ -434,18 +434,18 @@ export default function Gallery() {
                     whileTap={{ scale: 0.95 }}
                     onClick={loadMore}
                     disabled={loadingMore}
-                    className="inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-rose/50 text-cream font-bold hover:bg-rose/10 hover:border-rose transition-all disabled:opacity-50"
+                    className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full border-2 border-rose/50 text-cream font-bold text-sm md:text-base hover:bg-rose/10 hover:border-rose transition-all disabled:opacity-50"
                   >
                     {loadingMore ? (
                       <>
-                        <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                        <span className="material-symbols-outlined text-lg md:text-xl animate-spin">progress_activity</span>
                         <span>Loading...</span>
                       </>
                     ) : (
                       <>
-                        <span className="material-symbols-outlined">add</span>
+                        <span className="material-symbols-outlined text-lg md:text-xl">add</span>
                         <span>Load More</span>
-                        <span className="px-2 py-0.5 rounded-full bg-rose/20 text-rose text-sm">
+                        <span className="px-1.5 py-0.5 md:px-2 rounded-full bg-rose/20 text-rose text-xs md:text-sm">
                           +{Math.min(LOAD_MORE_COUNT, remainingCount)}
                         </span>
                       </>
@@ -461,9 +461,9 @@ export default function Gallery() {
                     setCurrentIndex(0);
                     setLightboxOpen(true);
                   }}
-                  className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
+                  className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
                 >
-                  <span className="material-symbols-outlined">photo_library</span>
+                  <span className="material-symbols-outlined text-lg md:text-xl">photo_library</span>
                   <span>View All ({galleryImages.length})</span>
                 </motion.button>
               </motion.div>

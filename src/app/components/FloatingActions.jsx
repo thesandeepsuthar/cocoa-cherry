@@ -83,7 +83,7 @@ export default function FloatingActions() {
       </motion.div>
 
       {/* Floating Buttons Container */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-3 md:gap-4">
         
         {/* Back to Top Button with Circular Progress */}
         <AnimatePresence>
@@ -96,7 +96,7 @@ export default function FloatingActions() {
               className="relative"
             >
               {/* Circular Progress Ring */}
-              <svg className="absolute inset-0 w-12 h-12 -rotate-90" viewBox="0 0 48 48">
+              <svg className="absolute inset-0 w-10 h-10 md:w-12 md:h-12 -rotate-90" viewBox="0 0 48 48">
                 {/* Background circle */}
                 <circle
                   cx="24"
@@ -133,27 +133,27 @@ export default function FloatingActions() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={scrollToTop}
-                className="relative w-12 h-12 rounded-full bg-noir-light/90 backdrop-blur-sm border border-rose/30 shadow-lg shadow-black/30 flex items-center justify-center text-rose hover:bg-rose hover:text-noir hover:border-rose transition-all duration-300 group"
+                className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-noir-light/90 backdrop-blur-sm border border-rose/30 shadow-lg shadow-black/30 flex items-center justify-center text-rose hover:bg-rose hover:text-noir hover:border-rose transition-all duration-300 group"
                 aria-label="Back to top"
               >
                 <motion.span 
-                  className="material-symbols-outlined text-xl"
+                  className="material-symbols-outlined text-lg md:text-xl"
                   animate={{ y: [0, -2, 0] }}
                   transition={{ duration: 1, repeat: Infinity }}
                 >
                   arrow_upward
                 </motion.span>
 
-                {/* Tooltip */}
-                <span className="absolute right-full mr-3 px-3 py-1.5 rounded-lg bg-noir-light border border-rose/20 text-cream text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">
+                {/* Tooltip - Hidden on mobile */}
+                <span className="hidden md:block absolute right-full mr-3 px-3 py-1.5 rounded-lg bg-noir-light border border-rose/20 text-cream text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">
                   Back to top
                   <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-2 h-2 bg-noir-light border-r border-b border-rose/20 rotate-[-45deg]" />
                 </span>
               </motion.button>
 
-              {/* Percentage indicator */}
+              {/* Percentage indicator - Hidden on mobile */}
               <motion.span 
-                className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-cream-muted font-medium"
+                className="hidden md:block absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-cream-muted font-medium"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
@@ -179,13 +179,13 @@ export default function FloatingActions() {
                 initial={{ opacity: 0, x: 10, scale: 0.8 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 10, scale: 0.8 }}
-                className="absolute right-full mr-3 top-1/2 -translate-y-1/2"
+                className="absolute right-full mr-3 bottom-0"
               >
                 <div className="relative bg-white text-noir px-4 py-2.5 rounded-2xl shadow-xl">
                   <p className="text-sm font-bold whitespace-nowrap">Need a cake? 🎂</p>
                   <p className="text-xs text-noir/70">Chat with us!</p>
                   {/* Arrow */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3 h-3 bg-white rotate-45 shadow-xl" />
+                  <div className="absolute right-0 bottom-4 translate-x-1/2 w-3 h-3 bg-white rotate-45 shadow-xl" />
                 </div>
                 {/* Close button */}
                 <button 
@@ -205,9 +205,9 @@ export default function FloatingActions() {
                 initial={{ opacity: 0, x: 10, width: 0 }}
                 animate={{ opacity: 1, x: 0, width: 'auto' }}
                 exit={{ opacity: 0, x: 10, width: 0 }}
-                className="absolute right-full mr-3 top-1/2 -translate-y-1/2 overflow-hidden"
+                className="hidden md:block absolute right-full mr-3 bottom-0 overflow-hidden"
               >
-                <div className="bg-noir-light border border-[#25D366]/30 rounded-2xl shadow-2xl p-4 min-w-[200px]">
+                <div className="relative bg-noir-light border border-[#25D366]/30 rounded-2xl shadow-2xl p-4 min-w-[200px]">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center">
                       <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -234,8 +234,8 @@ export default function FloatingActions() {
                     <span>Start Chat</span>
                     <span className="material-symbols-outlined text-lg">arrow_forward</span>
                   </motion.button>
-                  {/* Arrow */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3 h-3 bg-noir-light border-r border-b border-[#25D366]/30 rotate-[-45deg]" />
+                  {/* Arrow - positioned at bottom */}
+                  <div className="absolute right-0 bottom-4 translate-x-1/2 w-3 h-3 bg-noir-light border-r border-b border-[#25D366]/30 rotate-[-45deg]" />
                 </div>
               </motion.div>
             )}
@@ -260,12 +260,12 @@ export default function FloatingActions() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={openWhatsApp}
-            className="relative w-14 h-14 rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/40 flex items-center justify-center text-white transition-all group"
+            className="relative w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/40 flex items-center justify-center text-white transition-all group"
             aria-label="Contact on WhatsApp"
           >
             {/* Icon with subtle animation */}
             <motion.svg 
-              className="w-7 h-7" 
+              className="w-6 h-6 md:w-7 md:h-7" 
               fill="currentColor" 
               viewBox="0 0 24 24"
               animate={{ 
@@ -278,7 +278,7 @@ export default function FloatingActions() {
 
             {/* Notification badge */}
             <motion.span 
-              className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose text-[10px] font-bold flex items-center justify-center shadow-lg"
+              className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 w-4 h-4 md:w-5 md:h-5 rounded-full bg-rose text-[8px] md:text-[10px] font-bold flex items-center justify-center shadow-lg"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 1, type: 'spring' }}
@@ -287,9 +287,9 @@ export default function FloatingActions() {
             </motion.span>
           </motion.button>
 
-          {/* "Order Now" floating label */}
+          {/* "Order Now" floating label - Hidden on small mobile */}
           <motion.span
-            className="absolute -left-2 -bottom-1 px-2 py-0.5 rounded-full bg-rose text-noir text-[9px] font-bold whitespace-nowrap shadow-lg"
+            className="hidden sm:block absolute -left-2 -bottom-1 px-2 py-0.5 rounded-full bg-rose text-noir text-[8px] md:text-[9px] font-bold whitespace-nowrap shadow-lg"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5 }}
@@ -304,25 +304,25 @@ export default function FloatingActions() {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 1 }}
-        className="fixed bottom-6 left-6 z-50"
+        className="fixed bottom-4 left-4 md:bottom-6 md:left-6 z-50"
       >
         <motion.a
           href="tel:+919712752469"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="relative w-12 h-12 rounded-full bg-noir-light/90 backdrop-blur-sm border border-rose/30 shadow-lg flex items-center justify-center text-rose hover:bg-rose hover:text-noir hover:border-rose transition-all group"
+          className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-noir-light/90 backdrop-blur-sm border border-rose/30 shadow-lg flex items-center justify-center text-rose hover:bg-rose hover:text-noir hover:border-rose transition-all group"
           aria-label="Call us"
         >
           <motion.span 
-            className="material-symbols-outlined text-xl"
+            className="material-symbols-outlined text-lg md:text-xl"
             animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
             transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
           >
             call
           </motion.span>
 
-          {/* Tooltip */}
-          <span className="absolute left-full ml-3 px-3 py-1.5 rounded-lg bg-noir-light border border-rose/20 text-cream text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">
+          {/* Tooltip - Hidden on mobile */}
+          <span className="hidden md:block absolute left-full ml-3 px-3 py-1.5 rounded-lg bg-noir-light border border-rose/20 text-cream text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">
             Call: +91 97127 52469
             <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 bg-noir-light border-l border-t border-rose/20 rotate-[-45deg]" />
           </span>
