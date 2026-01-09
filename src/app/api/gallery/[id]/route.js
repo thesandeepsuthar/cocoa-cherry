@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Gallery } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
-import { sanitizeString, validateBase64Image } from '@/lib/security';
+import { sanitizeString } from '@/lib/security';
+import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
 import mongoose from 'mongoose';
 
 // Validate MongoDB ObjectId
@@ -69,16 +70,32 @@ export async function PUT(request, { params }) {
 
     // Build update object with only allowed fields
     const updateData = { updatedAt: new Date() };
+    let compressionInfo = null;
 
+    // If new image is provided, validate and compress it
     if (body.imageData) {
-      const imageValidation = validateBase64Image(body.imageData, 20);
+      const imageValidation = validateImage(body.imageData, 20);
       if (!imageValidation.valid) {
         return NextResponse.json(
           { success: false, error: imageValidation.error },
           { status: 400 }
         );
       }
-      updateData.imageData = body.imageData;
+
+      // Compress the image
+      try {
+        const result = await compressWithPreset(body.imageData, 'gallery');
+        updateData.imageData = result.base64;
+        compressionInfo = {
+          originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
+          compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
+          savings: result.savings,
+        };
+        console.log(`✅ Image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
+      } catch (compressionError) {
+        console.error('⚠️ Compression failed, using original:', compressionError.message);
+        updateData.imageData = body.imageData;
+      }
     }
 
     if (body.caption !== undefined) {
@@ -113,6 +130,7 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedImage,
+      compression: compressionInfo,
       message: 'Image updated successfully',
     });
   } catch (error) {
