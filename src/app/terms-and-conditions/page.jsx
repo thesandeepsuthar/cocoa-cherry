@@ -97,7 +97,7 @@ export default function TermsAndConditions() {
       
       📞 Phone: +91 97127 52469
       
-      📧 Email: thakarjhanvi140@gmail.com
+      📧 Email: cocoacheery307@gmail.com
       
       📱 Instagram: @cocoa_cherry_`
     },

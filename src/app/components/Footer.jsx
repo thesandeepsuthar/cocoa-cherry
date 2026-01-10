@@ -29,8 +29,8 @@ const contactInfo = [
   },
   { 
     icon: 'mail', 
-    text: 'thakarjhanvi140@gmail.com',
-    href: 'mailto:thakarjhanvi140@gmail.com'
+    text: 'cocoacheery307@gmail.com',
+    href: 'mailto:cocoacheery307@gmail.com'
   },
 ];
 

@@ -543,26 +543,92 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Testimonials slider specific styles */
+.testimonials-slider {
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.testimonials-slider .slick-slider {
+  overflow: hidden !important;
+}
+
 .testimonials-slider .slick-list {
-  margin: 0 -8px;
+  overflow: hidden !important;
+  margin: 0 !important;
+}
+
+.testimonials-slider .slick-track {
+  display: flex !important;
+  align-items: stretch !important;
+}
+
+.testimonials-slider .slick-slide {
+  height: auto !important;
+  display: flex !important;
+  align-items: stretch !important;
 }
 
 .testimonials-slider .slick-slide > div {
-  padding: 0 8px;
+  padding: 0 12px;
+  display: flex !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
-/* Mobile styles for testimonials */
-@media (max-width: 768px) {
+.testimonials-slider .slick-slide > div > div {
+  width: 100% !important;
+  display: flex !important;
+  height: 100% !important;
+}
+
+/* Testimonial card equal height - FIXED HEIGHT for consistency */
+.testimonial-card {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 260px !important;
+  overflow: hidden;
+}
+
+/* Desktop - 3 cards */
+@media (min-width: 1025px) {
+  .testimonials-slider .slick-list {
+    overflow: hidden !important;
+  }
+  
+  .testimonial-card {
+    height: 260px !important;
+  }
+}
+
+/* Tablet - 2 cards */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .testimonial-card {
+    height: 260px !important;
+  }
+}
+
+/* Mobile styles for testimonials - 1 card */
+@media (max-width: 640px) {
   .testimonials-slider .slick-slide {
     width: 100% !important;
   }
   
   .testimonials-slider .slick-list {
     margin: 0;
+    overflow: hidden !important;
   }
   
   .testimonials-slider .slick-slide > div {
-    padding: 0 4px;
+    padding: 0 8px;
+  }
+  
+  /* Fixed height on mobile for consistency */
+  .testimonial-card {
+    height: 240px !important;
+    min-height: 240px !important;
+    max-height: 240px !important;
   }
 }
 

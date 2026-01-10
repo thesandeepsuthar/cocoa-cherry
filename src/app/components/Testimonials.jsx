@@ -364,22 +364,24 @@ export default function Testimonials() {
     infinite: true,
     speed: 500,
     slidesToShow: 3,
-    slidesToScroll: 3,
+    slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
     pauseOnHover: true,
     arrows: false,
     adaptiveHeight: false,
+    centerMode: false,
+    variableWidth: false,
     responsive: [
       {
         breakpoint: 1025,
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 2,
+          slidesToScroll: 1,
         }
       },
       {
-        breakpoint: 768,
+        breakpoint: 640,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
@@ -466,30 +468,30 @@ export default function Testimonials() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
-            className="mb-12 testimonials-slider"
+            className="mb-12 testimonials-slider overflow-hidden px-2"
           >
             <Slider {...sliderSettings}>
               {testimonials.map((item) => {
                 const avatar = getAvatar(item);
                 return (
-                  <div key={item._id} className="px-2 sm:px-3">
-                    <div className="card-noir p-5 sm:p-6 md:p-8 relative h-full min-h-[280px] flex flex-col">
+                  <div key={item._id} className="h-full">
+                    <div className="card-noir testimonial-card p-4 sm:p-5 md:p-6 relative">
                       {/* Quote icon */}
-                      <span className="material-symbols-outlined text-3xl md:text-4xl text-rose/20 absolute top-3 md:top-4 right-3 md:right-4">
+                      <span className="material-symbols-outlined text-2xl sm:text-3xl md:text-4xl text-rose/20 absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4">
                         format_quote
                       </span>
 
                       {/* Rating */}
-                      <div className="mb-3 md:mb-4">
+                      <div className="mb-2 sm:mb-3 md:mb-4">
                         <StarRating rating={item.rating || 5} size="sm" />
                       </div>
 
                       {/* Review text - Truncated */}
                       {(() => {
-                        const { text, isTruncated } = truncateText(item.review, 100);
+                        const { text, isTruncated } = truncateText(item.review, 70);
                         return (
-                          <div className="mb-4 md:mb-6 flex-grow">
-                            <p className="text-cream-muted italic text-sm md:text-base leading-relaxed">
+                          <div className="mb-3 md:mb-4 flex-1 overflow-hidden">
+                            <p className="text-cream-muted italic text-xs sm:text-sm md:text-base leading-relaxed line-clamp-2 sm:line-clamp-3">
                               &ldquo;{text}&rdquo;
                             </p>
                             {isTruncated && (
@@ -498,11 +500,11 @@ export default function Testimonials() {
                                   e.stopPropagation();
                                   setSelectedReview(item);
                                 }}
-                                className="text-rose text-xs md:text-sm font-medium hover:text-rose-glow 
-                                         transition-colors mt-2 inline-flex items-center gap-1"
+                                className="text-rose text-xs font-medium hover:text-rose-glow 
+                                         transition-colors mt-1.5 sm:mt-2 inline-flex items-center gap-1"
                               >
                                 Read more
-                                <span className="material-symbols-outlined text-xs md:text-sm">arrow_forward</span>
+                                <span className="material-symbols-outlined text-xs">arrow_forward</span>
                               </button>
                             )}
                           </div>
@@ -510,22 +512,22 @@ export default function Testimonials() {
                       })()}
 
                       {/* Author */}
-                      <div className="flex items-center gap-3 mt-auto">
+                      <div className="flex items-center gap-2 sm:gap-3 mt-auto pt-2 sm:pt-3 border-t border-rose/10">
                         {avatar.type === 'image' ? (
                           <div
-                            className="w-10 md:w-12 h-10 md:h-12 rounded-full bg-cover bg-center 
+                            className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-cover bg-center 
                                      border-2 border-rose/30 flex-shrink-0"
                             style={{ backgroundImage: `url('${avatar.value}')` }}
                           />
                         ) : (
-                          <div className="w-10 md:w-12 h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
-                                        flex items-center justify-center text-noir font-bold text-sm md:text-lg flex-shrink-0">
+                          <div className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                                        flex items-center justify-center text-noir font-bold text-xs sm:text-sm md:text-lg flex-shrink-0">
                             {avatar.value}
                           </div>
                         )}
-                        <div className="min-w-0">
-                          <p className="text-cream font-bold text-sm md:text-base truncate">{item.name}</p>
-                          <p className="text-cream-muted text-xs md:text-sm truncate">{item.cakeType || 'Cake Order'}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-cream font-bold text-xs sm:text-sm md:text-base truncate">{item.name}</p>
+                          <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm truncate">{item.cakeType || 'Cake Order'}</p>
                         </div>
                       </div>
                     </div>

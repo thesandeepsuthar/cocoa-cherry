@@ -136,7 +136,7 @@ const jsonLd = {
       logo: `${siteUrl}/logo.svg`,
       image: `${siteUrl}/logo.svg`,
       telephone: "+91-97127-52469",
-      email: "thakarjhanvi140@gmail.com",
+      email: "cocoacheery307@gmail.com",
       address: {
         "@type": "PostalAddress",
         streetAddress: "9/A, Dholeshwar Mahadev Rd, Ganesh Park Society, Rajeswari Society",
