@@ -56,12 +56,12 @@ export default function Navigation() {
 
   return (
     <>
-      <motion.nav
-        initial={{ y: -100 }}
+    <motion.nav
+      initial={{ y: -100 }}
         animate={{ y: hidden ? -100 : 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
+        scrolled
             ? 'glass-strong shadow-2xl shadow-black/20'
             : 'bg-transparent'
         }`}
@@ -80,22 +80,22 @@ export default function Navigation() {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link href="#" className="flex items-center gap-2 md:gap-3 group">
-              <motion.div
+            <motion.div
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
                 className="relative w-10 h-10 md:w-12 md:h-12"
-              >
+            >
                 {/* Glow effect behind logo */}
                 <div className="absolute inset-0 bg-rose/20 rounded-full blur-xl group-hover:bg-rose/40 transition-colors" />
-                <Image
-                  src="/logo.svg"
+              <Image
+                src="/logo.svg"
                   alt="Cocoa&Cherry Logo"
                   width={48}
                   height={48}
                   className="relative w-full h-full drop-shadow-lg"
-                  priority
-                />
-              </motion.div>
+                priority
+              />
+            </motion.div>
               
               <div className="flex flex-col">
                 <motion.h2 
@@ -110,19 +110,19 @@ export default function Navigation() {
                   Artisanal Cakes
                 </span>
               </div>
-            </Link>
+          </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-2">
-              {navLinks.map((link, index) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
+            {navLinks.map((link, index) => (
+              <motion.div
+                key={link.href}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 + 0.2 }}
-                >
-                  <Link
-                    href={link.href}
+              >
+                <Link
+                  href={link.href}
                     className="relative px-5 py-2.5 text-cream/80 text-sm font-medium tracking-wide hover:text-cream transition-colors group"
                   >
                     <span className="relative z-10">{link.label}</span>
@@ -132,19 +132,19 @@ export default function Navigation() {
                     
                     {/* Underline effect */}
                     <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-rose to-gold rounded-full group-hover:w-3/4 transition-all duration-300" />
-                  </Link>
-                </motion.div>
-              ))}
+                </Link>
+              </motion.div>
+            ))}
 
               {/* CTA Button */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
                 className="ml-4"
-              >
-                <Link
-                  href="#order"
+            >
+              <Link
+                href="#order"
                   className="relative group flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm shadow-lg shadow-rose/20 hover:shadow-rose/40 transform hover:-translate-y-0.5 transition-all duration-300"
                 >
                   {/* Shimmer effect */}
@@ -154,14 +154,14 @@ export default function Navigation() {
                   
                   <span className="material-symbols-outlined text-lg">cake</span>
                   <span>Order Now</span>
-                </Link>
-              </motion.div>
-            </div>
+              </Link>
+            </motion.div>
+          </div>
 
-            {/* Mobile Menu Button */}
-            <motion.button
+          {/* Mobile Menu Button */}
+          <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen(!isOpen)}
               className="lg:hidden relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-xl bg-noir-light/50 border border-rose/20 hover:border-rose/40 transition-colors"
             >
               <div className="flex flex-col items-center justify-center gap-1 md:gap-1.5">
@@ -187,9 +187,9 @@ export default function Navigation() {
                   className="w-4 md:w-5 h-0.5 bg-cream rounded-full origin-center"
                 />
               </div>
-            </motion.button>
-          </div>
+          </motion.button>
         </div>
+      </div>
       </motion.nav>
 
       {/* Mobile Menu Overlay */}
@@ -206,7 +206,7 @@ export default function Navigation() {
             />
 
             {/* Mobile Menu */}
-            <motion.div
+          <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
@@ -229,16 +229,16 @@ export default function Navigation() {
 
               {/* Menu Links */}
               <div className="p-4 md:p-6 space-y-1.5 md:space-y-2">
-                {navLinks.map((link, index) => (
-                  <motion.div
-                    key={link.href}
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.href}
                     initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={() => setIsOpen(false)}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
                       className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl text-cream/80 hover:text-cream hover:bg-rose/10 transition-all group"
                     >
                       <span className="material-symbols-outlined text-rose/60 group-hover:text-rose transition-colors text-xl md:text-2xl">
@@ -248,27 +248,27 @@ export default function Navigation() {
                       <span className="material-symbols-outlined ml-auto text-cream/30 group-hover:text-cream/60 group-hover:translate-x-1 transition-all text-lg md:text-xl">
                         chevron_right
                       </span>
-                    </Link>
-                  </motion.div>
-                ))}
-
-                {/* Mobile CTA */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="pt-4 md:pt-6"
-                >
-                  <Link
-                    href="#order"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-2 md:gap-3 w-full py-3 md:py-4 rounded-lg md:rounded-xl bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/20"
-                  >
-                    <span className="material-symbols-outlined text-lg md:text-xl">cake</span>
-                    <span>Order Your Cake</span>
                   </Link>
                 </motion.div>
-              </div>
+              ))}
+
+                {/* Mobile CTA */}
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                  className="pt-4 md:pt-6"
+              >
+                <Link
+                  href="#order"
+                  onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 md:gap-3 w-full py-3 md:py-4 rounded-lg md:rounded-xl bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/20"
+                >
+                    <span className="material-symbols-outlined text-lg md:text-xl">cake</span>
+                    <span>Order Your Cake</span>
+                </Link>
+              </motion.div>
+            </div>
 
               {/* Mobile Menu Footer */}
               <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 border-t border-rose/10">
@@ -290,7 +290,7 @@ export default function Navigation() {
                   </a>
                 </div>
               </div>
-            </motion.div>
+          </motion.div>
           </>
         )}
       </AnimatePresence>

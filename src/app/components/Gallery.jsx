@@ -337,10 +337,10 @@ export default function Gallery() {
 
         <div className="relative max-w-7xl mx-auto px-4 md:px-8">
           {/* Section Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
+              transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
             <motion.div 
@@ -376,30 +376,30 @@ export default function Gallery() {
               </motion.p>
             )}
 
-            <Link
+              <Link
               href="https://www.instagram.com/cocoa_cherry_"
               target="_blank"
               className="inline-flex items-center gap-2 text-rose font-bold hover:text-rose-glow transition-colors group"
-            >
+              >
               <span>Follow us on Instagram</span>
               <motion.span
                 className="material-symbols-outlined text-sm"
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                arrow_forward
-              </motion.span>
-            </Link>
-          </motion.div>
+                  arrow_forward
+                </motion.span>
+              </Link>
+            </motion.div>
 
           {/* Gallery Grid */}
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {[...Array(6)].map((_, i) => (
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                {[...Array(6)].map((_, i) => (
                 <div key={i} className="aspect-square rounded-2xl skeleton" />
-              ))}
-            </div>
-          ) : (
+                ))}
+              </div>
+            ) : (
             <>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -410,10 +410,10 @@ export default function Gallery() {
                 <AnimatePresence>
                   {displayedImages.map((image, index) => (
                     <GalleryCard
-                      key={image._id}
+                    key={image._id}
                       image={image}
                       index={index}
-                      onClick={() => openLightbox(index)}
+                    onClick={() => openLightbox(index)}
                       isInView={isInView}
                     />
                   ))}
@@ -421,8 +421,8 @@ export default function Gallery() {
               </motion.div>
 
               {/* Load More / View All Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.5 }}
                 className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mt-8 md:mt-12"
@@ -454,19 +454,19 @@ export default function Gallery() {
                 )}
 
                 {/* View All in Lightbox Button */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     setCurrentIndex(0);
                     setLightboxOpen(true);
                   }}
                   className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
-                >
+              >
                   <span className="material-symbols-outlined text-lg md:text-xl">photo_library</span>
                   <span>View All ({galleryImages.length})</span>
-                </motion.button>
-              </motion.div>
+              </motion.button>
+            </motion.div>
 
               {/* Progress indicator */}
               {galleryImages.length > INITIAL_DISPLAY_COUNT && (
@@ -482,7 +482,7 @@ export default function Gallery() {
                       animate={{ width: `${(displayCount / galleryImages.length) * 100}%` }}
                       transition={{ duration: 0.5 }}
                     />
-                  </div>
+          </div>
                   <p className="text-cream-muted/60 text-xs">
                     Showing {displayCount} of {galleryImages.length} images
                   </p>

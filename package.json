@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:reviews": "node scripts/seed-reviews.mjs"
   },
   "dependencies": {
+    "dotenv": "^16.6.1",
     "framer-motion": "^12.24.0",
     "mongoose": "^9.1.2",
     "next": "16.1.1",

@@ -304,10 +304,17 @@ function ReviewForm({ onClose, onSubmit }) {
   );
 }
 
+// Helper to truncate text
+const truncateText = (text, maxLength = 120) => {
+  if (!text || text.length <= maxLength) return { text: text || '', isTruncated: false };
+  return { text: text.slice(0, maxLength).trim() + '...', isTruncated: true };
+};
+
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState(defaultTestimonials);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -329,7 +336,7 @@ export default function Testimonials() {
   }, []);
 
   useEffect(() => {
-    if (showReviewForm) {
+    if (showReviewForm || selectedReview) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -337,18 +344,48 @@ export default function Testimonials() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [showReviewForm]);
+  }, [showReviewForm, selectedReview]);
+
+  // Navigate to previous/next review
+  const navigateReview = (direction) => {
+    if (!selectedReview) return;
+    const currentIndex = testimonials.findIndex(t => t._id === selectedReview._id);
+    let newIndex;
+    if (direction === 'prev') {
+      newIndex = currentIndex > 0 ? currentIndex - 1 : testimonials.length - 1;
+    } else {
+      newIndex = currentIndex < testimonials.length - 1 ? currentIndex + 1 : 0;
+    }
+    setSelectedReview(testimonials[newIndex]);
+  };
 
   const sliderSettings = {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
+    slidesToShow: 3,
+    slidesToScroll: 3,
     autoplay: true,
     autoplaySpeed: 5000,
     pauseOnHover: true,
     arrows: false,
+    adaptiveHeight: false,
+    responsive: [
+      {
+        breakpoint: 1025,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+        }
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        }
+      }
+    ]
   };
 
   const getAvatar = (item) => {
@@ -405,18 +442,18 @@ export default function Testimonials() {
           </p>
         </motion.div>
 
-        {/* Testimonials Grid */}
+        {/* Testimonials Slider */}
         {loading ? (
-          <div className="hidden md:grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="card-noir p-8">
+              <div key={i} className="card-noir p-6 md:p-8">
                 <div className="h-5 skeleton w-24 mb-4" />
                 <div className="space-y-2 mb-6">
                   <div className="h-4 skeleton" />
                   <div className="h-4 skeleton w-5/6" />
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 skeleton rounded-full" />
+                  <div className="w-10 md:w-12 h-10 md:h-12 skeleton rounded-full" />
                   <div className="space-y-1">
                     <div className="h-4 skeleton w-24" />
                     <div className="h-3 skeleton w-16" />
@@ -426,111 +463,77 @@ export default function Testimonials() {
             ))}
           </div>
         ) : (
-          <>
-            {/* Desktop Grid */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
-            >
-              {testimonials.slice(0, 3).map((item, index) => {
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            className="mb-12 testimonials-slider"
+          >
+            <Slider {...sliderSettings}>
+              {testimonials.map((item) => {
                 const avatar = getAvatar(item);
                 return (
-                  <motion.div
-                    key={item._id}
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ y: -10 }}
-                    className={`card-noir p-8 relative ${
-                      item.isFeatured ? 'md:-translate-y-4 glow-rose' : ''
-                    }`}
-                  >
-                    {/* Quote icon */}
-                    <span className="material-symbols-outlined text-4xl text-rose/20 absolute top-4 right-4">
-                      format_quote
-                    </span>
+                  <div key={item._id} className="px-2 sm:px-3">
+                    <div className="card-noir p-5 sm:p-6 md:p-8 relative h-full min-h-[280px] flex flex-col">
+                      {/* Quote icon */}
+                      <span className="material-symbols-outlined text-3xl md:text-4xl text-rose/20 absolute top-3 md:top-4 right-3 md:right-4">
+                        format_quote
+                      </span>
 
-                    {/* Rating */}
-                    <div className="mb-4">
-                      <StarRating rating={item.rating || 5} size="sm" />
-                    </div>
+                      {/* Rating */}
+                      <div className="mb-3 md:mb-4">
+                        <StarRating rating={item.rating || 5} size="sm" />
+                      </div>
 
-                    {/* Review text */}
-                    <p className="text-cream-muted italic mb-6 leading-relaxed">
-                      &ldquo;{item.review}&rdquo;
-                    </p>
+                      {/* Review text - Truncated */}
+                      {(() => {
+                        const { text, isTruncated } = truncateText(item.review, 100);
+                        return (
+                          <div className="mb-4 md:mb-6 flex-grow">
+                            <p className="text-cream-muted italic text-sm md:text-base leading-relaxed">
+                              &ldquo;{text}&rdquo;
+                            </p>
+                            {isTruncated && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedReview(item);
+                                }}
+                                className="text-rose text-xs md:text-sm font-medium hover:text-rose-glow 
+                                         transition-colors mt-2 inline-flex items-center gap-1"
+                              >
+                                Read more
+                                <span className="material-symbols-outlined text-xs md:text-sm">arrow_forward</span>
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })()}
 
-                    {/* Author */}
-                    <div className="flex items-center gap-3">
-                      {avatar.type === 'image' ? (
-                        <div
-                          className="w-12 h-12 rounded-full bg-cover bg-center 
-                                   border-2 border-rose/30"
-                          style={{ backgroundImage: `url('${avatar.value}')` }}
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
-                                      flex items-center justify-center text-noir font-bold text-lg">
-                          {avatar.value}
+                      {/* Author */}
+                      <div className="flex items-center gap-3 mt-auto">
+                        {avatar.type === 'image' ? (
+                          <div
+                            className="w-10 md:w-12 h-10 md:h-12 rounded-full bg-cover bg-center 
+                                     border-2 border-rose/30 flex-shrink-0"
+                            style={{ backgroundImage: `url('${avatar.value}')` }}
+                          />
+                        ) : (
+                          <div className="w-10 md:w-12 h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                                        flex items-center justify-center text-noir font-bold text-sm md:text-lg flex-shrink-0">
+                            {avatar.value}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-cream font-bold text-sm md:text-base truncate">{item.name}</p>
+                          <p className="text-cream-muted text-xs md:text-sm truncate">{item.cakeType || 'Cake Order'}</p>
                         </div>
-                      )}
-                      <div>
-                        <p className="text-cream font-bold">{item.name}</p>
-                        <p className="text-cream-muted text-sm">{item.cakeType || 'Cake Order'}</p>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
-            </motion.div>
-
-            {/* Mobile Slider */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              className="md:hidden mb-12 -mx-2"
-            >
-              <Slider {...sliderSettings}>
-                {testimonials.map((item) => {
-                  const avatar = getAvatar(item);
-                  return (
-                    <div key={item._id} className="px-2">
-                      <div className="card-noir p-6 relative mx-1">
-                        <span className="material-symbols-outlined text-3xl text-rose/20 absolute top-3 right-3">
-                          format_quote
-                        </span>
-                        <div className="mb-3">
-                          <StarRating rating={item.rating || 5} size="sm" />
-                        </div>
-                        <p className="text-cream-muted italic mb-5 text-sm leading-relaxed">
-                          &ldquo;{item.review}&rdquo;
-                        </p>
-                        <div className="flex items-center gap-3">
-                          {avatar.type === 'image' ? (
-                            <div
-                              className="w-10 h-10 rounded-full bg-cover bg-center 
-                                       border-2 border-rose/30"
-                              style={{ backgroundImage: `url('${avatar.value}')` }}
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose to-rose-dark 
-                                          flex items-center justify-center text-noir font-bold">
-                              {avatar.value}
-                            </div>
-                          )}
-                          <div>
-                            <p className="text-cream font-bold text-sm">{item.name}</p>
-                            <p className="text-cream-muted text-xs">{item.cakeType || 'Cake Order'}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </Slider>
-            </motion.div>
-          </>
+            </Slider>
+          </motion.div>
         )}
 
         {/* Write Review Button */}
@@ -602,6 +605,140 @@ export default function Testimonials() {
                   onClose={() => setShowReviewForm(false)}
                   onSubmit={(data) => console.log('Review submitted:', data)}
                 />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Review Detail Modal */}
+      <AnimatePresence>
+        {selectedReview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-noir/95 backdrop-blur-xl 
+                     flex items-center justify-center p-4"
+            onClick={() => setSelectedReview(null)}
+          >
+            {/* Navigation arrows - Desktop */}
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigateReview('prev');
+              }}
+              className="hidden md:flex absolute left-4 lg:left-8 w-12 h-12 rounded-full 
+                       bg-rose/10 hover:bg-rose/20 border border-rose/20 
+                       items-center justify-center transition-colors z-10"
+            >
+              <span className="material-symbols-outlined text-cream text-2xl">chevron_left</span>
+            </motion.button>
+
+            <motion.button
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigateReview('next');
+              }}
+              className="hidden md:flex absolute right-4 lg:right-8 w-12 h-12 rounded-full 
+                       bg-rose/10 hover:bg-rose/20 border border-rose/20 
+                       items-center justify-center transition-colors z-10"
+            >
+              <span className="material-symbols-outlined text-cream text-2xl">chevron_right</span>
+            </motion.button>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-noir-light max-w-lg w-full rounded-3xl border border-rose/20 
+                       shadow-2xl p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setSelectedReview(null)}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-rose/10 
+                         hover:bg-rose/20 flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined text-cream">close</span>
+              </motion.button>
+
+              {/* Quote icon */}
+              <span className="material-symbols-outlined text-5xl sm:text-6xl text-rose/20 mb-4 block">
+                format_quote
+              </span>
+
+              {/* Rating */}
+              <div className="mb-4">
+                <StarRating rating={selectedReview.rating || 5} size="md" />
+              </div>
+
+              {/* Full Review */}
+              <p className="text-cream text-base sm:text-lg italic leading-relaxed mb-6">
+                &ldquo;{selectedReview.review}&rdquo;
+              </p>
+
+              {/* Author */}
+              <div className="flex items-center gap-4 pt-4 border-t border-rose/10">
+                {(() => {
+                  const avatar = getAvatar(selectedReview);
+                  return avatar.type === 'image' ? (
+                    <div
+                      className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-cover bg-center border-2 border-rose/30"
+                      style={{ backgroundImage: `url('${avatar.value}')` }}
+                    />
+                  ) : (
+                    <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                                  flex items-center justify-center text-noir font-bold text-lg sm:text-xl">
+                      {avatar.value}
+                    </div>
+                  );
+                })()}
+                <div>
+                  <p className="text-cream font-bold text-base sm:text-lg">{selectedReview.name}</p>
+                  <p className="text-cream-muted text-sm">{selectedReview.cakeType || 'Cake Order'}</p>
+                </div>
+              </div>
+
+              {/* Mobile navigation */}
+              <div className="flex justify-between mt-6 md:hidden">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigateReview('prev')}
+                  className="px-4 py-2 rounded-full bg-rose/10 hover:bg-rose/20 text-cream 
+                           flex items-center gap-1 transition-colors text-sm"
+                >
+                  <span className="material-symbols-outlined text-lg">chevron_left</span>
+                  Prev
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigateReview('next')}
+                  className="px-4 py-2 rounded-full bg-rose/10 hover:bg-rose/20 text-cream 
+                           flex items-center gap-1 transition-colors text-sm"
+                >
+                  Next
+                  <span className="material-symbols-outlined text-lg">chevron_right</span>
+                </motion.button>
+              </div>
+
+              {/* Review counter */}
+              <div className="text-center mt-4 text-cream-muted text-xs">
+                {testimonials.findIndex(t => t._id === selectedReview._id) + 1} of {testimonials.length} reviews
               </div>
             </motion.div>
           </motion.div>

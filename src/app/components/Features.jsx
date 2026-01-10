@@ -107,10 +107,10 @@ export default function Features() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Section Header */}
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center mb-12 sm:mb-16 md:mb-20">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6 }}
+              transition={{ duration: 0.6 }}
             className="text-center lg:text-left"
           >
             {/* Label */}
@@ -145,44 +145,44 @@ export default function Features() {
                 />
               </span>
               <span className="text-cream">?</span>
-            </h2>
+              </h2>
 
             <p className="text-cream-muted text-sm sm:text-base md:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 mb-6 sm:mb-8">
-              We don&apos;t just bake cakes; we craft edible centerpieces for your most
-              cherished moments. Using only the finest ingredients, every slice is a
-              testament to quality and passion.
-            </p>
+                We don&apos;t just bake cakes; we craft edible centerpieces for your most
+                cherished moments. Using only the finest ingredients, every slice is a
+                testament to quality and passion.
+              </p>
 
-            <Link
+              <Link
               href="#menu"
               className="group inline-flex items-center gap-2 text-rose font-bold hover:text-rose-glow transition-colors"
-            >
-              <span>Explore our creations</span>
-              <motion.span
-                className="material-symbols-outlined"
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
               >
-                arrow_forward
-              </motion.span>
-            </Link>
-          </motion.div>
+              <span>Explore our creations</span>
+                <motion.span
+                className="material-symbols-outlined"
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  arrow_forward
+                </motion.span>
+              </Link>
+            </motion.div>
 
           {/* Stats */}
-          <motion.div
+            <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-5 self-center"
-          >
+            >
             {[
               { number: '500+', label: 'Happy Customers', icon: 'groups' },
               { number: '5+', label: 'Years Experience', icon: 'workspace_premium' },
               { number: '1000+', label: 'Cakes Delivered', icon: 'cake' },
               { number: '100%', label: 'Satisfaction Rate', icon: 'thumb_up' },
             ].map((stat, index) => (
-              <motion.div
-                key={index}
+                <motion.div
+                  key={index}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: 0.3 + index * 0.1 }}
@@ -196,10 +196,10 @@ export default function Features() {
                   {stat.number}
                 </p>
                 <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm">{stat.label}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
 
         {/* Feature Cards - Bento Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">

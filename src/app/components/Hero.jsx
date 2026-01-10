@@ -382,7 +382,7 @@ export default function Hero() {
         </div>
 
         {/* Main content */}
-        <motion.div 
+            <motion.div
           style={{ y, opacity, scale }}
           className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-20"
         >
@@ -503,7 +503,7 @@ export default function Hero() {
                   </div>
                   <p className="text-cream-muted text-sm">500+ Happy Customers</p>
                 </div>
-              </motion.div>
+            </motion.div>
             </div>
 
             {/* Right: Image */}
@@ -517,7 +517,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-rose/20 rounded-[3rem] blur-[60px]" />
               
               {/* Decorative frame */}
-              <motion.div 
+              <motion.div
                 className="absolute -inset-4 rounded-[3rem] border border-rose/20"
                 animate={{ rotate: [0, 5, 0, -5, 0] }}
                 transition={{ duration: 10, repeat: Infinity }}
@@ -532,11 +532,11 @@ export default function Hero() {
                   {/* Image */}
                   <div
                     className="absolute inset-0 bg-cover bg-center transform hover:scale-110 transition-transform duration-700"
-                    style={{
-                      backgroundImage:
-                        "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_')",
-                    }}
-                  />
+                style={{
+                  backgroundImage:
+                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_')",
+                }}
+              />
                   
                   {/* Overlay gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-noir/60 via-transparent to-transparent" />

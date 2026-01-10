@@ -125,7 +125,7 @@ export default function RateList() {
             <span className="material-symbols-outlined text-gold text-xs sm:text-sm">payments</span>
             <span className="text-gold text-[10px] sm:text-xs font-bold uppercase tracking-widest">
               Transparent Pricing
-            </span>
+          </span>
           </motion.div>
 
           <h2 
@@ -194,18 +194,18 @@ export default function RateList() {
                   <div className="flex items-center gap-3 sm:gap-4">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-rose to-rose-dark flex items-center justify-center shadow-lg shadow-rose/20">
                       <span className="material-symbols-outlined text-white text-xl sm:text-2xl">
-                        {getCategoryIcon(category)}
-                      </span>
+                    {getCategoryIcon(category)}
+                  </span>
                     </div>
                     <div>
                       <h3 className="text-base sm:text-lg md:text-xl font-bold text-cream capitalize"
                           style={{ fontFamily: 'var(--font-cinzel)' }}>
-                        {category}
-                      </h3>
+                  {category}
+                </h3>
                       <p className="text-cream-muted text-xs sm:text-sm">{categoryItems.length} items</p>
                     </div>
-                  </div>
-                  
+              </div>
+
                   <motion.span
                     animate={{ rotate: expandedCategory === category ? 180 : 0 }}
                     className="material-symbols-outlined text-rose text-xl sm:text-2xl"
@@ -225,78 +225,78 @@ export default function RateList() {
                       className="overflow-hidden"
                     >
                       <div className="border-t border-rose/10">
-                        {/* Desktop Table */}
-                        <div className="hidden md:block overflow-x-auto">
-                          <table className="w-full">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
                             <thead>
                               <tr className="bg-noir-light/50">
                                 <th className="text-left px-6 py-4 text-sm font-bold text-cream-muted">Item</th>
                                 <th className="text-left px-6 py-4 text-sm font-bold text-cream-muted">Description</th>
                                 <th className="text-center px-6 py-4 text-sm font-bold text-cream-muted">Unit</th>
                                 <th className="text-right px-6 py-4 text-sm font-bold text-cream-muted">Price</th>
-                              </tr>
-                            </thead>
+                    </tr>
+                  </thead>
                             <tbody className="divide-y divide-rose/5">
-                              {categoryItems.map((item, index) => {
-                                const hasDiscount = item.discountPrice && item.discountPrice < item.price;
-                                const discountPercent = hasDiscount 
-                                  ? Math.round(((item.price - item.discountPrice) / item.price) * 100) 
-                                  : 0;
+                    {categoryItems.map((item, index) => {
+                      const hasDiscount = item.discountPrice && item.discountPrice < item.price;
+                      const discountPercent = hasDiscount 
+                        ? Math.round(((item.price - item.discountPrice) / item.price) * 100) 
+                        : 0;
 
-                                return (
+                      return (
                                   <motion.tr 
-                                    key={item._id}
+                          key={item._id} 
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.05 }}
                                     className="hover:bg-rose/5 transition-colors"
-                                  >
-                                    <td className="px-6 py-4">
-                                      <div className="flex items-center gap-3">
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
                                         <span className="font-medium text-cream">{item.item}</span>
-                                        {hasDiscount && (
+                              {hasDiscount && (
                                           <span className="px-2 py-0.5 rounded-full text-xs font-bold 
                                                        bg-emerald-500/20 text-emerald-400">
-                                            {discountPercent}% OFF
-                                          </span>
-                                        )}
-                                      </div>
-                                    </td>
+                                  {discountPercent}% OFF
+                                </span>
+                              )}
+                            </div>
+                          </td>
                                     <td className="px-6 py-4 text-sm text-cream-muted max-w-xs">
-                                      {item.description || '-'}
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
+                            {item.description || '-'}
+                          </td>
+                          <td className="px-6 py-4 text-center">
                                       <span className="inline-flex items-center px-3 py-1 rounded-full 
                                                      text-xs font-medium bg-rose/10 text-rose border border-rose/20">
-                                        {item.unit}
-                                      </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                      {hasDiscount ? (
-                                        <div className="flex items-center justify-end gap-2">
+                              {item.unit}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            {hasDiscount ? (
+                              <div className="flex items-center justify-end gap-2">
                                           <span className="text-cream-muted line-through text-sm">₹{item.price}</span>
                                           <span className="text-lg font-bold text-rose">₹{item.discountPrice}</span>
-                                        </div>
-                                      ) : (
+                              </div>
+                            ) : (
                                         <span className="text-lg font-bold text-cream">₹{item.price}</span>
-                                      )}
-                                    </td>
+                            )}
+                          </td>
                                   </motion.tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-                        {/* Mobile Cards */}
+              {/* Mobile Cards */}
                         <div className="md:hidden divide-y divide-rose/5">
                           {categoryItems.map((item, index) => {
-                            const hasDiscount = item.discountPrice && item.discountPrice < item.price;
-                            const discountPercent = hasDiscount 
-                              ? Math.round(((item.price - item.discountPrice) / item.price) * 100) 
-                              : 0;
+                  const hasDiscount = item.discountPrice && item.discountPrice < item.price;
+                  const discountPercent = hasDiscount 
+                    ? Math.round(((item.price - item.discountPrice) / item.price) * 100) 
+                    : 0;
 
-                            return (
+                  return (
                               <motion.div 
                                 key={item._id}
                                 initial={{ opacity: 0, x: -20 }}
@@ -304,46 +304,46 @@ export default function RateList() {
                                 transition={{ delay: index * 0.05 }}
                                 className="p-4 hover:bg-rose/5 transition-colors"
                               >
-                                <div className="flex justify-between items-start mb-2">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
                                       <h4 className="font-medium text-cream">{item.item}</h4>
-                                      {hasDiscount && (
+                            {hasDiscount && (
                                         <span className="px-2 py-0.5 rounded-full text-xs font-bold 
                                                        bg-emerald-500/20 text-emerald-400">
-                                          {discountPercent}% OFF
-                                        </span>
-                                      )}
-                                    </div>
-                                    {item.description && (
+                                {discountPercent}% OFF
+                              </span>
+                            )}
+                          </div>
+                          {item.description && (
                                       <p className="text-sm text-cream-muted mt-1">{item.description}</p>
-                                    )}
-                                  </div>
-                                  <div className="text-right ml-4">
-                                    {hasDiscount ? (
-                                      <div className="flex flex-col items-end">
+                          )}
+                        </div>
+                        <div className="text-right ml-4">
+                          {hasDiscount ? (
+                            <div className="flex flex-col items-end">
                                         <span className="text-cream-muted line-through text-sm">₹{item.price}</span>
                                         <span className="text-lg font-bold text-rose">₹{item.discountPrice}</span>
-                                      </div>
-                                    ) : (
+                            </div>
+                          ) : (
                                       <span className="text-lg font-bold text-cream">₹{item.price}</span>
-                                    )}
-                                  </div>
-                                </div>
+                          )}
+                        </div>
+                      </div>
                                 <span className="inline-flex items-center px-2.5 py-1 rounded-full 
                                                text-xs font-medium bg-rose/10 text-rose border border-rose/20">
-                                  {item.unit}
-                                </span>
+                        {item.unit}
+                      </span>
                               </motion.div>
-                            );
-                          })}
-                        </div>
+                  );
+                })}
+              </div>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
-            ))}
+            </motion.div>
+          ))}
           </motion.div>
         </AnimatePresence>
 

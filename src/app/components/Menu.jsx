@@ -211,12 +211,12 @@ export default function Menu() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-10 sm:mb-16"
-        >
+          >
           {/* Label */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
@@ -238,35 +238,35 @@ export default function Menu() {
           </h2>
           
           <p className="text-cream-muted text-sm sm:text-base md:text-lg px-4 sm:px-0">
-            From timeless classics to adventurous new pairings, explore our most loved
-            flavor combinations.
-          </p>
-        </motion.div>
+              From timeless classics to adventurous new pairings, explore our most loved
+              flavor combinations.
+            </p>
+          </motion.div>
 
         {/* Menu Grid */}
-        {loading ? (
+          {loading ? (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-            {[...Array(6)].map((_, i) => (
+              {[...Array(6)].map((_, i) => (
               <div key={i} className="card-noir overflow-hidden">
                 <div className="h-40 sm:h-48 md:h-52 skeleton" />
                 <div className="p-4 sm:p-6 space-y-2 sm:space-y-3">
                   <div className="h-5 sm:h-6 skeleton w-3/4" />
                   <div className="h-3 sm:h-4 skeleton" />
                   <div className="h-3 sm:h-4 skeleton w-1/2" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
+              ))}
+            </div>
+          ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             {flavors.map((flavor, index) => (
               <MenuCard key={flavor._id} flavor={flavor} index={index} />
             ))}
-          </div>
-        )}
-
+                      </div>
+                    )}
+                    
         {/* Bottom CTA */}
-        <motion.div
+                      <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.5 }}
@@ -275,16 +275,16 @@ export default function Menu() {
           <p className="text-cream-muted text-xs sm:text-sm mb-3 sm:mb-4 px-4 sm:px-0">
             Don&apos;t see your favorite flavor? We can create custom flavors too!
           </p>
-          <motion.a
-            href="#order"
+                      <motion.a
+                        href="#order"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-rose/50 text-cream font-bold text-sm sm:text-base hover:bg-rose/10 hover:border-rose transition-all"
-          >
+                      >
             <span className="material-symbols-outlined text-base sm:text-lg">add_circle</span>
             <span>Request Custom Flavor</span>
-          </motion.a>
-        </motion.div>
+                      </motion.a>
+            </motion.div>
       </div>
     </section>
   );

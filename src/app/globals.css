@@ -224,7 +224,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { 
+  0%, 100% {
     box-shadow: 0 0 20px rgba(228, 160, 160, 0.3);
     transform: scale(1);
   }
@@ -505,9 +505,18 @@ h1, h2, h3, h4, h5, h6 {
    SLICK SLIDER CUSTOM STYLES
 ═══════════════════════════════════════════════════════════ */
 
+.slick-dots {
+  bottom: -30px;
+}
+
+.slick-dots li {
+  margin: 0 2px;
+}
+
 .slick-dots li button:before {
   color: var(--color-rose) !important;
   opacity: 0.3;
+  font-size: 8px;
 }
 
 .slick-dots li.slick-active button:before {
@@ -518,6 +527,43 @@ h1, h2, h3, h4, h5, h6 {
 .slick-prev:before,
 .slick-next:before {
   color: var(--color-rose) !important;
+}
+
+/* Ensure slides have equal height */
+.slick-track {
+  display: flex !important;
+}
+
+.slick-slide {
+  height: inherit !important;
+}
+
+.slick-slide > div {
+  height: 100%;
+}
+
+/* Testimonials slider specific styles */
+.testimonials-slider .slick-list {
+  margin: 0 -8px;
+}
+
+.testimonials-slider .slick-slide > div {
+  padding: 0 8px;
+}
+
+/* Mobile styles for testimonials */
+@media (max-width: 768px) {
+  .testimonials-slider .slick-slide {
+    width: 100% !important;
+  }
+  
+  .testimonials-slider .slick-list {
+    margin: 0;
+  }
+  
+  .testimonials-slider .slick-slide > div {
+    padding: 0 4px;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════

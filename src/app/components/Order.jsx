@@ -73,19 +73,19 @@ Sent from Cocoa&Cherry Website`;
         >
           <div className="grid md:grid-cols-5 min-h-[600px]">
             {/* Left Image Section */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
               animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
               className="md:col-span-2 relative min-h-[300px] md:min-h-full"
             >
               {/* Background image */}
               <div
                 className="absolute inset-0 bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCYrsxOa3m_sRbUYHq1lb0db8WedP93p3BXOL3UMBi-osr49tDAhYWg1SfUNyrpjtS9VsfXVkDABtWcJzzCxFgg3U5k-agykEM-_yqggN2pakXxEjru_XBqFT7V8_SPNT6kiX1PY972JOv4Xgx8r43J2pHrr5AHhnLFbertQNAvZBZHW_LGZZb9aImVHGlKzFOH9bRxbPRade1E_q65ucEBoA5luGGuUiRmLRjbAmboZvbJYFe4Xi0nlajmbd4zIarnyU2UddUpjUrj')",
-                }}
+            style={{
+              backgroundImage:
+                "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCYrsxOa3m_sRbUYHq1lb0db8WedP93p3BXOL3UMBi-osr49tDAhYWg1SfUNyrpjtS9VsfXVkDABtWcJzzCxFgg3U5k-agykEM-_yqggN2pakXxEjru_XBqFT7V8_SPNT6kiX1PY972JOv4Xgx8r43J2pHrr5AHhnLFbertQNAvZBZHW_LGZZb9aImVHGlKzFOH9bRxbPRade1E_q65ucEBoA5luGGuUiRmLRjbAmboZvbJYFe4Xi0nlajmbd4zIarnyU2UddUpjUrj')",
+            }}
               />
               
               {/* Overlay */}
@@ -105,8 +105,8 @@ Sent from Cocoa&Cherry Website`;
                     Ready to <span className="gradient-text">Celebrate?</span>
                   </h3>
                   <p className="text-cream/80 text-lg mb-6">
-                    Fill out the form to start your order conversation on WhatsApp.
-                  </p>
+                Fill out the form to start your order conversation on WhatsApp.
+              </p>
 
                   {/* Quick contact */}
                   <div className="flex flex-wrap gap-4">
@@ -130,16 +130,16 @@ Sent from Cocoa&Cherry Website`;
                     </a>
                   </div>
                 </motion.div>
-              </div>
-            </motion.div>
+            </div>
+          </motion.div>
 
             {/* Right Form Section */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
               animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
               className="md:col-span-3 p-8 md:p-12"
-            >
+          >
               <div className="mb-8">
                 <h2 
                   className="text-2xl md:text-3xl font-bold text-cream mb-2"
@@ -154,60 +154,60 @@ Sent from Cocoa&Cherry Website`;
 
               <form className="space-y-5" onSubmit={handleSubmit}>
                 {/* Name */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.4 }}
-                >
+                transition={{ delay: 0.4 }}
+              >
                   <label className="block text-sm font-medium text-cream mb-2">
                     Your Name <span className="text-rose">*</span>
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                     onFocus={() => setFocusedField('name')}
                     onBlur={() => setFocusedField(null)}
                     className={getInputClass('name')}
                     placeholder="Jane Doe"
-                    required
-                  />
-                </motion.div>
+                  required
+                />
+              </motion.div>
 
                 {/* Date and Weight */}
                 <div className="grid grid-cols-2 gap-4">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.5 }}
-                  >
+                  transition={{ delay: 0.5 }}
+                >
                     <label className="block text-sm font-medium text-cream mb-2">
                       Date <span className="text-rose">*</span>
                     </label>
-                    <input
-                      type="date"
-                      name="date"
-                      value={formData.date}
-                      onChange={handleChange}
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
                       onFocus={() => setFocusedField('date')}
                       onBlur={() => setFocusedField(null)}
                       className={getInputClass('date')}
-                      required
-                    />
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    required
+                  />
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.5 }}
-                  >
+                  transition={{ delay: 0.5 }}
+                >
                     <label className="block text-sm font-medium text-cream mb-2">
                       Approx. Weight
                     </label>
-                    <select
-                      name="weight"
-                      value={formData.weight}
-                      onChange={handleChange}
+                  <select
+                    name="weight"
+                    value={formData.weight}
+                    onChange={handleChange}
                       onFocus={() => setFocusedField('weight')}
                       onBlur={() => setFocusedField(null)}
                       className={`${getInputClass('weight')} appearance-none cursor-pointer`}
@@ -217,28 +217,28 @@ Sent from Cocoa&Cherry Website`;
                         backgroundPosition: 'right 12px center',
                         backgroundSize: '18px'
                       }}
-                    >
+                  >
                       <option value="0.5 kg">0.5 kg</option>
                       <option value="1 kg">1 kg</option>
                       <option value="1.5 kg">1.5 kg</option>
                       <option value="2 kg+">2 kg+</option>
-                    </select>
-                  </motion.div>
-                </div>
+                  </select>
+                </motion.div>
+              </div>
 
                 {/* Flavor */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.6 }}
-                >
+                transition={{ delay: 0.6 }}
+              >
                   <label className="block text-sm font-medium text-cream mb-2">
                     Flavor Preference
                   </label>
-                  <select
-                    name="flavor"
-                    value={formData.flavor}
-                    onChange={handleChange}
+                <select
+                  name="flavor"
+                  value={formData.flavor}
+                  onChange={handleChange}
                     onFocus={() => setFocusedField('flavor')}
                     onBlur={() => setFocusedField(null)}
                     className={`${getInputClass('flavor')} appearance-none cursor-pointer`}
@@ -248,7 +248,7 @@ Sent from Cocoa&Cherry Website`;
                       backgroundPosition: 'right 12px center',
                       backgroundSize: '18px'
                     }}
-                  >
+                >
                     <option value="Belgian Truffle">Belgian Truffle</option>
                     <option value="Red Velvet">Red Velvet</option>
                     <option value="Lemon Blueberry">Lemon Blueberry</option>
@@ -256,37 +256,37 @@ Sent from Cocoa&Cherry Website`;
                     <option value="Rasmalai Fusion">Rasmalai Fusion</option>
                     <option value="Espresso Walnut">Espresso Walnut</option>
                     <option value="Other / Custom">Other / Custom</option>
-                  </select>
-                </motion.div>
+                </select>
+              </motion.div>
 
                 {/* Message */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.7 }}
-                >
+                transition={{ delay: 0.7 }}
+              >
                   <label className="block text-sm font-medium text-cream mb-2">
-                    Message / Theme Details
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
+                  Message / Theme Details
+                </label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                     onFocus={() => setFocusedField('message')}
                     onBlur={() => setFocusedField(null)}
                     className={`${getInputClass('message')} resize-none min-h-[100px]`}
-                    placeholder="Describe your dream cake..."
-                  />
-                </motion.div>
+                  placeholder="Describe your dream cake..."
+                />
+              </motion.div>
 
                 {/* Submit Button */}
-                <motion.button
-                  initial={{ opacity: 0, y: 20 }}
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.8 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
+                transition={{ delay: 0.8 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
                   disabled={isSubmitting}
                   className={`relative w-full py-3 md:py-4 rounded-xl font-bold text-sm md:text-base flex items-center justify-center gap-2 md:gap-3 overflow-hidden ${isSubmitting ? 'bg-cream-muted/30 cursor-not-allowed' : 'bg-gradient-to-r from-gold to-gold/80 text-noir'} shadow-lg shadow-gold/20 transition-all`}
                 >
@@ -311,9 +311,9 @@ Sent from Cocoa&Cherry Website`;
                       <span className="material-symbols-outlined text-base md:text-lg relative">send</span>
                     </>
                   )}
-                </motion.button>
-              </form>
-            </motion.div>
+              </motion.button>
+            </form>
+          </motion.div>
           </div>
         </motion.div>
       </div>

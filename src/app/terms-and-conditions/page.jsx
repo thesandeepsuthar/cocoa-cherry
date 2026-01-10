@@ -125,20 +125,20 @@ export default function TermsAndConditions() {
               className="relative w-10 h-10"
             >
               <div className="absolute inset-0 bg-rose/20 rounded-full blur-xl group-hover:bg-rose/40 transition-colors" />
-              <Image
-                src="/logo.svg"
-                alt="Cocoa&Cherry Logo"
-                width={40}
-                height={40}
+                <Image
+                  src="/logo.svg"
+                  alt="Cocoa&Cherry Logo"
+                  width={40}
+                  height={40}
                 className="relative w-full h-full"
-              />
+                />
             </motion.div>
             <span className="text-xl font-bold" style={{ fontFamily: 'var(--font-cinzel)' }}>
               <span className="text-cream">Cocoa</span>
               <span className="gradient-text">&</span>
               <span className="text-rose">Cherry</span>
-            </span>
-          </Link>
+              </span>
+            </Link>
 
           <motion.div whileHover={{ x: -3 }}>
             <Link
@@ -212,21 +212,21 @@ export default function TermsAndConditions() {
                 </h2>
                 <p className="text-cream-muted leading-relaxed">
                   These terms and conditions outline the rules and regulations 
-                  for the use of our website and services. Please read these terms carefully before 
-                  placing an order or using our services.
-                </p>
+                for the use of our website and services. Please read these terms carefully before 
+                placing an order or using our services.
+              </p>
               </div>
             </div>
           </motion.div>
 
           {/* Terms Sections */}
           <div className="space-y-4">
-            {sections.map((section, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
+                {sections.map((section, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
+                    transition={{ duration: 0.5, delay: index * 0.05 }}
                 className="card-noir overflow-hidden group"
               >
                 <div className="p-6 md:p-8">
@@ -247,9 +247,9 @@ export default function TermsAndConditions() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+                  </motion.div>
+                ))}
+              </div>
 
           {/* Agreement Section */}
           <motion.div
@@ -265,9 +265,9 @@ export default function TermsAndConditions() {
               </div>
               
               <p className="text-cream-muted mb-6 max-w-lg mx-auto">
-                By placing an order with Cocoa&Cherry, you acknowledge that you have read, 
-                understood, and agree to these Terms and Conditions.
-              </p>
+                  By placing an order with Cocoa&Cherry, you acknowledge that you have read, 
+                  understood, and agree to these Terms and Conditions.
+                </p>
               
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link

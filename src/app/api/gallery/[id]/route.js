@@ -94,7 +94,7 @@ export async function PUT(request, { params }) {
         console.log(`✅ Image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
       } catch (compressionError) {
         console.error('⚠️ Compression failed, using original:', compressionError.message);
-        updateData.imageData = body.imageData;
+      updateData.imageData = body.imageData;
       }
     }
 
