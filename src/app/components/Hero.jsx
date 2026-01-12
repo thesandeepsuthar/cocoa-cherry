@@ -25,14 +25,14 @@ const FloatingParticle = ({ delay, duration, size, startX, startY }) => (
 );
 
 // Order Form Modal Component
-function OrderFormModal({ onClose }) {
+function OrderFormModal({ onClose, menuItems = [] }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     address: '',
     date: '',
     weight: '1 kg',
-    flavor: '',
+    flavor: menuItems.length > 0 ? menuItems[0].name : '',
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -232,10 +232,10 @@ Sent from Cocoa&Cherry Website`;
               </div>
             </div>
 
-            {/* Flavor */}
+            {/* Flavor - Menu Items from Database */}
             <div>
               <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
-                Flavor Preference
+                Select Cake <span className="text-rose">*</span>
               </label>
               <select
                 name="flavor"
@@ -243,6 +243,7 @@ Sent from Cocoa&Cherry Website`;
                 onChange={handleChange}
                 onFocus={() => setFocusedField('flavor')}
                 onBlur={() => setFocusedField(null)}
+                required
                 className={`${getInputClass('flavor')} appearance-none cursor-pointer`}
                 style={{ 
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
@@ -251,16 +252,19 @@ Sent from Cocoa&Cherry Website`;
                   backgroundSize: '16px'
                 }}
               >
-                <option value="">Select a flavor</option>
-                <option value="Belgian Truffle">Belgian Truffle</option>
-                <option value="Red Velvet">Red Velvet</option>
-                <option value="Lemon Blueberry">Lemon Blueberry</option>
-                <option value="Salted Caramel">Salted Caramel</option>
-                <option value="Rasmalai Fusion">Rasmalai Fusion</option>
-                <option value="Espresso Walnut">Espresso Walnut</option>
-                <option value="Black Forest">Black Forest</option>
-                <option value="Vanilla">Vanilla</option>
-                <option value="Other / Custom">Other / Custom</option>
+                {menuItems.length === 0 ? (
+                  <option value="">Loading menu...</option>
+                ) : (
+                  <>
+                    <option value="">Select a cake</option>
+                    {menuItems.map((item) => (
+                      <option key={item._id} value={item.name}>
+                        {item.name} - ₹{item.price}/{item.priceUnit?.replace('per ', '')}
+                      </option>
+                    ))}
+                    <option value="Custom / Other">Custom / Other</option>
+                  </>
+                )}
               </select>
             </div>
 
@@ -326,6 +330,7 @@ Sent from Cocoa&Cherry Website`;
 
 export default function Hero() {
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [menuItems, setMenuItems] = useState([]);
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -335,6 +340,22 @@ export default function Hero() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
+
+  // Fetch menu items from API
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        if (data.success && data.data) {
+          setMenuItems(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching menu:', error);
+      }
+    };
+    fetchMenu();
+  }, []);
 
   useEffect(() => {
     if (showOrderForm) {
@@ -623,7 +644,7 @@ export default function Hero() {
 
       {/* Order Form Modal */}
       <AnimatePresence>
-        {showOrderForm && <OrderFormModal onClose={() => setShowOrderForm(false)} />}
+        {showOrderForm && <OrderFormModal onClose={() => setShowOrderForm(false)} menuItems={menuItems} />}
       </AnimatePresence>
     </>
   );

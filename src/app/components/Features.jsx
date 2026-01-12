@@ -176,10 +176,10 @@ export default function Features() {
             className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-5 self-center"
             >
             {[
-              { number: '500+', label: 'Happy Customers', icon: 'groups' },
-              { number: '5+', label: 'Years Experience', icon: 'workspace_premium' },
-              { number: '1000+', label: 'Cakes Delivered', icon: 'cake' },
-              { number: '100%', label: 'Satisfaction Rate', icon: 'thumb_up' },
+              { number: '50+', label: 'Happy Customers', icon: 'groups' },
+              { number: '2+', label: 'Years Experience', icon: 'workspace_premium' },
+              { number: '150+', label: 'Cakes Delivered', icon: 'cake' },
+              { number: '96%', label: 'Satisfaction Rate', icon: 'thumb_up' },
             ].map((stat, index) => (
                 <motion.div
                   key={index}

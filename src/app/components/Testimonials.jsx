@@ -74,7 +74,7 @@ function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }
 }
 
 // Review Form Component
-function ReviewForm({ onClose, onSubmit }) {
+function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -225,13 +225,16 @@ function ReviewForm({ onClose, onSubmit }) {
         </div>
       </div>
 
-      {/* Cake Type */}
+      {/* Cake Type - Menu Items from Database */}
       <div>
-        <label className="block text-sm font-medium text-cream mb-2">What did you order?</label>
+        <label className="block text-sm font-medium text-cream mb-2">
+          What did you order? <span className="text-rose">*</span>
+        </label>
         <select
           name="cakeType"
           value={formData.cakeType}
           onChange={handleChange}
+          required
           className="w-full bg-noir border border-rose/20 rounded-xl px-4 py-3 
                    text-cream focus:border-rose focus:ring-1 focus:ring-rose/30 
                    transition-all appearance-none cursor-pointer"
@@ -242,13 +245,20 @@ function ReviewForm({ onClose, onSubmit }) {
             backgroundSize: '20px'
           }}
         >
-          <option value="">Select cake type</option>
-          <option value="Birthday Cake">Birthday Cake</option>
-          <option value="Wedding Cake">Wedding Cake</option>
-          <option value="Anniversary Cake">Anniversary Cake</option>
-          <option value="Custom Cake">Custom Cake</option>
-          <option value="Cupcakes">Cupcakes</option>
-          <option value="Other">Other</option>
+          {menuItems.length === 0 ? (
+            <option value="">Loading menu...</option>
+          ) : (
+            <>
+              <option value="">Select cake type</option>
+              {menuItems.map((item) => (
+                <option key={item._id} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
+              <option value="Custom Cake">Custom Cake</option>
+              <option value="Other">Other</option>
+            </>
+          )}
         </select>
       </div>
 
@@ -312,12 +322,14 @@ const truncateText = (text, maxLength = 120) => {
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState(defaultTestimonials);
+  const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
+  // Fetch reviews
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -333,6 +345,22 @@ export default function Testimonials() {
       }
     };
     fetchReviews();
+  }, []);
+
+  // Fetch menu items for review form
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        if (data.success && data.data) {
+          setMenuItems(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching menu:', error);
+      }
+    };
+    fetchMenu();
   }, []);
 
   useEffect(() => {
@@ -606,6 +634,7 @@ export default function Testimonials() {
                 <ReviewForm
                   onClose={() => setShowReviewForm(false)}
                   onSubmit={(data) => console.log('Review submitted:', data)}
+                  menuItems={menuItems}
                 />
               </div>
             </motion.div>

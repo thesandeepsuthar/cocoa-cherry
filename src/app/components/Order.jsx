@@ -1,18 +1,39 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 export default function Order() {
+  const [menuItems, setMenuItems] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     address: '',
     date: '',
     weight: '1 kg',
-    flavor: 'Belgian Truffle',
+    flavor: '',
     message: '',
   });
+
+  // Fetch menu items from API
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        if (data.success && data.data) {
+          setMenuItems(data.data);
+          // Set default flavor to first menu item if available
+          if (data.data.length > 0) {
+            setFormData(prev => ({ ...prev, flavor: data.data[0].name }));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching menu:', error);
+      }
+    };
+    fetchMenu();
+  }, []);
   const [focusedField, setFocusedField] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const sectionRef = useRef(null);
@@ -273,14 +294,14 @@ Sent from Cocoa&Cherry Website`;
                   </motion.div>
                 </div>
 
-                {/* Flavor */}
+                {/* Flavor - Menu Items from Database */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: 0.6 }}
                 >
                   <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
-                    Flavor Preference
+                    Select Cake <span className="text-rose">*</span>
                   </label>
                   <select
                     name="flavor"
@@ -288,6 +309,7 @@ Sent from Cocoa&Cherry Website`;
                     onChange={handleChange}
                     onFocus={() => setFocusedField('flavor')}
                     onBlur={() => setFocusedField(null)}
+                    required
                     className={`${getInputClass('flavor')} appearance-none cursor-pointer`}
                     style={{ 
                       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
@@ -296,13 +318,19 @@ Sent from Cocoa&Cherry Website`;
                       backgroundSize: '16px'
                     }}
                   >
-                    <option value="Belgian Truffle">Belgian Truffle</option>
-                    <option value="Red Velvet">Red Velvet</option>
-                    <option value="Lemon Blueberry">Lemon Blueberry</option>
-                    <option value="Salted Caramel">Salted Caramel</option>
-                    <option value="Rasmalai Fusion">Rasmalai Fusion</option>
-                    <option value="Espresso Walnut">Espresso Walnut</option>
-                    <option value="Other / Custom">Other / Custom</option>
+                    {menuItems.length === 0 ? (
+                      <option value="">Loading menu...</option>
+                    ) : (
+                      <>
+                        <option value="">Select a cake</option>
+                        {menuItems.map((item) => (
+                          <option key={item._id} value={item.name}>
+                            {item.name} - ₹{item.price}/{item.priceUnit?.replace('per ', '')}
+                          </option>
+                        ))}
+                        <option value="Custom / Other">Custom / Other</option>
+                      </>
+                    )}
                   </select>
                 </motion.div>
 
