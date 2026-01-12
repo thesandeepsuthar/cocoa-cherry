@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Image from 'next/image';
 
 // Configuration
-const ITEMS_PER_CATEGORY = 8; // Items per horizontal scroll
+const ITEMS_PER_CATEGORY = 8;
 
 // Default fallback menu items
 const defaultFlavors = [
@@ -50,11 +50,10 @@ const getCategoryIcon = (category) => {
 };
 
 // Quick View Modal Component
-function QuickViewModal({ item, onClose }) {
+function QuickViewModal({ item, onClose, onAddToOrder, isInOrder }) {
   const hasDiscount = item.discountPrice !== null && item.discountPrice !== undefined && item.discountPrice < item.price;
   const discountPercentage = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
 
-  // Close on escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose();
@@ -63,7 +62,6 @@ function QuickViewModal({ item, onClose }) {
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -118,6 +116,12 @@ function QuickViewModal({ item, onClose }) {
                 {discountPercentage}% OFF
               </span>
             )}
+            {isInOrder && (
+              <span className="px-3 py-1 rounded-full bg-gold text-noir text-xs font-bold shadow-lg flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm">check_circle</span>
+                In Order
+              </span>
+            )}
           </div>
         </div>
 
@@ -156,25 +160,149 @@ function QuickViewModal({ item, onClose }) {
             </div>
           )}
 
-          {/* Order Button */}
-          <motion.a
-            href="#order"
-            onClick={onClose}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-gradient-to-r from-rose to-rose-dark text-white font-bold text-lg shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-shadow"
-          >
-            <span className="material-symbols-outlined">shopping_bag</span>
-            <span>Order Now</span>
-          </motion.a>
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <motion.button
+              onClick={() => {
+                onAddToOrder(item);
+                onClose();
+              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-lg shadow-lg transition-all ${
+                isInOrder
+                  ? 'bg-red-500/20 text-red-400 border-2 border-red-500/30 hover:bg-red-500/30'
+                  : 'bg-gradient-to-r from-rose to-rose-dark text-white shadow-rose/30 hover:shadow-rose/50'
+              }`}
+            >
+              <span className="material-symbols-outlined">
+                {isInOrder ? 'remove_shopping_cart' : 'add_shopping_cart'}
+              </span>
+              <span>{isInOrder ? 'Remove' : 'Add to Order'}</span>
+            </motion.button>
+          </div>
         </div>
       </motion.div>
     </motion.div>
   );
 }
 
+// Floating Cart Component
+function FloatingCart({ items, onRemove, onClearAll, onProceed }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const totalItems = items.length;
+
+  if (totalItems === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 100, opacity: 0 }}
+      className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40"
+    >
+      {/* Expanded Cart */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="absolute bottom-16 left-1/2 -translate-x-1/2 w-80 max-h-96 bg-noir-light border border-cream/10 rounded-2xl shadow-2xl overflow-hidden"
+          >
+            {/* Header */}
+            <div className="p-4 border-b border-cream/10 flex items-center justify-between bg-noir">
+              <h4 className="font-bold text-cream flex items-center gap-2">
+                <span className="material-symbols-outlined text-rose">shopping_bag</span>
+                Your Order ({totalItems})
+              </h4>
+              <button
+                onClick={onClearAll}
+                className="text-xs text-red-400 hover:text-red-300 transition-colors"
+              >
+                Clear All
+              </button>
+            </div>
+
+            {/* Items List */}
+            <div className="max-h-60 overflow-y-auto p-2">
+              {items.map((item) => (
+                <div
+                  key={item._id}
+                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-cream/5 transition-colors"
+                >
+                  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={item.imageData}
+                      alt={item.name}
+                      width={48}
+                      height={48}
+                      className="w-full h-full object-cover"
+                      unoptimized
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-cream text-sm font-medium truncate">{item.name}</p>
+                    <p className="text-rose text-xs font-bold">
+                      ₹{item.discountPrice || item.price}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => onRemove(item)}
+                    className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/30 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">close</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="p-3 border-t border-cream/10 bg-noir">
+              <motion.button
+                onClick={() => {
+                  setIsExpanded(false);
+                  onProceed();
+                }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-gold to-gold/80 text-noir font-bold flex items-center justify-center gap-2 shadow-lg"
+              >
+                <span>Proceed to Order</span>
+                <span className="material-symbols-outlined">arrow_forward</span>
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cart Button */}
+      <motion.button
+        onClick={() => setIsExpanded(!isExpanded)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="relative w-14 h-14 rounded-full bg-gradient-to-r from-rose to-rose-dark text-white shadow-lg shadow-rose/40 flex items-center justify-center"
+      >
+        <span className="material-symbols-outlined text-2xl">
+          {isExpanded ? 'close' : 'shopping_bag'}
+        </span>
+        
+        {/* Badge */}
+        <motion.span
+          key={totalItems}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gold text-noir text-xs font-bold flex items-center justify-center"
+        >
+          {totalItems}
+        </motion.span>
+      </motion.button>
+    </motion.div>
+  );
+}
+
 // Horizontal Scroll Category Section
-function CategorySection({ category, items, onItemClick }) {
+function CategorySection({ category, items, onItemClick, orderItems }) {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -205,6 +333,8 @@ function CategorySection({ category, items, onItemClick }) {
 
   if (items.length === 0) return null;
 
+  const isItemInOrder = (item) => orderItems.some(o => o._id === item._id);
+
   return (
     <div className="mb-8 sm:mb-12">
       {/* Category Header */}
@@ -223,7 +353,7 @@ function CategorySection({ category, items, onItemClick }) {
           </div>
         </div>
 
-        {/* Scroll Arrows - Desktop */}
+        {/* Scroll Arrows */}
         <div className="hidden sm:flex items-center gap-2">
           <button
             onClick={() => scroll('left')}
@@ -252,18 +382,17 @@ function CategorySection({ category, items, onItemClick }) {
 
       {/* Horizontal Scroll */}
       <div className="relative">
-        {/* Left Gradient Fade */}
         {canScrollLeft && (
           <div className="hidden sm:block absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-noir-light to-transparent z-10 pointer-events-none" />
         )}
 
-        {/* Items */}
         <div
           ref={scrollRef}
           className="flex gap-3 sm:gap-4 overflow-x-auto hide-scrollbar pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
         >
           {items.map((item, index) => {
             const hasDiscount = item.discountPrice !== null && item.discountPrice !== undefined && item.discountPrice < item.price;
+            const inOrder = isItemInOrder(item);
 
             return (
               <motion.div
@@ -274,7 +403,9 @@ function CategorySection({ category, items, onItemClick }) {
                 onClick={() => onItemClick(item)}
                 className="flex-shrink-0 w-[160px] sm:w-[200px] md:w-[240px] cursor-pointer group"
               >
-                <div className="card-noir overflow-hidden h-full hover:border-rose/30 transition-all">
+                <div className={`card-noir overflow-hidden h-full transition-all ${
+                  inOrder ? 'ring-2 ring-gold border-gold/30' : 'hover:border-rose/30'
+                }`}>
                   {/* Image */}
                   <div className="relative h-28 sm:h-36 md:h-44 overflow-hidden">
                     <Image
@@ -296,6 +427,14 @@ function CategorySection({ category, items, onItemClick }) {
                       <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold">
                         {Math.round(((item.price - item.discountPrice) / item.price) * 100)}% OFF
                       </span>
+                    )}
+
+                    {/* In Order Badge */}
+                    {inOrder && (
+                      <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-gold text-noir text-[10px] font-bold flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">check</span>
+                        Added
+                      </div>
                     )}
 
                     {/* Quick View Icon */}
@@ -338,7 +477,6 @@ function CategorySection({ category, items, onItemClick }) {
           })}
         </div>
 
-        {/* Right Gradient Fade */}
         {canScrollRight && (
           <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-noir-light to-transparent z-10 pointer-events-none" />
         )}
@@ -351,6 +489,7 @@ export default function Menu() {
   const [allFlavors, setAllFlavors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [orderItems, setOrderItems] = useState([]);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -382,7 +521,6 @@ export default function Menu() {
       if (!groups[category]) groups[category] = [];
       groups[category].push(item);
     });
-    // Sort categories to put ones with more items first
     return Object.entries(groups)
       .sort((a, b) => b[1].length - a[1].length)
       .reduce((acc, [key, value]) => {
@@ -393,6 +531,47 @@ export default function Menu() {
 
   const totalItems = allFlavors.length;
   const totalCategories = Object.keys(categorizedItems).length;
+
+  // Toggle item in order
+  const toggleItemInOrder = (item) => {
+    setOrderItems(prev => {
+      const exists = prev.some(o => o._id === item._id);
+      if (exists) {
+        return prev.filter(o => o._id !== item._id);
+      } else {
+        return [...prev, item];
+      }
+    });
+  };
+
+  // Remove item from order
+  const removeFromOrder = (item) => {
+    setOrderItems(prev => prev.filter(o => o._id !== item._id));
+  };
+
+  // Clear all items
+  const clearOrder = () => {
+    setOrderItems([]);
+  };
+
+  // Proceed to order
+  const proceedToOrder = () => {
+    // Dispatch event with all selected items
+    window.dispatchEvent(new CustomEvent('selectCakeForOrder', { 
+      detail: { 
+        cakes: orderItems.map(item => ({
+          name: item.name,
+          price: item.discountPrice || item.price,
+          priceUnit: item.priceUnit
+        }))
+      } 
+    }));
+    
+    // Scroll to order section
+    setTimeout(() => {
+      document.getElementById('order')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
   return (
     <section 
@@ -436,8 +615,7 @@ export default function Menu() {
           </h2>
           
           <p className="text-cream-muted text-sm sm:text-base md:text-lg px-4 sm:px-0 mb-4">
-            From timeless classics to adventurous new pairings, explore our most loved
-            flavor combinations.
+            Tap items to add to your order. Select multiple items and proceed when ready!
           </p>
 
           {/* Quick Stats */}
@@ -496,6 +674,7 @@ export default function Menu() {
                 category={category}
                 items={items}
                 onItemClick={setSelectedItem}
+                orderItems={orderItems}
               />
             ))}
           </motion.div>
@@ -529,6 +708,20 @@ export default function Menu() {
           <QuickViewModal
             item={selectedItem}
             onClose={() => setSelectedItem(null)}
+            onAddToOrder={toggleItemInOrder}
+            isInOrder={orderItems.some(o => o._id === selectedItem._id)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Floating Cart */}
+      <AnimatePresence>
+        {orderItems.length > 0 && (
+          <FloatingCart
+            items={orderItems}
+            onRemove={removeFromOrder}
+            onClearAll={clearOrder}
+            onProceed={proceedToOrder}
           />
         )}
       </AnimatePresence>

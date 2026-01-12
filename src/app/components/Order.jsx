@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 
 export default function Order() {
   const [menuItems, setMenuItems] = useState([]);
@@ -11,9 +11,10 @@ export default function Order() {
     address: '',
     date: '',
     weight: '1 kg',
-    flavor: '',
     message: '',
   });
+  const [selectedCakes, setSelectedCakes] = useState([]);
+  const [showCakeSelector, setShowCakeSelector] = useState(false);
 
   // Fetch menu items from API
   useEffect(() => {
@@ -23,10 +24,6 @@ export default function Order() {
         const data = await res.json();
         if (data.success && data.data) {
           setMenuItems(data.data);
-          // Set default flavor to first menu item if available
-          if (data.data.length > 0) {
-            setFormData(prev => ({ ...prev, flavor: data.data[0].name }));
-          }
         }
       } catch (error) {
         console.error('Error fetching menu:', error);
@@ -34,14 +31,81 @@ export default function Order() {
     };
     fetchMenu();
   }, []);
+
+  // Listen for cake selection from Menu
+  useEffect(() => {
+    const handleCakeSelection = (event) => {
+      const { cakes, cakeName } = event.detail;
+      
+      // Handle multiple cakes (from floating cart)
+      if (cakes && Array.isArray(cakes)) {
+        setSelectedCakes(cakes);
+        setFocusedField('cakes');
+        setTimeout(() => setFocusedField(null), 2000);
+      }
+      // Handle single cake (backward compatibility)
+      else if (cakeName) {
+        const menuItem = menuItems.find(m => m.name === cakeName);
+        const cake = {
+          name: cakeName,
+          price: menuItem?.discountPrice || menuItem?.price || 0,
+          priceUnit: menuItem?.priceUnit || 'per kg'
+        };
+        setSelectedCakes(prev => {
+          const exists = prev.some(c => c.name === cakeName);
+          if (exists) return prev;
+          return [...prev, cake];
+        });
+        setFocusedField('cakes');
+        setTimeout(() => setFocusedField(null), 2000);
+      }
+    };
+
+    window.addEventListener('selectCakeForOrder', handleCakeSelection);
+    return () => window.removeEventListener('selectCakeForOrder', handleCakeSelection);
+  }, [menuItems]);
+
   const [focusedField, setFocusedField] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
+  // Add a cake to selection
+  const addCake = (cakeName) => {
+    const menuItem = menuItems.find(m => m.name === cakeName);
+    if (!menuItem) return;
+    
+    const exists = selectedCakes.some(c => c.name === cakeName);
+    if (exists) return;
+
+    setSelectedCakes(prev => [...prev, {
+      name: menuItem.name,
+      price: menuItem.discountPrice || menuItem.price,
+      priceUnit: menuItem.priceUnit || 'per kg'
+    }]);
+    setShowCakeSelector(false);
+  };
+
+  // Remove a cake from selection
+  const removeCake = (cakeName) => {
+    setSelectedCakes(prev => prev.filter(c => c.name !== cakeName));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (selectedCakes.length === 0) {
+      setFocusedField('cakes');
+      setTimeout(() => setFocusedField(null), 2000);
+      return;
+    }
+    
     setIsSubmitting(true);
+    
+    // Format selected cakes
+    const cakesList = selectedCakes.map((cake, i) => 
+      `  ${i + 1}. ${cake.name} - ₹${cake.price}/${cake.priceUnit?.replace('per ', '')}`
+    ).join('\n');
     
     const whatsappMessage = `🎂 *New Cake Order Inquiry*
     
@@ -50,9 +114,11 @@ export default function Order() {
 📍 *Address:* ${formData.address}
 📅 *Date:* ${formData.date}
 ⚖️ *Weight:* ${formData.weight}
-🍰 *Flavor:* ${formData.flavor}
 
-📝 *Details:*
+🍰 *Selected Items (${selectedCakes.length}):*
+${cakesList}
+
+📝 *Additional Details:*
 ${formData.message || 'No additional details'}
 
 ---
@@ -104,19 +170,16 @@ Sent from Cocoa&Cherry Website`;
               transition={{ duration: 0.6, delay: 0.2 }}
               className="md:col-span-2 relative min-h-[200px] sm:min-h-[250px] md:min-h-full"
             >
-              {/* Background image */}
               <div
                 className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCYrsxOa3m_sRbUYHq1lb0db8WedP93p3BXOL3UMBi-osr49tDAhYWg1SfUNyrpjtS9VsfXVkDABtWcJzzCxFgg3U5k-agykEM-_yqggN2pakXxEjru_XBqFT7V8_SPNT6kiX1PY972JOv4Xgx8r43J2pHrr5AHhnLFbertQNAvZBZHW_LGZZb9aImVHGlKzFOH9bRxbPRade1E_q65ucEBoA5luGGuUiRmLRjbAmboZvbJYFe4Xi0nlajmbd4zIarnyU2UddUpjUrj')",
-            }}
+                style={{
+                  backgroundImage:
+                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCYrsxOa3m_sRbUYHq1lb0db8WedP93p3BXOL3UMBi-osr49tDAhYWg1SfUNyrpjtS9VsfXVkDABtWcJzzCxFgg3U5k-agykEM-_yqggN2pakXxEjru_XBqFT7V8_SPNT6kiX1PY972JOv4Xgx8r43J2pHrr5AHhnLFbertQNAvZBZHW_LGZZb9aImVHGlKzFOH9bRxbPRade1E_q65ucEBoA5luGGuUiRmLRjbAmboZvbJYFe4Xi0nlajmbd4zIarnyU2UddUpjUrj')",
+                }}
               />
               
-              {/* Overlay */}
               <div className="absolute inset-0 bg-gradient-to-r from-noir/90 via-noir/60 to-noir/40 md:bg-gradient-to-b" />
               
-              {/* Content */}
               <div className="relative h-full flex flex-col justify-end p-5 sm:p-6 md:p-10">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -130,10 +193,9 @@ Sent from Cocoa&Cherry Website`;
                     Ready to <span className="gradient-text">Celebrate?</span>
                   </h3>
                   <p className="text-cream/80 text-sm sm:text-base md:text-lg mb-4 sm:mb-6">
-                    Fill out the form to start your order conversation on WhatsApp.
+                    Select your favorite cakes and fill out the form to start your order!
                   </p>
 
-                  {/* Quick contact */}
                   <div className="flex flex-wrap gap-3 sm:gap-4">
                     <a 
                       href="tel:+919712752469"
@@ -173,11 +235,120 @@ Sent from Cocoa&Cherry Website`;
                   Quick Order Inquiry
                 </h2>
                 <p className="text-cream-muted text-sm sm:text-base">
-                  Let us know your requirements and we&apos;ll get back to you shortly.
+                  Select items from menu or add below, then fill your details.
                 </p>
               </div>
 
               <form className="space-y-3 sm:space-y-4 md:space-y-5" onSubmit={handleSubmit}>
+                {/* Selected Cakes Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.35 }}
+                >
+                  <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
+                    Selected Items <span className="text-rose">*</span>
+                    {selectedCakes.length > 0 && (
+                      <span className="ml-2 text-gold">({selectedCakes.length} selected)</span>
+                    )}
+                  </label>
+                  
+                  {/* Selected Cakes Display */}
+                  <div className={`min-h-[60px] p-3 rounded-xl border transition-all ${
+                    focusedField === 'cakes' 
+                      ? 'border-rose bg-rose/5 shadow-lg shadow-rose/10' 
+                      : 'border-rose/20 bg-noir hover:border-rose/40'
+                  }`}>
+                    {selectedCakes.length === 0 ? (
+                      <p className="text-cream/40 text-sm">
+                        No items selected. Add from menu above or click below.
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        <AnimatePresence>
+                          {selectedCakes.map((cake) => (
+                            <motion.div
+                              key={cake.name}
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-rose/20 to-rose-dark/20 border border-rose/30"
+                            >
+                              <span className="material-symbols-outlined text-rose text-sm">cake</span>
+                              <span className="text-cream text-sm font-medium">{cake.name}</span>
+                              <span className="text-gold text-xs">₹{cake.price}</span>
+                              <button
+                                type="button"
+                                onClick={() => removeCake(cake.name)}
+                                className="w-5 h-5 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/40 transition-colors"
+                              >
+                                <span className="material-symbols-outlined text-xs">close</span>
+                              </button>
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Add More Button */}
+                  <div className="mt-2 relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowCakeSelector(!showCakeSelector)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-rose border border-rose/30 hover:bg-rose/10 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-sm">add</span>
+                      <span>Add Item</span>
+                    </button>
+
+                    {/* Cake Selector Dropdown */}
+                    <AnimatePresence>
+                      {showCakeSelector && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute top-full left-0 mt-1 w-72 max-h-60 overflow-y-auto bg-noir-light border border-cream/10 rounded-xl shadow-2xl z-20"
+                        >
+                          {menuItems.length === 0 ? (
+                            <div className="p-4 text-center text-cream/50 text-sm">
+                              Loading menu...
+                            </div>
+                          ) : (
+                            <div className="p-2">
+                              {menuItems
+                                .filter(item => !selectedCakes.some(c => c.name === item.name))
+                                .map((item) => (
+                                  <button
+                                    key={item._id}
+                                    type="button"
+                                    onClick={() => addCake(item.name)}
+                                    className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-cream/5 transition-colors text-left"
+                                  >
+                                    <span className="material-symbols-outlined text-rose text-lg">cake</span>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-cream text-sm font-medium truncate">{item.name}</p>
+                                      <p className="text-cream/50 text-xs">
+                                        ₹{item.discountPrice || item.price}/{item.priceUnit?.replace('per ', '')}
+                                      </p>
+                                    </div>
+                                    <span className="material-symbols-outlined text-cream/30 text-sm">add_circle</span>
+                                  </button>
+                                ))}
+                              {menuItems.filter(item => !selectedCakes.some(c => c.name === item.name)).length === 0 && (
+                                <div className="p-4 text-center text-cream/50 text-sm">
+                                  All items already selected!
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+
                 {/* Name and Phone */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <motion.div
@@ -270,7 +441,7 @@ Sent from Cocoa&Cherry Website`;
                     transition={{ delay: 0.55 }}
                   >
                     <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
-                      Weight
+                      Weight (per item)
                     </label>
                     <select
                       name="weight"
@@ -294,51 +465,11 @@ Sent from Cocoa&Cherry Website`;
                   </motion.div>
                 </div>
 
-                {/* Flavor - Menu Items from Database */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.6 }}
-                >
-                  <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
-                    Select Cake <span className="text-rose">*</span>
-                  </label>
-                  <select
-                    name="flavor"
-                    value={formData.flavor}
-                    onChange={handleChange}
-                    onFocus={() => setFocusedField('flavor')}
-                    onBlur={() => setFocusedField(null)}
-                    required
-                    className={`${getInputClass('flavor')} appearance-none cursor-pointer`}
-                    style={{ 
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'right 8px center',
-                      backgroundSize: '16px'
-                    }}
-                  >
-                    {menuItems.length === 0 ? (
-                      <option value="">Loading menu...</option>
-                    ) : (
-                      <>
-                        <option value="">Select a cake</option>
-                        {menuItems.map((item) => (
-                          <option key={item._id} value={item.name}>
-                            {item.name} - ₹{item.price}/{item.priceUnit?.replace('per ', '')}
-                          </option>
-                        ))}
-                        <option value="Custom / Other">Custom / Other</option>
-                      </>
-                    )}
-                  </select>
-                </motion.div>
-
                 {/* Message */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.65 }}
+                  transition={{ delay: 0.6 }}
                 >
                   <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
                     Message / Theme Details
@@ -350,7 +481,7 @@ Sent from Cocoa&Cherry Website`;
                     onFocus={() => setFocusedField('message')}
                     onBlur={() => setFocusedField(null)}
                     className={`${getInputClass('message')} resize-none min-h-[60px] sm:min-h-[70px]`}
-                    placeholder="Describe your dream cake..."
+                    placeholder="Describe your requirements, theme, custom text on cake..."
                   />
                 </motion.div>
 
@@ -358,14 +489,18 @@ Sent from Cocoa&Cherry Website`;
                 <motion.button
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.7 }}
+                  transition={{ delay: 0.65 }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  disabled={isSubmitting}
-                  className={`relative w-full py-2.5 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 overflow-hidden ${isSubmitting ? 'bg-cream-muted/30 cursor-not-allowed' : 'bg-gradient-to-r from-gold to-gold/80 text-noir'} shadow-lg shadow-gold/20 transition-all`}
+                  disabled={isSubmitting || selectedCakes.length === 0}
+                  className={`relative w-full py-2.5 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 overflow-hidden ${
+                    isSubmitting || selectedCakes.length === 0
+                      ? 'bg-cream-muted/30 cursor-not-allowed text-cream/50' 
+                      : 'bg-gradient-to-r from-gold to-gold/80 text-noir shadow-lg shadow-gold/20'
+                  } transition-all`}
                 >
-                  {!isSubmitting && (
+                  {!isSubmitting && selectedCakes.length > 0 && (
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700" />
                   )}
                   
@@ -380,9 +515,14 @@ Sent from Cocoa&Cherry Website`;
                       </motion.span>
                       <span className="text-cream text-sm sm:text-base">Opening WhatsApp...</span>
                     </>
+                  ) : selectedCakes.length === 0 ? (
+                    <>
+                      <span className="material-symbols-outlined text-lg">shopping_cart</span>
+                      <span>Select items to continue</span>
+                    </>
                   ) : (
                     <>
-                      <span className="relative">Send to WhatsApp</span>
+                      <span className="relative">Send {selectedCakes.length} Item{selectedCakes.length > 1 ? 's' : ''} to WhatsApp</span>
                       <span className="material-symbols-outlined text-base relative">send</span>
                     </>
                   )}
