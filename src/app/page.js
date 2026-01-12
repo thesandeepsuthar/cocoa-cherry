@@ -5,6 +5,7 @@ import {
   Menu,
   RateList,
   Gallery,
+  Events,
   Reels,
   Testimonials,
   SpecialOffer,
@@ -28,6 +29,7 @@ export default function Home() {
         <Menu />
         <RateList />
         <Gallery />
+        <Events />
         <Reels />
         <Testimonials />
         {/* <SpecialOffer /> */}

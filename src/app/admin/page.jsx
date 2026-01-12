@@ -8,6 +8,7 @@ import Image from 'next/image';
 // Tabs
 const TABS = [
   { id: 'gallery', label: 'Gallery', icon: 'photo_library' },
+  { id: 'events', label: 'Events', icon: 'celebration' },
   { id: 'reels', label: 'Reels', icon: 'movie' },
   { id: 'menu', label: 'Menu', icon: 'restaurant_menu' },
   { id: 'ratelist', label: 'Rates', icon: 'payments' },
@@ -231,6 +232,312 @@ function GalleryTab({ adminKey }) {
       </div>
 
       {items.length === 0 && <EmptyState icon="photo_library" text="No gallery images yet" />}
+    </div>
+  );
+}
+
+// Events Tab
+function EventsTab({ adminKey }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [formData, setFormData] = useState({ 
+    title: '', 
+    venue: '', 
+    date: '', 
+    description: '', 
+    highlights: '',
+    coverImage: '', 
+    images: [],
+    order: 0 
+  });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const fetchItems = useCallback(async () => {
+    try {
+      const res = await fetch('/api/events');
+      const data = await res.json();
+      if (data.success) setItems(data.data);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchItems(); }, [fetchItems]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.title?.trim()) newErrors.title = 'Title is required';
+    if (!formData.venue?.trim()) newErrors.venue = 'Venue is required';
+    if (!formData.date) newErrors.date = 'Date is required';
+    if (!formData.coverImage) newErrors.coverImage = 'Cover image is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setSubmitting(true);
+    try {
+      const url = editingItem ? `/api/events/${editingItem._id}?key=${adminKey}` : `/api/events?key=${adminKey}`;
+      const res = await fetch(url, {
+        method: editingItem ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchItems();
+        closeForm();
+      } else alert(data.error);
+    } catch (error) {
+      alert('Failed to save');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Delete this event?')) return;
+    try {
+      const res = await fetch(`/api/events/${id}?key=${adminKey}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) fetchItems();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setFormData({ 
+      title: item.title, 
+      venue: item.venue, 
+      date: item.date ? new Date(item.date).toISOString().split('T')[0] : '',
+      description: item.description || '',
+      highlights: item.highlights || '',
+      coverImage: item.coverImage, 
+      images: item.images || [],
+      order: item.order 
+    });
+    setErrors({});
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingItem(null);
+    setFormData({ title: '', venue: '', date: '', description: '', highlights: '', coverImage: '', images: [], order: 0 });
+    setErrors({});
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  // Handle additional images
+  const handleAddImage = (imageData) => {
+    if (formData.images.length >= 5) {
+      alert('Maximum 5 additional images allowed');
+      return;
+    }
+    setFormData({ ...formData, images: [...formData.images, imageData] });
+  };
+
+  const handleRemoveImage = (index) => {
+    const newImages = formData.images.filter((_, i) => i !== index);
+    setFormData({ ...formData, images: newImages });
+  };
+
+  if (loading) return <LoadingSpinner />;
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>Events & Stalls ({items.length})</h2>
+        <button onClick={() => { closeForm(); setShowForm(true); }} 
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg hover:opacity-90 
+                         text-sm font-medium shadow-md bg-gradient-to-r from-rose to-rose-dark text-noir">
+          <span className="material-symbols-outlined text-lg">add</span>
+          Add Event
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {showForm && (
+          <FormModal title={editingItem ? 'Edit Event' : 'Add Event'} onClose={closeForm} wide>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <InputField 
+                label="Event Title" 
+                value={formData.title} 
+                onChange={(e) => { setFormData({ ...formData, title: e.target.value }); setErrors({ ...errors, title: '' }); }} 
+                placeholder="Annual School Food Festival" 
+                required 
+                error={errors.title} 
+              />
+              
+              <InputField 
+                label="Venue" 
+                value={formData.venue} 
+                onChange={(e) => { setFormData({ ...formData, venue: e.target.value }); setErrors({ ...errors, venue: '' }); }} 
+                placeholder="St. Xavier's High School, Ahmedabad" 
+                required 
+                error={errors.venue} 
+              />
+              
+              <InputField 
+                label="Event Date" 
+                type="date" 
+                value={formData.date} 
+                onChange={(e) => { setFormData({ ...formData, date: e.target.value }); setErrors({ ...errors, date: '' }); }} 
+                required 
+                error={errors.date} 
+              />
+              
+              <div>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">Description</label>
+                <textarea 
+                  value={formData.description} 
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+                  className="w-full rounded-lg border border-cream/10 px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40" 
+                  rows={3} 
+                  placeholder="We had an amazing time serving our signature treats to the students..." 
+                />
+              </div>
+              
+              <InputField 
+                label="Highlights" 
+                value={formData.highlights} 
+                onChange={(e) => setFormData({ ...formData, highlights: e.target.value })} 
+                placeholder="500+ Students Served" 
+              />
+
+              <ImageUpload 
+                value={formData.coverImage} 
+                onChange={(v) => { setFormData({ ...formData, coverImage: v }); setErrors({ ...errors, coverImage: '' }); }} 
+                label="Cover Image" 
+                error={errors.coverImage} 
+                required 
+              />
+
+              {/* Additional Images */}
+              <div>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1.5 sm:mb-2">
+                  Additional Photos (Max 5)
+                </label>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-2">
+                  {formData.images.map((img, index) => (
+                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-cream/10">
+                      <Image src={img} alt={`Photo ${index + 1}`} fill className="object-cover" unoptimized />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full hover:bg-red-600 flex items-center justify-center"
+                      >
+                        <span className="material-symbols-outlined text-xs">close</span>
+                      </button>
+                    </div>
+                  ))}
+                  {formData.images.length < 5 && (
+                    <label className="aspect-square rounded-lg border-2 border-dashed border-cream/20 hover:border-rose/50 flex items-center justify-center cursor-pointer transition-colors">
+                      <span className="material-symbols-outlined text-2xl text-cream/40">add_photo_alternate</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 5 * 1024 * 1024) {
+                              alert('Image size should be less than 5MB');
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onloadend = () => handleAddImage(reader.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+                <p className="text-xs text-cream-muted">Add more photos from the event</p>
+              </div>
+
+              <InputField 
+                label="Order" 
+                type="number" 
+                value={formData.order} 
+                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })} 
+                min="0" 
+              />
+              
+              <FormButtons onCancel={closeForm} submitting={submitting} submitText={editingItem ? 'Update' : 'Add'} />
+            </form>
+          </FormModal>
+        )}
+      </AnimatePresence>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        {items.map((item) => (
+          <div key={item._id} className="card-noir rounded-xl overflow-hidden">
+            <div className="relative h-40 sm:h-48">
+              {item.coverImage ? (
+                <Image src={item.coverImage} alt={item.title} fill className="object-cover" unoptimized />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-rose/20 to-gold/20 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-5xl text-rose/40">celebration</span>
+                </div>
+              )}
+              {/* Date Badge */}
+              <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-noir/80 backdrop-blur-sm border border-rose/20">
+                <span className="text-cream text-xs font-medium flex items-center gap-1">
+                  <span className="material-symbols-outlined text-rose text-sm">calendar_today</span>
+                  {formatDate(item.date)}
+                </span>
+              </div>
+              {/* Highlights Badge */}
+              {item.highlights && (
+                <div className="absolute bottom-2 left-2">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-gold/90 text-noir text-xs font-bold">
+                    <span className="material-symbols-outlined text-sm">emoji_events</span>
+                    {item.highlights}
+                  </span>
+                </div>
+              )}
+              {/* Image Count Badge */}
+              {item.images?.length > 0 && (
+                <div className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-noir/80 backdrop-blur-sm">
+                  <span className="text-cream text-xs flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">photo_library</span>
+                    +{item.images.length}
+                  </span>
+                </div>
+              )}
+            </div>
+            <div className="p-3 sm:p-4">
+              <h3 className="font-bold text-cream text-sm sm:text-base mb-1 line-clamp-1">{item.title}</h3>
+              <p className="text-xs sm:text-sm text-cream-muted flex items-center gap-1 mb-2">
+                <span className="material-symbols-outlined text-rose text-sm">location_on</span>
+                <span className="line-clamp-1">{item.venue}</span>
+              </p>
+              {item.description && (
+                <p className="text-xs text-cream/60 line-clamp-2 mb-3">{item.description}</p>
+              )}
+              <ActionButtons onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item._id)} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {items.length === 0 && <EmptyState icon="celebration" text="No events yet" />}
     </div>
   );
 }
@@ -1330,6 +1637,7 @@ function AdminContent() {
       {/* Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {activeTab === 'gallery' && <GalleryTab adminKey={adminKey} />}
+        {activeTab === 'events' && <EventsTab adminKey={adminKey} />}
         {activeTab === 'reels' && <ReelsTab adminKey={adminKey} />}
         {activeTab === 'menu' && <MenuTab adminKey={adminKey} />}
         {activeTab === 'ratelist' && <RateListTab adminKey={adminKey} />}

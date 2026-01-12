@@ -134,31 +134,31 @@ Sent from Cocoa&Cherry Website`;
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {/* Name and Phone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div>
+            <div>
                 <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
                   Your Name <span className="text-rose">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                   onFocus={() => setFocusedField('name')}
                   onBlur={() => setFocusedField(null)}
-                  required
+                required
                   placeholder="Jane Doe"
                   className={getInputClass('name')}
-                />
-              </div>
-              <div>
+              />
+            </div>
+            <div>
                 <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
                   Phone Number <span className="text-rose">*</span>
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                   onFocus={() => setFocusedField('phone')}
                   onBlur={() => setFocusedField(null)}
                   required

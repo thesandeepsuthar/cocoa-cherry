@@ -4,6 +4,7 @@ export { default as Features } from './Features';
 export { default as Menu } from './Menu';
 export { default as RateList } from './RateList';
 export { default as Gallery } from './Gallery';
+export { default as Events } from './Events';
 export { default as Reels } from './Reels';
 export { default as Testimonials } from './Testimonials';
 export { default as FAQ } from './FAQ';
