@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Configuration
+const ITEMS_PER_PAGE = 8;
 
 export default function RateList() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [expandedCategory, setExpandedCategory] = useState(null);
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchRateList();
@@ -21,10 +23,9 @@ export default function RateList() {
       const data = await res.json();
       if (data.success) {
         setItems(data.data);
-        // Auto-expand first category
         const categories = [...new Set(data.data.map((item) => item.category))];
         if (categories.length > 0) {
-          setExpandedCategory(categories[0]);
+          setActiveCategory(categories[0]);
         }
       }
     } catch (error) {
@@ -35,98 +36,93 @@ export default function RateList() {
   };
 
   // Get unique categories
-  const categories = ['all', ...new Set(items.map((item) => item.category))];
+  const categories = useMemo(() => {
+    return [...new Set(items.map((item) => item.category))];
+  }, [items]);
 
-  // Filter items by category
-  const filteredItems = activeCategory === 'all' 
-    ? items 
-    : items.filter((item) => item.category === activeCategory);
-
-  // Group items by category for display
-  const groupedItems = filteredItems.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
+  // Filter items by category and search
+  const filteredItems = useMemo(() => {
+    let filtered = activeCategory 
+      ? items.filter((item) => item.category === activeCategory)
+      : items;
+    
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(item => 
+        item.item.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query)
+      );
     }
-    acc[item.category].push(item);
-    return acc;
-  }, {});
+    
+    return filtered;
+  }, [items, activeCategory, searchQuery]);
 
-  // Helper function to get category icons
+  // Paginated items
+  const displayedItems = showAll ? filteredItems : filteredItems.slice(0, ITEMS_PER_PAGE);
+  const hasMore = filteredItems.length > ITEMS_PER_PAGE;
+
+  // Reset when category changes
+  useEffect(() => {
+    setShowAll(false);
+    setSearchQuery('');
+  }, [activeCategory]);
+
+  // Category icons
   const getCategoryIcon = (category) => {
     const categoryLower = category.toLowerCase();
-    if (categoryLower.includes('cake')) return 'cake';
-    if (categoryLower.includes('pastry') || categoryLower.includes('pastries')) return 'bakery_dining';
-    if (categoryLower.includes('cookie') || categoryLower.includes('biscuit')) return 'cookie';
-    if (categoryLower.includes('bread')) return 'breakfast_dining';
-    if (categoryLower.includes('chocolate') || categoryLower.includes('truffle')) return 'nutrition';
+    if (categoryLower.includes('cake') && !categoryLower.includes('cup') && !categoryLower.includes('cheese') && !categoryLower.includes('dry')) return 'cake';
     if (categoryLower.includes('cupcake')) return 'cupcake';
-    if (categoryLower.includes('dessert')) return 'icecream';
-    if (categoryLower.includes('beverage') || categoryLower.includes('drink')) return 'local_cafe';
-    if (categoryLower.includes('special') || categoryLower.includes('premium')) return 'stars';
+    if (categoryLower.includes('brownie')) return 'cookie';
+    if (categoryLower.includes('cheesecake')) return 'icecream';
+    if (categoryLower.includes('cookie')) return 'cookie';
+    if (categoryLower.includes('chocolate')) return 'nutrition';
+    if (categoryLower.includes('bomboloni')) return 'donut_small';
+    if (categoryLower.includes('healthy')) return 'eco';
+    if (categoryLower.includes('dry')) return 'bakery_dining';
+    if (categoryLower.includes('muffin')) return 'breakfast_dining';
     return 'restaurant';
   };
 
   if (loading) {
     return (
-      <section className="py-20 md:py-32 bg-noir">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center justify-center">
-          {/* Animated loader */}
+      <section className="py-12 sm:py-16 md:py-24 lg:py-32 bg-noir">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex flex-col items-center justify-center min-h-[300px]">
           <motion.div
-            className="relative w-16 h-16"
+            className="relative w-12 h-12 sm:w-16 sm:h-16"
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           >
             <div className="absolute inset-0 border-4 border-rose/20 rounded-full" />
             <div className="absolute inset-0 border-4 border-transparent border-t-rose rounded-full" />
           </motion.div>
-          <motion.p
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-cream-muted text-sm mt-4"
-          >
-            Loading rates...
-          </motion.p>
+          <p className="text-cream-muted text-sm mt-4">Loading rates...</p>
         </div>
       </section>
     );
   }
 
-  if (items.length === 0) {
-    return null;
-  }
+  if (items.length === 0) return null;
 
   return (
     <section 
-      ref={sectionRef}
       className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir overflow-hidden" 
       id="rate-list"
     >
-      {/* Background decorations */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] 
-                      bg-rose/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] 
-                      bg-gold/5 rounded-full blur-[100px]" />
+      {/* Background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 -right-20 w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-rose/5 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-20 -left-20 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-gold/5 rounded-full blur-[80px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8 sm:mb-12"
-        >
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gold/10 border border-gold/20 mb-4 sm:mb-6"
-          >
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
+        {/* Header */}
+        <div className="text-center mb-6 sm:mb-10">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gold/10 border border-gold/20 mb-4 sm:mb-5">
             <span className="material-symbols-outlined text-gold text-xs sm:text-sm">payments</span>
             <span className="text-gold text-[10px] sm:text-xs font-bold uppercase tracking-widest">
               Transparent Pricing
-          </span>
-          </motion.div>
+            </span>
+          </div>
 
           <h2 
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
@@ -136,231 +132,199 @@ export default function RateList() {
             <span className="gradient-text">Rate List</span>
           </h2>
           
-          <p className="text-cream-muted text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4 sm:px-0">
-            Quality ingredients, artisanal craftsmanship, and love in every bite. 
-            Here&apos;s our complete pricing guide.
+          <p className="text-cream-muted text-sm sm:text-base max-w-xl mx-auto">
+            Premium quality, honest pricing. Find your perfect treat!
           </p>
-        </motion.div>
+        </div>
 
-        {/* Category Filter */}
-        {categories.length > 2 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-12"
-          >
-            {categories.map((category) => (
-              <motion.button
-                key={category}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveCategory(category)}
-                className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all capitalize ${
-                  activeCategory === category
-                    ? 'bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30'
-                    : 'bg-noir-light text-cream border border-rose/20 hover:border-rose/40'
-                }`}
-              >
-                {category}
-              </motion.button>
-            ))}
-          </motion.div>
-        )}
-
-        {/* Rate List Accordion */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeCategory}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-4"
-          >
-            {Object.entries(groupedItems).map(([category, categoryItems], idx) => (
-              <motion.div
-                key={category}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="card-noir overflow-hidden"
-              >
-                {/* Category Header - Clickable */}
+        {/* Category Tabs */}
+        <div className="mb-5 sm:mb-6">
+          <div className="flex overflow-x-auto pb-2 gap-2 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center">
+            {categories.map((category) => {
+              const count = items.filter(i => i.category === category).length;
+              const isActive = activeCategory === category;
+              
+              return (
                 <button
-                  onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
-                  className="w-full flex items-center justify-between p-4 sm:p-5 md:p-6 hover:bg-rose/5 transition-colors text-left"
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all flex-shrink-0 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-rose to-rose-dark text-white shadow-lg shadow-rose/30'
+                      : 'bg-noir-light text-cream border border-cream/10 hover:border-rose/30'
+                  }`}
                 >
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-rose to-rose-dark flex items-center justify-center shadow-lg shadow-rose/20">
-                      <span className="material-symbols-outlined text-white text-xl sm:text-2xl">
+                  <span className="material-symbols-outlined text-sm sm:text-base">
                     {getCategoryIcon(category)}
                   </span>
-                    </div>
-                    <div>
-                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-cream capitalize"
-                          style={{ fontFamily: 'var(--font-cinzel)' }}>
-                  {category}
-                </h3>
-                      <p className="text-cream-muted text-xs sm:text-sm">{categoryItems.length} items</p>
-                    </div>
-              </div>
-
-                  <motion.span
-                    animate={{ rotate: expandedCategory === category ? 180 : 0 }}
-                    className="material-symbols-outlined text-rose text-xl sm:text-2xl"
-                  >
-                    expand_more
-                  </motion.span>
+                  <span className="whitespace-nowrap">{category}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                    isActive ? 'bg-white/20' : 'bg-rose/10'
+                  }`}>
+                    {count}
+                  </span>
                 </button>
+              );
+            })}
+          </div>
+        </div>
 
-                {/* Expanded Content */}
-                <AnimatePresence>
-                  {expandedCategory === category && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="border-t border-rose/10">
-              {/* Desktop Table */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full">
-                            <thead>
-                              <tr className="bg-noir-light/50">
-                                <th className="text-left px-6 py-4 text-sm font-bold text-cream-muted">Item</th>
-                                <th className="text-left px-6 py-4 text-sm font-bold text-cream-muted">Description</th>
-                                <th className="text-center px-6 py-4 text-sm font-bold text-cream-muted">Unit</th>
-                                <th className="text-right px-6 py-4 text-sm font-bold text-cream-muted">Price</th>
-                    </tr>
-                  </thead>
-                            <tbody className="divide-y divide-rose/5">
-                    {categoryItems.map((item, index) => {
-                      const hasDiscount = item.discountPrice && item.discountPrice < item.price;
-                      const discountPercent = hasDiscount 
-                        ? Math.round(((item.price - item.discountPrice) / item.price) * 100) 
-                        : 0;
+        {/* Search Bar */}
+        <div className="mb-5 sm:mb-6">
+          <div className="relative max-w-sm mx-auto">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-cream/40 text-lg">
+              search
+            </span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={`Search in ${activeCategory}...`}
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-noir-light border border-cream/10 text-cream placeholder:text-cream/40 text-sm focus:outline-none focus:border-rose/50 transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-cream/10 hover:bg-cream/20"
+              >
+                <span className="material-symbols-outlined text-cream/60 text-xs">close</span>
+              </button>
+            )}
+          </div>
+        </div>
 
-                      return (
-                                  <motion.tr 
-                          key={item._id} 
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.05 }}
-                                    className="hover:bg-rose/5 transition-colors"
-                        >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                                        <span className="font-medium text-cream">{item.item}</span>
-                              {hasDiscount && (
-                                          <span className="px-2 py-0.5 rounded-full text-xs font-bold 
-                                                       bg-emerald-500/20 text-emerald-400">
-                                  {discountPercent}% OFF
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                                    <td className="px-6 py-4 text-sm text-cream-muted max-w-xs">
-                            {item.description || '-'}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full 
-                                                     text-xs font-medium bg-rose/10 text-rose border border-rose/20">
-                              {item.unit}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            {hasDiscount ? (
-                              <div className="flex items-center justify-end gap-2">
-                                          <span className="text-cream-muted line-through text-sm">₹{item.price}</span>
-                                          <span className="text-lg font-bold text-rose">₹{item.discountPrice}</span>
-                              </div>
-                            ) : (
-                                        <span className="text-lg font-bold text-cream">₹{item.price}</span>
-                            )}
-                          </td>
-                                  </motion.tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+        {/* Items Grid */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory + searchQuery}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {filteredItems.length === 0 ? (
+              <div className="text-center py-12">
+                <span className="material-symbols-outlined text-4xl text-cream/20 mb-2 block">search_off</span>
+                <p className="text-cream-muted text-sm">No items found. Try a different search.</p>
               </div>
-
-              {/* Mobile Cards */}
-                        <div className="md:hidden divide-y divide-rose/5">
-                          {categoryItems.map((item, index) => {
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {displayedItems.map((item, index) => {
                   const hasDiscount = item.discountPrice && item.discountPrice < item.price;
                   const discountPercent = hasDiscount 
                     ? Math.round(((item.price - item.discountPrice) / item.price) * 100) 
                     : 0;
 
                   return (
-                              <motion.div 
-                                key={item._id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                className="p-4 hover:bg-rose/5 transition-colors"
-                              >
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                                      <h4 className="font-medium text-cream">{item.item}</h4>
-                            {hasDiscount && (
-                                        <span className="px-2 py-0.5 rounded-full text-xs font-bold 
-                                                       bg-emerald-500/20 text-emerald-400">
-                                {discountPercent}% OFF
-                              </span>
+                    <motion.div
+                      key={item._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.02 }}
+                      className="group"
+                    >
+                      <div className={`relative p-4 rounded-2xl bg-noir-light border border-cream/5 hover:border-rose/30 transition-all ${!item.isAvailable ? 'opacity-50' : ''}`}>
+                        {/* Discount Badge */}
+                        {hasDiscount && (
+                          <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-emerald-500 text-white text-[10px] font-bold">
+                            {discountPercent}% OFF
+                          </div>
+                        )}
+
+                        {/* Icon & Name */}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-rose to-rose-dark flex items-center justify-center flex-shrink-0">
+                            <span className="material-symbols-outlined text-white text-base sm:text-lg">
+                              {getCategoryIcon(item.category)}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-cream text-sm leading-tight line-clamp-2 group-hover:text-rose transition-colors">
+                              {item.item}
+                            </h4>
+                            {item.description && (
+                              <p className="text-cream/40 text-[11px] mt-0.5 line-clamp-1">
+                                {item.description}
+                              </p>
                             )}
                           </div>
-                          {item.description && (
-                                      <p className="text-sm text-cream-muted mt-1">{item.description}</p>
-                          )}
                         </div>
-                        <div className="text-right ml-4">
-                          {hasDiscount ? (
-                            <div className="flex flex-col items-end">
-                                        <span className="text-cream-muted line-through text-sm">₹{item.price}</span>
-                                        <span className="text-lg font-bold text-rose">₹{item.discountPrice}</span>
-                            </div>
-                          ) : (
-                                      <span className="text-lg font-bold text-cream">₹{item.price}</span>
-                          )}
+
+                        {/* Price & Unit */}
+                        <div className="flex items-end justify-between pt-2 border-t border-cream/5">
+                          <div>
+                            {hasDiscount ? (
+                              <div className="flex items-baseline gap-1.5">
+                                <span className="text-lg sm:text-xl font-bold text-rose">₹{item.discountPrice}</span>
+                                <span className="text-xs text-cream/30 line-through">₹{item.price}</span>
+                              </div>
+                            ) : (
+                              <span className="text-lg sm:text-xl font-bold text-cream">₹{item.price}</span>
+                            )}
+                          </div>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cream/5 text-cream/50 border border-cream/10">
+                            {item.unit}
+                          </span>
                         </div>
+
+                        {/* Unavailable Overlay */}
+                        {!item.isAvailable && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-noir/50 rounded-2xl">
+                            <span className="text-xs text-cream/50 bg-cream/10 px-2 py-1 rounded">Unavailable</span>
+                          </div>
+                        )}
                       </div>
-                                <span className="inline-flex items-center px-2.5 py-1 rounded-full 
-                                               text-xs font-medium bg-rose/10 text-rose border border-rose/20">
-                        {item.unit}
-                      </span>
-                              </motion.div>
+                    </motion.div>
                   );
                 })}
               </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-            </motion.div>
-          ))}
+            )}
+
+            {/* Show More Button */}
+            {hasMore && !searchQuery && (
+              <div className="text-center mt-5 sm:mt-6">
+                <button
+                  onClick={() => setShowAll(!showAll)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-noir-light border border-rose/20 text-cream font-medium text-sm hover:border-rose/40 hover:bg-rose/5 transition-all"
+                >
+                  <span className="material-symbols-outlined text-rose text-base">
+                    {showAll ? 'expand_less' : 'expand_more'}
+                  </span>
+                  <span>{showAll ? 'Show Less' : `View All ${filteredItems.length} Items`}</span>
+                </button>
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
 
+        {/* Quick Stats */}
+        <div className="mt-8 sm:mt-10 grid grid-cols-4 gap-2 sm:gap-3">
+          {[
+            { icon: 'category', label: 'Categories', value: categories.length },
+            { icon: 'menu_book', label: 'Items', value: items.length },
+            { icon: 'local_offer', label: 'On Sale', value: items.filter(i => i.discountPrice && i.discountPrice < i.price).length },
+            { icon: 'verified', label: 'Available', value: items.filter(i => i.isAvailable !== false).length },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="text-center p-2 sm:p-3 rounded-xl bg-noir-light/50 border border-cream/5"
+            >
+              <span className="material-symbols-outlined text-rose text-lg sm:text-xl">{stat.icon}</span>
+              <p className="text-lg sm:text-2xl font-bold text-cream">{stat.value}</p>
+              <p className="text-[9px] sm:text-[10px] text-cream/40">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+
         {/* Footer Note */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.5 }}
-          className="mt-8 sm:mt-12 text-center"
-        >
-          <div className="inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-noir-light border border-rose/10">
-            <span className="material-symbols-outlined text-rose text-lg sm:text-base">info</span>
-            <p className="text-xs sm:text-sm text-cream-muted text-center">
-              Prices may vary based on customization. Contact us for custom orders!
+        <div className="mt-6 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-noir-light border border-cream/10">
+            <span className="material-symbols-outlined text-gold text-base">lightbulb</span>
+            <p className="text-[11px] sm:text-xs text-cream/60">
+              Custom orders welcome! Prices may vary based on design.
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
