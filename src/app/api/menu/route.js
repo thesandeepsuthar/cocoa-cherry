@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Menu } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
-import { sanitizeString, validateBase64Image, validateRequired } from '@/lib/security';
+import { sanitizeString, validateRequired } from '@/lib/security';
+import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
 
 // GET - Fetch all menu items (Public)
 export async function GET() {
@@ -48,12 +49,32 @@ export async function POST(request) {
     const { name, description, imageData, badge, price, discountPrice, priceUnit, order } = body;
 
     // Validate image
-    const imageValidation = validateBase64Image(imageData, 20);
+    const imageValidation = validateImage(imageData, 20);
     if (!imageValidation.valid) {
       return NextResponse.json(
         { success: false, error: imageValidation.error },
         { status: 400 }
       );
+    }
+
+    // ========================================
+    // COMPRESS IMAGE USING SHARP
+    // Reduces size by 60-90% while keeping quality
+    // ========================================
+    let compressedImageData = imageData;
+    let compressionInfo = null;
+
+    try {
+      const result = await compressWithPreset(imageData, 'menu');
+      compressedImageData = result.base64;
+      compressionInfo = {
+        originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
+        compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
+        savings: result.savings,
+      };
+      console.log(`✅ Menu image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
+    } catch (compressionError) {
+      console.error('⚠️ Compression failed, using original:', compressionError.message);
     }
 
     // Sanitize text inputs
@@ -78,7 +99,7 @@ export async function POST(request) {
     const newMenuItem = await Menu.create({
       name: sanitizedName,
       description: sanitizedDescription,
-      imageData,
+      imageData: compressedImageData,
       badge: sanitizedBadge,
       price: typeof price === 'number' ? price : null,
       discountPrice: typeof discountPrice === 'number' ? discountPrice : null,
@@ -89,6 +110,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       data: newMenuItem,
+      compression: compressionInfo,
       message: 'Menu item added successfully',
     });
   } catch (error) {

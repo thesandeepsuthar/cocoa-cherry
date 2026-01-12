@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Reel } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
-import { sanitizeString, validateBase64Image, validateRequired, isValidUrl } from '@/lib/security';
+import { sanitizeString, validateRequired, isValidUrl } from '@/lib/security';
+import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
 
 // GET - Fetch all reels (Public)
 export async function GET() {
@@ -56,12 +57,32 @@ export async function POST(request) {
     }
 
     // Validate thumbnail image
-    const imageValidation = validateBase64Image(thumbnailData, 20);
+    const imageValidation = validateImage(thumbnailData, 20);
     if (!imageValidation.valid) {
       return NextResponse.json(
         { success: false, error: imageValidation.error },
         { status: 400 }
       );
+    }
+
+    // ========================================
+    // COMPRESS THUMBNAIL USING SHARP
+    // Reduces size by 60-90% while keeping quality
+    // ========================================
+    let compressedThumbnail = thumbnailData;
+    let compressionInfo = null;
+
+    try {
+      const result = await compressWithPreset(thumbnailData, 'thumbnail');
+      compressedThumbnail = result.base64;
+      compressionInfo = {
+        originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
+        compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
+        savings: result.savings,
+      };
+      console.log(`✅ Thumbnail compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
+    } catch (compressionError) {
+      console.error('⚠️ Compression failed, using original:', compressionError.message);
     }
 
     // Sanitize caption
@@ -75,7 +96,7 @@ export async function POST(request) {
 
     const newReel = await Reel.create({
       videoUrl: videoUrl.trim(),
-      thumbnailData,
+      thumbnailData: compressedThumbnail,
       caption: sanitizedCaption,
       order: typeof order === 'number' ? order : 0,
     });
@@ -83,6 +104,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       data: newReel,
+      compression: compressionInfo,
       message: 'Reel added successfully',
     });
   } catch (error) {

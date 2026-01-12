@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Reel } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
-import { sanitizeString, validateBase64Image, isValidUrl } from '@/lib/security';
+import { sanitizeString, isValidUrl } from '@/lib/security';
+import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
 import mongoose from 'mongoose';
 
 // Validate MongoDB ObjectId
@@ -69,6 +70,7 @@ export async function PUT(request, { params }) {
 
     // Build update object with validation
     const updateData = { updatedAt: new Date() };
+    let compressionInfo = null;
 
     if (body.videoUrl !== undefined) {
       if (!isValidUrl(body.videoUrl)) {
@@ -81,14 +83,28 @@ export async function PUT(request, { params }) {
     }
 
     if (body.thumbnailData) {
-      const imageValidation = validateBase64Image(body.thumbnailData, 20);
+      const imageValidation = validateImage(body.thumbnailData, 20);
       if (!imageValidation.valid) {
         return NextResponse.json(
           { success: false, error: imageValidation.error },
           { status: 400 }
         );
       }
-      updateData.thumbnailData = body.thumbnailData;
+
+      // Compress the thumbnail
+      try {
+        const result = await compressWithPreset(body.thumbnailData, 'thumbnail');
+        updateData.thumbnailData = result.base64;
+        compressionInfo = {
+          originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
+          compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
+          savings: result.savings,
+        };
+        console.log(`✅ Thumbnail compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
+      } catch (compressionError) {
+        console.error('⚠️ Compression failed, using original:', compressionError.message);
+        updateData.thumbnailData = body.thumbnailData;
+      }
     }
 
     if (body.caption !== undefined) {
@@ -156,6 +172,7 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedReel,
+      compression: compressionInfo,
       swappedWith: swappedWith,
       message: swappedWith 
         ? `Order swapped with "${swappedWith.caption}"` 
