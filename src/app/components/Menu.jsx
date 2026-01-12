@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
+import Image from 'next/image';
 
 // Configuration
-const ITEMS_PER_VIEW = 6; // Show 6 items initially
+const ITEMS_PER_CATEGORY = 8; // Items per horizontal scroll
 
 // Default fallback menu items
 const defaultFlavors = [
@@ -20,7 +21,7 @@ const defaultFlavors = [
   },
 ];
 
-// Extract category from name (e.g., "Chocolate Truffle Cake" -> "Cakes")
+// Extract category from name
 const getCategoryFromName = (name) => {
   const nameLower = name.toLowerCase();
   if (nameLower.includes('cake')) return 'Cakes';
@@ -36,7 +37,6 @@ const getCategoryFromName = (name) => {
 // Category icons
 const getCategoryIcon = (category) => {
   const icons = {
-    'All': 'apps',
     'Cakes': 'cake',
     'Brownies': 'cookie',
     'Cheesecakes': 'icecream',
@@ -49,108 +49,308 @@ const getCategoryIcon = (category) => {
   return icons[category] || 'restaurant';
 };
 
-// Price Display Component
-function PriceDisplay({ price, discountPrice, priceUnit }) {
-  const hasDiscount = discountPrice !== null && discountPrice !== undefined && discountPrice < price;
-  const discountPercentage = hasDiscount ? Math.round(((price - discountPrice) / price) * 100) : 0;
+// Quick View Modal Component
+function QuickViewModal({ item, onClose }) {
+  const hasDiscount = item.discountPrice !== null && item.discountPrice !== undefined && item.discountPrice < item.price;
+  const discountPercentage = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
 
-  if (!price && price !== 0) return null;
+  // Close on escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
 
-  return (
-    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-      {hasDiscount ? (
-        <>
-          <span className="text-rose font-bold text-lg sm:text-xl">₹{discountPrice}</span>
-          <span className="text-cream-muted line-through text-xs sm:text-sm">₹{price}</span>
-          <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-500/20 text-emerald-400">
-            {discountPercentage}% OFF
-          </span>
-        </>
-      ) : (
-        <span className="text-rose font-bold text-lg sm:text-xl">₹{price}</span>
-      )}
-      {priceUnit && <span className="text-cream-muted text-[10px] sm:text-xs">/{priceUnit.replace('per ', '')}</span>}
-    </div>
-  );
-}
-
-// Menu Card Component
-function MenuCard({ flavor, index }) {
-  const hasDiscount = flavor.discountPrice !== null && flavor.discountPrice !== undefined && flavor.discountPrice < flavor.price;
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
-      className="group relative"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-noir/90 backdrop-blur-md"
+      onClick={onClose}
     >
-      <div className="card-noir overflow-hidden h-full">
-        {/* Discount Badge */}
-        {hasDiscount && (
-          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500 text-white text-[10px] sm:text-xs font-bold shadow-lg">
-            {Math.round(((flavor.price - flavor.discountPrice) / flavor.price) * 100)}% OFF
-          </div>
-        )}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="relative w-full max-w-lg bg-noir-light rounded-3xl overflow-hidden shadow-2xl border border-cream/10"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-noir/80 backdrop-blur-sm flex items-center justify-center text-cream hover:bg-rose/20 transition-colors"
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
 
-        {/* Image Container */}
-        <div className="relative h-32 sm:h-40 md:h-48 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent z-10" />
-          
-          <motion.div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${flavor.imageData}')` }}
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.6 }}
+        {/* Image */}
+        <div className="relative h-64 sm:h-80 overflow-hidden">
+          <Image
+            src={item.imageData}
+            alt={item.name}
+            fill
+            className="object-cover"
+            unoptimized
           />
-
-          {/* Badge */}
-          {flavor.badge && (
-            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-10 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-rose to-rose-dark text-white text-[10px] sm:text-xs font-bold shadow-lg shadow-rose/30">
-              {flavor.badge}
-            </div>
-          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-noir-light via-transparent to-transparent" />
+          
+          {/* Badges */}
+          <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+            {item.badge && (
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-rose to-rose-dark text-white text-xs font-bold shadow-lg">
+                {item.badge}
+              </span>
+            )}
+            {hasDiscount && (
+              <span className="px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold shadow-lg">
+                {discountPercentage}% OFF
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Content */}
-        <div className="p-3 sm:p-4 md:p-5">
-          <h3 className="text-sm sm:text-base md:text-lg font-bold text-cream mb-1 sm:mb-1.5 line-clamp-1" style={{ fontFamily: 'var(--font-cinzel)' }}>
-            {flavor.name}
-          </h3>
-          <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm mb-2 sm:mb-3 line-clamp-2">{flavor.description}</p>
-          
+        <div className="p-6">
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <h3 className="text-2xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>
+              {item.name}
+            </h3>
+            <span className="flex-shrink-0 px-2 py-1 rounded-lg bg-rose/10 text-rose text-xs font-medium border border-rose/20">
+              {getCategoryFromName(item.name)}
+            </span>
+          </div>
+
+          <p className="text-cream-muted text-sm leading-relaxed mb-5">
+            {item.description}
+          </p>
+
           {/* Price */}
-          {flavor.price > 0 && (
-            <div className="mb-2 sm:mb-3">
-              <PriceDisplay 
-                price={flavor.price} 
-                discountPrice={flavor.discountPrice} 
-                priceUnit={flavor.priceUnit}
-              />
+          {item.price > 0 && (
+            <div className="flex items-center gap-3 mb-6 p-4 rounded-2xl bg-noir/50 border border-cream/5">
+              <span className="material-symbols-outlined text-gold text-2xl">payments</span>
+              <div>
+                {hasDiscount ? (
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold text-rose">₹{item.discountPrice}</span>
+                    <span className="text-cream/40 line-through">₹{item.price}</span>
+                  </div>
+                ) : (
+                  <span className="text-2xl font-bold text-cream">₹{item.price}</span>
+                )}
+                {item.priceUnit && (
+                  <span className="text-cream/50 text-sm ml-1">/{item.priceUnit.replace('per ', '')}</span>
+                )}
+              </div>
             </div>
           )}
-          
+
           {/* Order Button */}
           <motion.a
             href="#order"
-            whileHover={{ x: 5 }}
-            className="inline-flex items-center gap-1 sm:gap-1.5 text-rose font-bold text-xs sm:text-sm hover:text-rose-glow transition-colors"
+            onClick={onClose}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-gradient-to-r from-rose to-rose-dark text-white font-bold text-lg shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-shadow"
           >
+            <span className="material-symbols-outlined">shopping_bag</span>
             <span>Order Now</span>
-            <span className="material-symbols-outlined text-xs sm:text-sm">arrow_forward</span>
           </motion.a>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
+  );
+}
+
+// Horizontal Scroll Category Section
+function CategorySection({ category, items, onItemClick }) {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    const scrollEl = scrollRef.current;
+    if (scrollEl) {
+      scrollEl.addEventListener('scroll', checkScroll);
+      return () => scrollEl.removeEventListener('scroll', checkScroll);
+    }
+  }, [items]);
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = direction === 'left' ? -300 : 300;
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className="mb-8 sm:mb-12">
+      {/* Category Header */}
+      <div className="flex items-center justify-between mb-4 sm:mb-5 px-1">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose to-rose-dark flex items-center justify-center">
+            <span className="material-symbols-outlined text-white text-lg">
+              {getCategoryIcon(category)}
+            </span>
+          </div>
+          <div>
+            <h3 className="text-lg sm:text-xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>
+              {category}
+            </h3>
+            <p className="text-cream/40 text-xs">{items.length} items</p>
+          </div>
+        </div>
+
+        {/* Scroll Arrows - Desktop */}
+        <div className="hidden sm:flex items-center gap-2">
+          <button
+            onClick={() => scroll('left')}
+            disabled={!canScrollLeft}
+            className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+              canScrollLeft 
+                ? 'border-rose/30 text-cream hover:bg-rose/10 hover:border-rose' 
+                : 'border-cream/10 text-cream/20 cursor-not-allowed'
+            }`}
+          >
+            <span className="material-symbols-outlined text-lg">chevron_left</span>
+          </button>
+          <button
+            onClick={() => scroll('right')}
+            disabled={!canScrollRight}
+            className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+              canScrollRight 
+                ? 'border-rose/30 text-cream hover:bg-rose/10 hover:border-rose' 
+                : 'border-cream/10 text-cream/20 cursor-not-allowed'
+            }`}
+          >
+            <span className="material-symbols-outlined text-lg">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Horizontal Scroll */}
+      <div className="relative">
+        {/* Left Gradient Fade */}
+        {canScrollLeft && (
+          <div className="hidden sm:block absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-noir-light to-transparent z-10 pointer-events-none" />
+        )}
+
+        {/* Items */}
+        <div
+          ref={scrollRef}
+          className="flex gap-3 sm:gap-4 overflow-x-auto hide-scrollbar pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+        >
+          {items.map((item, index) => {
+            const hasDiscount = item.discountPrice !== null && item.discountPrice !== undefined && item.discountPrice < item.price;
+
+            return (
+              <motion.div
+                key={item._id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                onClick={() => onItemClick(item)}
+                className="flex-shrink-0 w-[160px] sm:w-[200px] md:w-[240px] cursor-pointer group"
+              >
+                <div className="card-noir overflow-hidden h-full hover:border-rose/30 transition-all">
+                  {/* Image */}
+                  <div className="relative h-28 sm:h-36 md:h-44 overflow-hidden">
+                    <Image
+                      src={item.imageData}
+                      alt={item.name}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      unoptimized
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent" />
+
+                    {/* Badges */}
+                    {item.badge && (
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-rose to-rose-dark text-white text-[10px] font-bold">
+                        {item.badge}
+                      </span>
+                    )}
+                    {hasDiscount && (
+                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold">
+                        {Math.round(((item.price - item.discountPrice) / item.price) * 100)}% OFF
+                      </span>
+                    )}
+
+                    {/* Quick View Icon */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-noir/40">
+                      <span className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white text-xl">visibility</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-3 sm:p-4">
+                    <h4 className="text-xs sm:text-sm font-bold text-cream mb-1 line-clamp-1 group-hover:text-rose transition-colors">
+                      {item.name}
+                    </h4>
+                    <p className="text-cream/50 text-[10px] sm:text-xs line-clamp-2 mb-2 h-6 sm:h-8">
+                      {item.description}
+                    </p>
+
+                    {/* Price */}
+                    {item.price > 0 && (
+                      <div className="flex items-baseline gap-1.5">
+                        {hasDiscount ? (
+                          <>
+                            <span className="text-rose font-bold text-sm sm:text-base">₹{item.discountPrice}</span>
+                            <span className="text-cream/30 line-through text-[10px]">₹{item.price}</span>
+                          </>
+                        ) : (
+                          <span className="text-cream font-bold text-sm sm:text-base">₹{item.price}</span>
+                        )}
+                        {item.priceUnit && (
+                          <span className="text-cream/40 text-[10px]">/{item.priceUnit.replace('per ', '')}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Right Gradient Fade */}
+        {canScrollRight && (
+          <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-noir-light to-transparent z-10 pointer-events-none" />
+        )}
+      </div>
+    </div>
   );
 }
 
 export default function Menu() {
   const [allFlavors, setAllFlavors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [showAll, setShowAll] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -174,26 +374,25 @@ export default function Menu() {
     fetchMenu();
   }, []);
 
-  // Get unique categories
-  const categories = useMemo(() => {
-    const cats = new Set(allFlavors.map(f => getCategoryFromName(f.name)));
-    return ['All', ...Array.from(cats).sort()];
+  // Group items by category
+  const categorizedItems = useMemo(() => {
+    const groups = {};
+    allFlavors.forEach((item) => {
+      const category = getCategoryFromName(item.name);
+      if (!groups[category]) groups[category] = [];
+      groups[category].push(item);
+    });
+    // Sort categories to put ones with more items first
+    return Object.entries(groups)
+      .sort((a, b) => b[1].length - a[1].length)
+      .reduce((acc, [key, value]) => {
+        acc[key] = value.slice(0, ITEMS_PER_CATEGORY);
+        return acc;
+      }, {});
   }, [allFlavors]);
 
-  // Filter items by category
-  const filteredFlavors = useMemo(() => {
-    if (activeCategory === 'All') return allFlavors;
-    return allFlavors.filter(f => getCategoryFromName(f.name) === activeCategory);
-  }, [allFlavors, activeCategory]);
-
-  // Limit display
-  const displayedFlavors = showAll ? filteredFlavors : filteredFlavors.slice(0, ITEMS_PER_VIEW);
-  const hasMore = filteredFlavors.length > ITEMS_PER_VIEW;
-
-  // Reset showAll when category changes
-  useEffect(() => {
-    setShowAll(false);
-  }, [activeCategory]);
+  const totalItems = allFlavors.length;
+  const totalCategories = Object.keys(categorizedItems).length;
 
   return (
     <section 
@@ -215,7 +414,7 @@ export default function Menu() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-6 sm:mb-10"
+          className="text-center max-w-2xl mx-auto mb-8 sm:mb-12"
         >
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
@@ -236,101 +435,69 @@ export default function Menu() {
             <span className="gradient-text">Flavors</span>
           </h2>
           
-          <p className="text-cream-muted text-sm sm:text-base md:text-lg px-4 sm:px-0">
+          <p className="text-cream-muted text-sm sm:text-base md:text-lg px-4 sm:px-0 mb-4">
             From timeless classics to adventurous new pairings, explore our most loved
             flavor combinations.
           </p>
+
+          {/* Quick Stats */}
+          {!loading && (
+            <div className="flex items-center justify-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-noir/50 border border-cream/10">
+                <span className="material-symbols-outlined text-rose text-sm">category</span>
+                <span className="text-cream text-xs font-medium">{totalCategories} Categories</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-noir/50 border border-cream/10">
+                <span className="material-symbols-outlined text-gold text-sm">menu_book</span>
+                <span className="text-cream text-xs font-medium">{totalItems} Items</span>
+              </div>
+            </div>
+          )}
         </motion.div>
 
-        {/* Category Tabs */}
-        {!loading && categories.length > 2 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2 }}
-            className="mb-6 sm:mb-8"
-          >
-            {/* Scrollable tabs container */}
-            <div className="flex overflow-x-auto pb-2 gap-2 sm:gap-3 hide-scrollbar justify-start sm:justify-center">
-              {categories.map((category) => {
-                const count = category === 'All' 
-                  ? allFlavors.length 
-                  : allFlavors.filter(f => getCategoryFromName(f.name) === category).length;
-                
-                return (
-                  <motion.button
-                    key={category}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setActiveCategory(category)}
-                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
-                      activeCategory === category
-                        ? 'bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30'
-                        : 'bg-noir text-cream border border-rose/20 hover:border-rose/40'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-sm sm:text-base">{getCategoryIcon(category)}</span>
-                    <span>{category}</span>
-                    <span className={`text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full ${
-                      activeCategory === category ? 'bg-noir/20' : 'bg-rose/10'
-                    }`}>
-                      {count}
-                    </span>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-
-        {/* Menu Grid */}
-        <AnimatePresence mode="wait">
-          {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="card-noir overflow-hidden">
-                  <div className="h-32 sm:h-40 md:h-48 skeleton" />
-                  <div className="p-3 sm:p-4 md:p-5 space-y-2 sm:space-y-3">
-                    <div className="h-4 sm:h-5 skeleton w-3/4" />
-                    <div className="h-3 sm:h-4 skeleton" />
-                    <div className="h-3 sm:h-4 skeleton w-1/2" />
+        {/* Category Sections */}
+        {loading ? (
+          <div className="space-y-8">
+            {[1, 2].map((i) => (
+              <div key={i}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl skeleton" />
+                  <div>
+                    <div className="w-24 h-5 skeleton mb-1" />
+                    <div className="w-16 h-3 skeleton" />
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <motion.div
-              key={activeCategory}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6"
-            >
-              {displayedFlavors.map((flavor, index) => (
-                <MenuCard key={flavor._id} flavor={flavor} index={index} />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Show More / Show Less */}
-        {!loading && hasMore && (
+                <div className="flex gap-4 overflow-hidden">
+                  {[1, 2, 3, 4].map((j) => (
+                    <div key={j} className="flex-shrink-0 w-[200px]">
+                      <div className="card-noir overflow-hidden">
+                        <div className="h-36 skeleton" />
+                        <div className="p-4 space-y-2">
+                          <div className="h-4 skeleton w-3/4" />
+                          <div className="h-3 skeleton" />
+                          <div className="h-4 skeleton w-1/2" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mt-6 sm:mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
           >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowAll(!showAll)}
-              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-noir border border-rose/30 text-cream font-medium text-sm sm:text-base hover:border-rose/50 hover:bg-rose/5 transition-all"
-            >
-              <span className="material-symbols-outlined text-rose text-lg">
-                {showAll ? 'expand_less' : 'expand_more'}
-              </span>
-              <span>{showAll ? 'Show Less' : `View All ${filteredFlavors.length} Items`}</span>
-            </motion.button>
+            {Object.entries(categorizedItems).map(([category, items]) => (
+              <CategorySection
+                key={category}
+                category={category}
+                items={items}
+                onItemClick={setSelectedItem}
+              />
+            ))}
           </motion.div>
         )}
 
@@ -355,6 +522,16 @@ export default function Menu() {
           </motion.a>
         </motion.div>
       </div>
+
+      {/* Quick View Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <QuickViewModal
+            item={selectedItem}
+            onClose={() => setSelectedItem(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
