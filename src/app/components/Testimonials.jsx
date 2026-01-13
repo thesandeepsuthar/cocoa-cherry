@@ -1,8 +1,72 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Slider from 'react-slick';
+
+// ============================================
+// Custom useBreakpoint Hook
+// - SSR-safe (defaults to largest breakpoint)
+// - Throttled resize for performance
+// - No memory leaks (cleanup on unmount)
+// ============================================
+function useBreakpoint() {
+  // Default to 'desktop' for SSR to prevent hydration mismatch
+  const [breakpoint, setBreakpoint] = useState('desktop');
+  const [slidesToShow, setSlidesToShow] = useState(3);
+
+  const getBreakpoint = useCallback(() => {
+    if (typeof window === 'undefined') return { bp: 'desktop', slides: 3 };
+    
+    const width = window.innerWidth;
+    if (width < 500) return { bp: 'mobile', slides: 1 };
+    if (width < 768) return { bp: 'tablet', slides: 2 };
+    return { bp: 'desktop', slides: 3 };
+  }, []);
+
+  useEffect(() => {
+    // Set initial value on mount (client-side only)
+    const { bp, slides } = getBreakpoint();
+    setBreakpoint(bp);
+    setSlidesToShow(slides);
+
+    // Throttle function to limit resize calls
+    let timeoutId = null;
+    let lastCall = 0;
+    const throttleMs = 150;
+
+    const handleResize = () => {
+      const now = Date.now();
+      const timeSinceLastCall = now - lastCall;
+
+      if (timeSinceLastCall >= throttleMs) {
+        lastCall = now;
+        const { bp: newBp, slides: newSlides } = getBreakpoint();
+        setBreakpoint(newBp);
+        setSlidesToShow(newSlides);
+      } else {
+        // Schedule a trailing call
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          lastCall = Date.now();
+          const { bp: newBp, slides: newSlides } = getBreakpoint();
+          setBreakpoint(newBp);
+          setSlidesToShow(newSlides);
+        }, throttleMs - timeSinceLastCall);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [getBreakpoint]);
+
+  return { breakpoint, slidesToShow };
+}
 
 // Default fallback testimonials
 const defaultTestimonials = [
@@ -320,14 +384,99 @@ const truncateText = (text, maxLength = 120) => {
   return { text: text.slice(0, maxLength).trim() + '...', isTruncated: true };
 };
 
+// Testimonial Card Component (extracted for cleaner code)
+function TestimonialCard({ item, onReadMore }) {
+  const getAvatar = (item) => {
+    if (item.avatarData) {
+      return { type: 'image', value: item.avatarData };
+    }
+    return { type: 'initials', value: item.name.charAt(0).toUpperCase() };
+  };
+
+  const avatar = getAvatar(item);
+  const { text, isTruncated } = truncateText(item.review, 70);
+
+  return (
+    <div className="h-full px-2">
+      <div className="card-noir testimonial-card p-4 sm:p-5 md:p-6 relative h-full flex flex-col">
+        {/* Google Review Badge */}
+        <div className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/10 border border-white/20">
+          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          <span className="text-[10px] sm:text-xs text-white/70 font-medium">Google</span>
+        </div>
+
+        {/* Rating */}
+        <div className="mb-2 sm:mb-3 md:mb-4">
+          <StarRating rating={item.rating || 5} size="sm" />
+        </div>
+
+        {/* Review text - Truncated */}
+        <div className="mb-3 md:mb-4 flex-1 overflow-hidden">
+          <p className="text-cream-muted italic text-xs sm:text-sm md:text-base leading-relaxed line-clamp-2 sm:line-clamp-3">
+            &ldquo;{text}&rdquo;
+          </p>
+          {isTruncated && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onReadMore(item);
+              }}
+              className="text-rose text-xs font-medium hover:text-rose-glow 
+                       transition-colors mt-1.5 sm:mt-2 inline-flex items-center gap-1"
+            >
+              Read more
+              <span className="material-symbols-outlined text-xs">arrow_forward</span>
+            </button>
+          )}
+        </div>
+
+        {/* Author */}
+        <div className="flex items-center gap-2 sm:gap-3 mt-auto pt-2 sm:pt-3 border-t border-rose/10">
+          {avatar.type === 'image' ? (
+            <div
+              className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-cover bg-center 
+                       border-2 border-rose/30 flex-shrink-0"
+              style={{ backgroundImage: `url('${avatar.value}')` }}
+            />
+          ) : (
+            <div className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                          flex items-center justify-center text-noir font-bold text-xs sm:text-sm md:text-lg flex-shrink-0">
+              {avatar.value}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-cream font-bold text-xs sm:text-sm md:text-base truncate">{item.name}</p>
+            <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm truncate">{item.cakeType || 'Cake Order'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState(defaultTestimonials);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
   const sectionRef = useRef(null);
+  const sliderRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+
+  // Use custom breakpoint hook for responsive slidesToShow
+  const { breakpoint, slidesToShow } = useBreakpoint();
+
+  // Track mount state for SSR safety
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Fetch reviews
   useEffect(() => {
@@ -387,11 +536,13 @@ export default function Testimonials() {
     setSelectedReview(testimonials[newIndex]);
   };
 
+  // Dynamic slider settings based on breakpoint
+  // Using key prop to force re-render when slidesToShow changes
   const sliderSettings = {
     dots: true,
-    infinite: true,
+    infinite: testimonials.length > slidesToShow,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: slidesToShow,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
@@ -400,22 +551,8 @@ export default function Testimonials() {
     adaptiveHeight: false,
     centerMode: false,
     variableWidth: false,
-    responsive: [
-      {
-        breakpoint: 1025,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        }
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        }
-      }
-    ]
+    swipeToSlide: true,
+    touchThreshold: 10,
   };
 
   const getAvatar = (item) => {
@@ -496,73 +633,41 @@ export default function Testimonials() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
-            className="mb-12 testimonials-slider overflow-hidden px-2"
+            className="mb-12 testimonials-slider overflow-hidden"
           >
-            <Slider {...sliderSettings}>
-              {testimonials.map((item) => {
-                const avatar = getAvatar(item);
-                return (
-                  <div key={item._id} className="h-full">
-                    <div className="card-noir testimonial-card p-4 sm:p-5 md:p-6 relative">
-                      {/* Quote icon */}
-                      <span className="material-symbols-outlined text-2xl sm:text-3xl md:text-4xl text-rose/20 absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4">
-                        format_quote
-                      </span>
-
-                      {/* Rating */}
-                      <div className="mb-2 sm:mb-3 md:mb-4">
-                        <StarRating rating={item.rating || 5} size="sm" />
-                      </div>
-
-                      {/* Review text - Truncated */}
-                      {(() => {
-                        const { text, isTruncated } = truncateText(item.review, 70);
-                        return (
-                          <div className="mb-3 md:mb-4 flex-1 overflow-hidden">
-                            <p className="text-cream-muted italic text-xs sm:text-sm md:text-base leading-relaxed line-clamp-2 sm:line-clamp-3">
-                              &ldquo;{text}&rdquo;
-                            </p>
-                            {isTruncated && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedReview(item);
-                                }}
-                                className="text-rose text-xs font-medium hover:text-rose-glow 
-                                         transition-colors mt-1.5 sm:mt-2 inline-flex items-center gap-1"
-                              >
-                                Read more
-                                <span className="material-symbols-outlined text-xs">arrow_forward</span>
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })()}
-
-                      {/* Author */}
-                      <div className="flex items-center gap-2 sm:gap-3 mt-auto pt-2 sm:pt-3 border-t border-rose/10">
-                        {avatar.type === 'image' ? (
-                          <div
-                            className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-cover bg-center 
-                                     border-2 border-rose/30 flex-shrink-0"
-                            style={{ backgroundImage: `url('${avatar.value}')` }}
-                          />
-                        ) : (
-                          <div className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
-                                        flex items-center justify-center text-noir font-bold text-xs sm:text-sm md:text-lg flex-shrink-0">
-                            {avatar.value}
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className="text-cream font-bold text-xs sm:text-sm md:text-base truncate">{item.name}</p>
-                          <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm truncate">{item.cakeType || 'Cake Order'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </Slider>
+            {/* 
+              Key prop forces Slider re-initialization when slidesToShow changes.
+              This is the most reliable way to handle responsive breakpoints with react-slick.
+              Only render slider after mount to prevent hydration mismatch.
+            */}
+            {isMounted && (
+              <Slider 
+                ref={sliderRef}
+                key={`slider-${breakpoint}-${slidesToShow}`} 
+                {...sliderSettings}
+              >
+                {testimonials.map((item) => (
+                  <TestimonialCard
+                    key={item._id}
+                    item={item}
+                    onReadMore={setSelectedReview}
+                  />
+                ))}
+              </Slider>
+            )}
+            
+            {/* SSR Fallback - show static grid before hydration */}
+            {!isMounted && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {testimonials.slice(0, 3).map((item) => (
+                  <TestimonialCard
+                    key={item._id}
+                    item={item}
+                    onReadMore={setSelectedReview}
+                  />
+                ))}
+              </div>
+            )}
           </motion.div>
         )}
 
