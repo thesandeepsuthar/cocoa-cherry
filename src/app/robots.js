@@ -6,10 +6,31 @@ export default function robots() {
       {
         userAgent: '*',
         allow: '/',
+        disallow: [
+          '/admin',
+          '/admin/*',
+          '/api/',
+          '/api/*',
+          '/_next/',
+          '/private/',
+        ],
+      },
+      {
+        userAgent: 'Googlebot',
+        allow: '/',
+        disallow: ['/admin', '/api/'],
+      },
+      {
+        userAgent: 'Googlebot-Image',
+        allow: '/',
+      },
+      {
+        userAgent: 'Bingbot',
+        allow: '/',
         disallow: ['/admin', '/api/'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }
-

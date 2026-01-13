@@ -9,42 +9,42 @@ import Link from 'next/link';
 const INITIAL_DISPLAY_COUNT = 6; // Show 6 images initially
 const LOAD_MORE_COUNT = 6; // Load 6 more each time
 
-// Default fallback images
+// Default fallback images with SEO-optimized alt text
 const defaultGalleryImages = [
   {
     _id: '1',
     imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBm1GWUFEfmswVpFplvqNXgXXyYbgr_zFqCpbwTH0d_9sjbjAqDJnzM6EW6EfH8mMAJt0Ag2LfGzBXZeiog2WK1V4GHdPIU30OIow0qH3Va3DFTGOfM0cTOSckzaTerVoaoM7iy3R2tbl5pUFOm9vMqNPKrjBrVRm_75XkNpqSZcDvVp5eVtNwXM9WF6Hb3NPKfpOp0K5bOYLbLVGOo5vaVFrbtvzO0ZvwoqkCmko7njflC1i-gfFoQlmzC3_MKcF126-ZUJHZSg_1G',
-    alt: 'Two tier pink floral wedding cake',
+    alt: 'Two tier pink floral wedding cake with elegant buttercream design - Custom wedding cake Ahmedabad by Cocoa&Cherry',
     caption: 'Elegant Wedding Cake',
   },
   {
     _id: '2',
     imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAah8GVLLzA6nAPXWPUKYmwd-jJIXbqcf0UM8Q0wugH6uMreOVsy_3JzRXSCWcjusY5jLsLicfltmevzrS2NPZZp_aNColSduaRRUTwh-PD7lNQwM19dzl1IAtFIbW_GmwGrlQNSi9Fa22H0FNH5G_hssGWGIJG382R9tdMCv9hqRogr0zH1BAyYuIq6q5_c--O8UIv4FPF8pnevOfosYdHH-RVflnREbvsj5f1UF367ZQ6umTgRVGLgFr-r_iPsvKD5zrPzwGGTRT-',
-    alt: 'Box of assorted premium cupcakes',
+    alt: 'Box of assorted premium cupcakes with colorful frosting - Cupcake box order Ahmedabad by Cocoa&Cherry',
     caption: 'Assorted Cupcake Box',
   },
   {
     _id: '3',
     imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDMBY064JY4sQ6fJegsnLLGZ-TtVvk-_5-IHYqZKP_c_4g6C68OaDQClS_I9CeMb9-sF8fn3_tPO8Vx1S8wmWA6Liy2UCoG6fqacZCFlS3LO0NEQ18uxymres9eG8As1_Wa6A8VOAH_tsqrzH_HeshLpofRSvNRqDkBGXQK669-o1pln_h1OiZpxvUMtfCT-S4L-JGyxQoTE1PcqFPWp1gHnCWw9WlDPe-8GuYWqFQ1WOCCnE0MuvRTVj8vmC9CIWHIbk7CgGb09X21',
-    alt: 'Chocolate drip cake with macarons',
+    alt: 'Chocolate drip birthday cake with macarons and Belgian chocolate ganache - Designer cake Ahmedabad by Cocoa&Cherry',
     caption: 'Chocolate Drip Delight',
   },
   {
     _id: '4',
     imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCd3i1U5fM86R101PGUh_dtlxde4PdWy8caNLoNlNrmOCL6ZZ7zJjW2JzBBBun7MkgQkH8LG4m3T-AoTRo5BVLIoOXH_jqzIfNWZq4aviS4ninyxVHBvyxURqBJVSBd1y7jlvWZKKlWc6GWrHvWrPNO65ERsEp9LOH7x3ds_yQ9CEWK3FFZY_w1IQgRtbW1Sk3xISAnkJk5kToVbAfNfqmiUUCy-au9c1jjJY4H9Pkp1vJy5XX5bCU-oYldwn-zoHFL0OCM5u5BkJ0B',
-    alt: 'Minimalist white frosting cake with gold leaf',
+    alt: 'Minimalist white frosting cake with edible gold leaf decoration - Premium anniversary cake Ahmedabad by Cocoa&Cherry',
     caption: 'Minimalist Gold Leaf',
   },
   {
     _id: '5',
     imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBtz8rv6qGzsLC_gsATHh3oNwSo_zjp2WksS_u3FT-D2Lc9qDYK9fFxvfuM36zA9_UqdUfa9DSkpRkXTYF_K32TW-FnIiRuod_G5pr_Rofi8UqAMqghUcTYuVTOXL8JLLARwZCmsxzDhTt5KKQCLGOa4IuEYOxnwIfazI__Q13B_PtD5-OJrX0oBB0hnvVRwnAH_OYa25qzvup0UQrsEuWmbpvC6xyk_WaFU4bmIhZFILRC2jPRsP9FS606eHd6DkcKbT3b2BOsZMsl',
-    alt: 'Celebration cake with candles',
+    alt: 'Birthday celebration cake with candles and festive decoration - Birthday cake delivery Ahmedabad by Cocoa&Cherry',
     caption: 'Birthday Celebration',
   },
   {
     _id: '6',
     imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD36QhPfIBwsBtYj5n7NW5obGhdnZgpmTWp7meScTgRYe0vv9AJaEXGvCYc81tQd3s9DeoCSQK0rrHZbO-QbHk-vDjSNxzPknXpBoVMTuklRE15lFzk8AO6guFs_HJmjZLsXl80aQl0wPtea3DbZFg_DK8-BISDZpFAtCmmdutv2JHTXwaRcMq1025ZXcBA2mxWW_c83wXPddXqf6bsnm8BNRhGoKsSYZW389fNx6_DNeb8tM4tHK2YGzQotgwOlkV7h5GZHSKmF91P',
-    alt: 'Strawberry shortcake with fresh berries',
+    alt: 'Fresh strawberry shortcake with seasonal berries and whipped cream - Fruit cake Ahmedabad by Cocoa&Cherry',
     caption: 'Fresh Berry Delight',
   },
 ];
@@ -328,6 +328,7 @@ export default function Gallery() {
         ref={sectionRef}
         className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light overflow-hidden" 
         id="gallery"
+        aria-labelledby="gallery-heading"
       >
         {/* Background decorations */}
         <div className="absolute inset-0 pointer-events-none">
@@ -355,9 +356,11 @@ export default function Gallery() {
             </motion.div>
 
             <h2 
+              id="gallery-heading"
               className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
               style={{ fontFamily: 'var(--font-cinzel)' }}
             >
+              <span className="text-cream">Cake </span>
               <span className="gradient-text">Gallery</span>
             </h2>
             

@@ -4,32 +4,33 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import Link from 'next/link';
 
+// SEO-optimized features with keywords
 const features = [
   {
     icon: 'verified_user',
-    title: 'FSSAI Certified',
-    description: 'Fully licensed home studio adhering to strict hygiene and safety protocols.',
+    title: 'FSSAI Certified Home Bakery',
+    description: 'Fully licensed and FSSAI certified home bakery in Ahmedabad. We follow strict hygiene and food safety protocols for your peace of mind.',
     gradient: 'from-emerald-400 to-teal-500',
     delay: 0,
   },
   {
     icon: 'diamond',
-    title: 'Premium Ingredients',
-    description: 'Imported Belgian chocolate, fresh seasonal fruits, and high-quality butter.',
+    title: 'Premium Belgian Chocolate',
+    description: 'We use imported Callebaut Belgian chocolate, fresh seasonal fruits, real butter, and premium ingredients in every cake.',
     gradient: 'from-rose to-rose-dark',
     delay: 0.1,
   },
   {
     icon: 'palette',
-    title: 'Custom Artistry',
-    description: 'Bespoke designs tailored to match your party theme and vision perfectly.',
+    title: 'Custom Cake Designs',
+    description: 'Bespoke designer cakes, photo cakes, themed cakes, and fondant artistry tailored to your vision and celebration.',
     gradient: 'from-violet-400 to-purple-600',
     delay: 0.2,
   },
   {
     icon: 'local_shipping',
-    title: 'Safe Delivery',
-    description: 'We use Porter for safe and on-time delivery, ensuring your cake arrives in pristine condition.',
+    title: 'Same Day Cake Delivery',
+    description: 'Fast and safe cake delivery across Ahmedabad via Porter. Same day delivery before 2PM, midnight delivery available.',
     gradient: 'from-gold to-amber-500',
     delay: 0.3,
   },
@@ -97,6 +98,7 @@ export default function Features() {
       ref={sectionRef}
       className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir overflow-hidden" 
       id="about"
+      aria-labelledby="about-heading"
     >
       {/* Background decorations */}
       <div className="absolute inset-0 pointer-events-none">

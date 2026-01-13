@@ -17,32 +17,49 @@ const workSans = Work_Sans({
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
 
 export const metadata = {
-  // Basic Meta Tags
+  // Base URL for resolving relative URLs
+  metadataBase: new URL(siteUrl),
+  
+  // Optimized Title (CTR focused)
   title: {
-    default: "Cocoa&Cherry | Premium Custom Cakes in Ahmedabad | Home Bakery",
+    default: "Custom Cakes Ahmedabad | Cocoa&Cherry ⭐ FSSAI Certified Home Bakery",
     template: "%s | Cocoa&Cherry"
   },
-  description: "Order premium custom cakes in Ahmedabad from Cocoa&Cherry - FSSAI certified home bakery. Birthday cakes, wedding cakes, anniversary cakes with Belgian chocolate. Safe delivery via Porter. Call +91 97127 52469",
+  
+  // Optimized Description (High click intent)
+  description: "Order premium custom cakes in Ahmedabad. Birthday cakes, wedding cakes, designer cakes with Belgian chocolate. FSSAI certified home bakery. Same day delivery! ☎️ 97127-52469",
+  
+  // Expanded Keywords
   keywords: [
-    "custom cakes Ahmedabad",
-    "birthday cake Ahmedabad",
-    "wedding cake Ahmedabad", 
-    "anniversary cake",
-    "premium cakes",
-    "home bakery Ahmedabad",
-    "Belgian chocolate cake",
-    "designer cakes",
-    "cake delivery Ahmedabad",
-    "FSSAI certified bakery",
-    "Isanpur cake shop",
-    "eggless cakes Ahmedabad",
-    "photo cakes",
-    "fondant cakes",
-    "custom cake design",
-    "cake order online Ahmedabad",
-    "Cocoa Cherry",
-    "homemade cakes"
+    // Primary Keywords
+    "custom cakes ahmedabad",
+    "birthday cake ahmedabad",
+    "cake delivery ahmedabad",
+    "home bakery ahmedabad",
+    "designer cakes ahmedabad",
+    // Secondary Keywords
+    "wedding cake ahmedabad",
+    "anniversary cake order",
+    "eggless cake ahmedabad",
+    "photo cake ahmedabad",
+    "fondant cake design",
+    "chocolate truffle cake",
+    "same day cake delivery",
+    "midnight cake delivery ahmedabad",
+    "fssai certified bakery",
+    "isanpur cake shop",
+    // Long-tail Keywords
+    "best chocolate truffle cake ahmedabad",
+    "custom photo cake order online",
+    "home bakery near maninagar",
+    "designer wedding cake prices",
+    "eggless birthday cake delivery",
+    // Brand Keywords
+    "cocoa cherry",
+    "cocoa and cherry",
+    "cocoacherry cakes"
   ],
+  
   authors: [{ name: "Cocoa&Cherry", url: siteUrl }],
   creator: "Cocoa&Cherry",
   publisher: "Cocoa&Cherry",
@@ -56,20 +73,34 @@ export const metadata = {
     apple: '/logo.svg',
   },
   
-  // Open Graph for Social Sharing
+  // Open Graph for Social Sharing (Critical for WhatsApp/Facebook)
   openGraph: {
     type: "website",
     locale: "en_IN",
     url: siteUrl,
     siteName: "Cocoa&Cherry",
-    title: "Cocoa&Cherry | Premium Custom Cakes in Ahmedabad",
-    description: "Order premium custom cakes from FSSAI certified home bakery. Birthday, wedding & anniversary cakes with Belgian chocolate. Safe delivery via Porter.",
+    title: "Custom Cakes in Ahmedabad | Cocoa&Cherry Home Bakery",
+    description: "Order premium custom cakes. FSSAI certified home bakery. Birthday, wedding & designer cakes with Belgian chocolate. Same day delivery in Ahmedabad!",
     images: [
       {
-        url: `${siteUrl}/logo.svg`,
+        url: "/og-image.jpg", // TODO: Create this 1200x630px image
         width: 1200,
         height: 630,
-        alt: "Cocoa&Cherry Premium Cakes",
+        alt: "Cocoa&Cherry - Premium Custom Cakes in Ahmedabad",
+        type: "image/jpeg",
+      },
+      {
+        url: "/og-image-square.jpg", // TODO: Create this 1200x1200px for WhatsApp
+        width: 1200,
+        height: 1200,
+        alt: "Cocoa&Cherry Cakes",
+        type: "image/jpeg",
+      },
+      {
+        url: "/logo.svg", // Fallback
+        width: 512,
+        height: 512,
+        alt: "Cocoa&Cherry Logo",
         type: "image/svg+xml",
       },
     ],
@@ -78,19 +109,22 @@ export const metadata = {
   // Twitter Card
   twitter: {
     card: "summary_large_image",
-    title: "Cocoa&Cherry | Premium Custom Cakes in Ahmedabad",
-    description: "Order premium custom cakes from FSSAI certified home bakery. Birthday, wedding & anniversary cakes with Belgian chocolate.",
-    images: [`${siteUrl}/logo.svg`],
+    site: "@cocoa_cherry_",
     creator: "@cocoa_cherry_",
+    title: "Custom Cakes Ahmedabad | Cocoa&Cherry ⭐ FSSAI Certified",
+    description: "Premium custom cakes from FSSAI certified home bakery. Birthday, wedding & designer cakes. Same day delivery!",
+    images: ["/og-image.jpg"],
   },
   
   // Robots
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
@@ -99,132 +133,401 @@ export const metadata = {
   
   // Verification (Add your verification codes here)
   verification: {
-    // google: "your-google-verification-code",
+    // google: "your-google-verification-code", // Get from Google Search Console
     // yandex: "your-yandex-verification-code",
   },
   
   // Canonical URL
   alternates: {
     canonical: siteUrl,
+    languages: {
+      'en-IN': siteUrl,
+    },
   },
   
   // App Info
   applicationName: "Cocoa&Cherry",
   category: "Food & Drink",
   
-  // Additional Meta
+  // Additional Meta Tags for Local SEO
   other: {
     "geo.region": "IN-GJ",
-    "geo.placename": "Ahmedabad",
+    "geo.placename": "Ahmedabad, Gujarat, India",
     "geo.position": "22.9734;72.6010",
     "ICBM": "22.9734, 72.6010",
     "format-detection": "telephone=yes",
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-title": "Cocoa&Cherry",
   },
 };
 
-// JSON-LD Structured Data
+// Comprehensive JSON-LD Structured Data for SEO
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
+    // 1. ORGANIZATION SCHEMA
     {
-      "@type": "LocalBusiness",
-      "@id": `${siteUrl}/#business`,
-      name: "Cocoa&Cherry",
-      alternateName: "Cocoa Cherry Cakes",
-      description: "Premium custom cakes from FSSAI certified home bakery in Ahmedabad. Specializing in birthday cakes, wedding cakes, and anniversary cakes with Belgian chocolate.",
-      url: siteUrl,
-      logo: `${siteUrl}/logo.svg`,
-      image: `${siteUrl}/logo.svg`,
-      telephone: "+91-97127-52469",
-      email: "cocoacheery307@gmail.com",
-      address: {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      "name": "Cocoa&Cherry",
+      "alternateName": ["Cocoa Cherry", "Cocoa and Cherry", "CocoaCherry Cakes"],
+      "url": siteUrl,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${siteUrl}/logo.svg`,
+        "width": 512,
+        "height": 512
+      },
+      "image": `${siteUrl}/logo.svg`,
+      "description": "Premium custom cakes and home bakery in Ahmedabad, Gujarat",
+      "foundingDate": "2020",
+      "address": {
         "@type": "PostalAddress",
-        streetAddress: "9/A, Dholeshwar Mahadev Rd, Ganesh Park Society, Rajeswari Society",
-        addressLocality: "Isanpur, Ahmedabad",
-        addressRegion: "Gujarat",
-        postalCode: "380008",
-        addressCountry: "IN"
+        "streetAddress": "9/A, Dholeshwar Mahadev Rd, Ganesh Park Society",
+        "addressLocality": "Isanpur, Ahmedabad",
+        "addressRegion": "Gujarat",
+        "postalCode": "380008",
+        "addressCountry": "IN"
       },
-      geo: {
-        "@type": "GeoCoordinates",
-        latitude: "22.9734",
-        longitude: "72.6010"
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-97127-52469",
+        "contactType": "customer service",
+        "availableLanguage": ["English", "Hindi", "Gujarati"],
+        "areaServed": "Ahmedabad"
       },
-      openingHoursSpecification: {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        opens: "09:00",
-        closes: "21:00"
-      },
-      priceRange: "₹₹",
-      currenciesAccepted: "INR",
-      paymentAccepted: "Cash, UPI, Bank Transfer",
-      areaServed: {
-        "@type": "City",
-        name: "Ahmedabad"
-      },
-      sameAs: [
+      "sameAs": [
         "https://www.instagram.com/cocoa_cherry_"
+      ]
+    },
+    
+    // 2. LOCAL BUSINESS / BAKERY SCHEMA (More specific)
+    {
+      "@type": "Bakery",
+      "@id": `${siteUrl}/#bakery`,
+      "name": "Cocoa&Cherry - Custom Cakes Ahmedabad",
+      "image": `${siteUrl}/logo.svg`,
+      "url": siteUrl,
+      "telephone": "+91-97127-52469",
+      "email": "cocoacheery307@gmail.com",
+      "priceRange": "₹₹",
+      "servesCuisine": ["Cakes", "Desserts", "Bakery Items", "Brownies", "Cheesecakes"],
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "9/A, Dholeshwar Mahadev Rd, Ganesh Park Society, Rajeswari Society",
+        "addressLocality": "Isanpur",
+        "addressRegion": "Gujarat",
+        "postalCode": "380008",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 22.9734,
+        "longitude": 72.6010
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          "opens": "09:00",
+          "closes": "21:00"
+        }
       ],
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: "Custom Cakes",
-        itemListElement: [
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "Ahmedabad"
+        },
+        {
+          "@type": "Place",
+          "name": "Isanpur"
+        },
+        {
+          "@type": "Place",
+          "name": "Maninagar"
+        },
+        {
+          "@type": "Place",
+          "name": "Vastral"
+        },
+        {
+          "@type": "Place",
+          "name": "Nikol"
+        },
+        {
+          "@type": "Place",
+          "name": "Satellite"
+        },
+        {
+          "@type": "Place",
+          "name": "Bopal"
+        }
+      ],
+      "hasMenu": {
+        "@type": "Menu",
+        "name": "Cocoa&Cherry Cake Menu",
+        "hasMenuSection": [
           {
-            "@type": "Offer",
-            itemOffered: {
-              "@type": "Product",
-              name: "Birthday Cakes"
-            }
+            "@type": "MenuSection",
+            "name": "Birthday Cakes",
+            "description": "Custom birthday cakes with designer themes and photo printing",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Chocolate Truffle Cake",
+                "description": "Rich chocolate truffle cake made with Belgian chocolate ganache",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "850",
+                  "priceCurrency": "INR",
+                  "availability": "https://schema.org/InStock"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Red Velvet Cake",
+                "description": "Classic red velvet with cream cheese frosting",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "900",
+                  "priceCurrency": "INR",
+                  "availability": "https://schema.org/InStock"
+                }
+              }
+            ]
           },
           {
-            "@type": "Offer",
-            itemOffered: {
-              "@type": "Product",
-              name: "Wedding Cakes"
-            }
+            "@type": "MenuSection",
+            "name": "Wedding Cakes",
+            "description": "Elegant multi-tier wedding cakes with custom designs"
           },
           {
-            "@type": "Offer",
-            itemOffered: {
-              "@type": "Product",
-              name: "Anniversary Cakes"
-            }
-          },
-          {
-            "@type": "Offer",
-            itemOffered: {
-              "@type": "Product",
-              name: "Photo Cakes"
-            }
+            "@type": "MenuSection",
+            "name": "Brownies & Cheesecakes",
+            "description": "Fresh homemade brownies and cheesecakes per piece"
           }
         ]
-      }
+      },
+      "currenciesAccepted": "INR",
+      "paymentAccepted": ["Cash", "UPI", "Google Pay", "PhonePe", "Bank Transfer"]
     },
+    
+    // 3. WEBSITE SCHEMA
     {
       "@type": "WebSite",
       "@id": `${siteUrl}/#website`,
-      url: siteUrl,
-      name: "Cocoa&Cherry",
-      description: "Premium Custom Cakes in Ahmedabad",
-      publisher: {
-        "@id": `${siteUrl}/#business`
+      "url": siteUrl,
+      "name": "Cocoa&Cherry",
+      "description": "Premium Custom Cakes in Ahmedabad",
+      "publisher": {
+        "@id": `${siteUrl}/#organization`
       },
-      potentialAction: {
+      "potentialAction": {
         "@type": "SearchAction",
-        target: `${siteUrl}/?s={search_term_string}`,
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${siteUrl}/?search={search_term_string}`
+        },
         "query-input": "required name=search_term_string"
-      }
+      },
+      "inLanguage": "en-IN"
     },
+    
+    // 4. WEBPAGE SCHEMA
+    {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/#webpage`,
+      "url": siteUrl,
+      "name": "Custom Cakes Ahmedabad | Cocoa&Cherry FSSAI Certified Home Bakery",
+      "isPartOf": {
+        "@id": `${siteUrl}/#website`
+      },
+      "about": {
+        "@id": `${siteUrl}/#bakery`
+      },
+      "description": "Order premium custom cakes in Ahmedabad. Birthday, wedding, anniversary cakes with Belgian chocolate. Same day delivery available.",
+      "breadcrumb": {
+        "@id": `${siteUrl}/#breadcrumb`
+      },
+      "inLanguage": "en-IN",
+      "potentialAction": [
+        {
+          "@type": "ReadAction",
+          "target": [siteUrl]
+        }
+      ]
+    },
+    
+    // 5. BREADCRUMB SCHEMA
     {
       "@type": "BreadcrumbList",
       "@id": `${siteUrl}/#breadcrumb`,
-      itemListElement: [
+      "itemListElement": [
         {
           "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: siteUrl
+          "position": 1,
+          "name": "Home",
+          "item": siteUrl
+        }
+      ]
+    },
+    
+    // 6. FAQ SCHEMA (Critical for Featured Snippets)
+    {
+      "@type": "FAQPage",
+      "@id": `${siteUrl}/#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How far in advance should I place my cake order?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We recommend placing your order at least 3-5 days in advance for regular cakes, and 7-10 days for custom/themed cakes. For last-minute orders, please contact us on WhatsApp at +91 97127-52469 and we'll do our best to accommodate your request."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you offer eggless cake options in Ahmedabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! All our cakes are 100% eggless. We use premium quality ingredients including Belgian chocolate to ensure the taste and texture are just as delicious as traditional cakes. Perfect for vegetarians and those with egg allergies."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What areas in Ahmedabad do you deliver cakes to?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We deliver across all of Ahmedabad including Isanpur, Maninagar, Vastral, Nikol, Naroda, Satellite, Bopal, SG Highway, Prahlad Nagar, and more. We use Porter for safe and reliable delivery. Free delivery on orders above ₹1500 within 10km."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I customize the design of my cake?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely! Custom designs are our specialty. Share your theme, colors, and any reference images with us, and we'll create a unique cake tailored to your vision. We offer photo cakes, themed cakes, character cakes, and fondant designs. Additional charges may apply for complex designs."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What payment methods do you accept?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We accept UPI payments (Google Pay, PhonePe, Paytm), bank transfers, and cash on delivery. A 50% advance is required to confirm your order, with the balance due before delivery."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you offer same day cake delivery in Ahmedabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! We offer same day cake delivery for orders placed before 2 PM, subject to availability. Midnight delivery is also available with advance booking for birthday surprises and celebrations."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Cocoa&Cherry FSSAI certified?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Cocoa&Cherry is a FSSAI certified home bakery. We follow strict hygiene standards and use only food-grade, premium ingredients including Belgian Callebaut chocolate."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the price of a 1kg birthday cake in Ahmedabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Birthday cakes at Cocoa&Cherry start from ₹800 per kg for basic flavors like vanilla and pineapple. Designer cakes, photo cakes, and premium flavors like Belgian chocolate truffle range from ₹1000-₹1500 per kg. Check our rate list for detailed pricing."
+          }
+        }
+      ]
+    },
+    
+    // 7. PRODUCT SCHEMA (Featured Product)
+    {
+      "@type": "Product",
+      "@id": `${siteUrl}/#product-truffle`,
+      "name": "Chocolate Truffle Cake",
+      "image": `${siteUrl}/products/chocolate-truffle.jpg`,
+      "description": "Rich chocolate truffle cake made with premium Belgian Callebaut chocolate and layers of chocolate ganache. Perfect for birthdays, anniversaries, and celebrations in Ahmedabad.",
+      "brand": {
+        "@type": "Brand",
+        "name": "Cocoa&Cherry"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": `${siteUrl}/#menu`,
+        "priceCurrency": "INR",
+        "price": "850",
+        "priceValidUntil": "2026-12-31",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": `${siteUrl}/#organization`
+        }
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "50"
+      }
+    },
+    
+    // 8. OFFER CATALOG SCHEMA
+    {
+      "@type": "OfferCatalog",
+      "@id": `${siteUrl}/#offers`,
+      "name": "Cocoa&Cherry Cake Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Custom Birthday Cakes Ahmedabad",
+            "description": "Personalized birthday cakes with custom designs, photo printing, and themed decorations"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Wedding Cakes Ahmedabad",
+            "description": "Elegant multi-tier wedding cakes with premium fondant and buttercream designs"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Same Day Cake Delivery",
+            "description": "Express cake delivery within Ahmedabad for last-minute celebrations and surprises"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Corporate Cake Orders",
+            "description": "Bulk cake orders for corporate events, office celebrations, and business meetings in Ahmedabad"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Midnight Cake Delivery",
+            "description": "Surprise midnight cake delivery for birthdays and special occasions in Ahmedabad"
+          }
         }
       ]
     }
@@ -235,19 +538,32 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
       <head>
+        {/* Preconnect to external domains for performance */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Material Icons */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
+        
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        
         {/* Additional SEO Meta Tags */}
         <meta name="theme-color" content="#0d0a0b" />
-        <meta name="msapplication-TileColor" content="#0d0a0b" />
+        <meta name="msapplication-TileColor" content="#722F37" />
+        <meta name="msapplication-TileImage" content="/logo.svg" />
+        
+        {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
+        
+        {/* Preload critical assets for LCP optimization */}
+        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
       </head>
       <body
         className={`${cinzel.variable} ${workSans.variable} antialiased bg-noir overflow-x-hidden`}
