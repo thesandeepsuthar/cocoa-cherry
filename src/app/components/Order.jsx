@@ -10,7 +10,6 @@ export default function Order() {
     phone: '',
     address: '',
     date: '',
-    weight: '1 kg',
     message: '',
   });
   const [selectedCakes, setSelectedCakes] = useState([]);
@@ -102,24 +101,23 @@ export default function Order() {
     
     setIsSubmitting(true);
     
-    // Format selected cakes
+    // Format selected cakes - names only, no prices
     const cakesList = selectedCakes.map((cake, i) => 
-      `  ${i + 1}. ${cake.name} - ₹${cake.price}/${cake.priceUnit?.replace('per ', '')}`
+      `  ${i + 1}. ${cake.name}`
     ).join('\n');
     
     const whatsappMessage = `🎂 *New Cake Order Inquiry*
-    
+
 👤 *Name:* ${formData.name}
 📞 *Phone:* ${formData.phone}
 📍 *Address:* ${formData.address}
-📅 *Date:* ${formData.date}
-⚖️ *Weight:* ${formData.weight}
+📅 *Delivery Date:* ${formData.date}
 
-🍰 *Selected Items (${selectedCakes.length}):*
+🍰 *Interested In (${selectedCakes.length} items):*
 ${cakesList}
 
-📝 *Additional Details:*
-${formData.message || 'No additional details'}
+📝 *Requirements/Theme:*
+${formData.message || 'Will discuss on WhatsApp'}
 
 ---
 Sent from Cocoa&Cherry Website`;
@@ -234,9 +232,16 @@ Sent from Cocoa&Cherry Website`;
                 >
                   Quick Order Inquiry
                 </h2>
-                <p className="text-cream-muted text-sm sm:text-base">
+                <p className="text-cream-muted text-sm sm:text-base mb-3">
                   Select items from menu or add below, then fill your details.
                 </p>
+                {/* Disclaimer */}
+                <div className="flex items-start gap-2 p-2.5 sm:p-3 rounded-lg bg-gold/10 border border-gold/20">
+                  <span className="material-symbols-outlined text-gold text-sm sm:text-base mt-0.5">info</span>
+                  <p className="text-gold/90 text-[11px] sm:text-xs leading-relaxed">
+                    <strong>Note:</strong> Prices, quantity (kg/piece/box), and customization details will be discussed on WhatsApp.
+                  </p>
+                </div>
               </div>
 
               <form className="space-y-3 sm:space-y-4 md:space-y-5" onSubmit={handleSubmit}>
@@ -276,7 +281,6 @@ Sent from Cocoa&Cherry Website`;
                             >
                               <span className="material-symbols-outlined text-rose text-sm">cake</span>
                               <span className="text-cream text-sm font-medium">{cake.name}</span>
-                              <span className="text-gold text-xs">₹{cake.price}</span>
                               <button
                                 type="button"
                                 onClick={() => removeCake(cake.name)}
@@ -327,12 +331,7 @@ Sent from Cocoa&Cherry Website`;
                                     className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-cream/5 transition-colors text-left"
                                   >
                                     <span className="material-symbols-outlined text-rose text-lg">cake</span>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-cream text-sm font-medium truncate">{item.name}</p>
-                                      <p className="text-cream/50 text-xs">
-                                        ₹{item.discountPrice || item.price}/{item.priceUnit?.replace('per ', '')}
-                                      </p>
-                                    </div>
+                                    <p className="flex-1 text-cream text-sm font-medium truncate">{item.name}</p>
                                     <span className="material-symbols-outlined text-cream/30 text-sm">add_circle</span>
                                   </button>
                                 ))}
@@ -414,56 +413,26 @@ Sent from Cocoa&Cherry Website`;
                   />
                 </motion.div>
 
-                {/* Date and Weight */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.55 }}
-                  >
-                    <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
-                      Date <span className="text-rose">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="date"
-                      value={formData.date}
-                      onChange={handleChange}
-                      onFocus={() => setFocusedField('date')}
-                      onBlur={() => setFocusedField(null)}
-                      className={getInputClass('date')}
-                      required
-                    />
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.55 }}
-                  >
-                    <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
-                      Weight (per item)
-                    </label>
-                    <select
-                      name="weight"
-                      value={formData.weight}
-                      onChange={handleChange}
-                      onFocus={() => setFocusedField('weight')}
-                      onBlur={() => setFocusedField(null)}
-                      className={`${getInputClass('weight')} appearance-none cursor-pointer`}
-                      style={{ 
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'right 8px center',
-                        backgroundSize: '16px'
-                      }}
-                    >
-                      <option value="0.5 kg">0.5 kg</option>
-                      <option value="1 kg">1 kg</option>
-                      <option value="1.5 kg">1.5 kg</option>
-                      <option value="2 kg+">2 kg+</option>
-                    </select>
-                  </motion.div>
-                </div>
+                {/* Delivery Date */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.55 }}
+                >
+                  <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
+                    Delivery Date <span className="text-rose">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField('date')}
+                    onBlur={() => setFocusedField(null)}
+                    className={getInputClass('date')}
+                    required
+                  />
+                </motion.div>
 
                 {/* Message */}
                 <motion.div

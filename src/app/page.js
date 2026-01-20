@@ -27,7 +27,7 @@ export default function Home() {
         <Hero />
         <Features />
         <Menu />
-        <RateList />
+        {/* <RateList /> */}
         <Gallery />
         <Events />
         <Reels />
