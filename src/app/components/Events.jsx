@@ -118,11 +118,33 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
         <div className="relative aspect-[4/3] sm:aspect-video bg-noir overflow-hidden flex-shrink-0">
           {allImages.length > 0 ? (
             <>
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url('${allImages[currentImageIndex]}')` }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent" />
+              <motion.div
+                className="flex w-full h-full"
+                drag="x"
+                dragConstraints={{ left: -(allImages.length - 1) * 100, right: 0 }}
+                dragElastic={0.1}
+                onDragEnd={(event, info) => {
+                  const swipeThreshold = 50;
+                  if (info.offset.x > swipeThreshold) {
+                    setCurrentImageIndex(Math.max(0, currentImageIndex - 1));
+                  } else if (info.offset.x < -swipeThreshold) {
+                    setCurrentImageIndex(Math.min(allImages.length - 1, currentImageIndex + 1));
+                  }
+                }}
+                animate={{ x: -currentImageIndex * 100 + '%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              >
+                {allImages.map((image, idx) => (
+                  <div key={idx} className="flex-shrink-0 w-full h-full relative">
+                    <img
+                      src={image}
+                      alt={`Event image ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent" />
+                  </div>
+                ))}
+              </motion.div>
               
               {/* Image navigation dots */}
               {allImages.length > 1 && (
