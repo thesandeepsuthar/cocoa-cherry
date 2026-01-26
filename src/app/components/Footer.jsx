@@ -83,9 +83,9 @@ export default function Footer() {
                   className="text-2xl font-bold"
                   style={{ fontFamily: "var(--font-cinzel)" }}
                 >
-                  <span className="text-cream">Cocoa</span>
-                  <span className="gradient-text">&</span>
-                  <span className="text-rose">Cherry</span>
+                  <span className="text-[#c9a86c]">Cocoa</span>
+                  <span className="text-[#c9a86c]">&</span>
+                  <span className="text-[#c9a86c]">Cherry</span>
                 </h2>
                 <span className="text-cream-muted text-xs tracking-widest uppercase">
                   Artisanal Cakes

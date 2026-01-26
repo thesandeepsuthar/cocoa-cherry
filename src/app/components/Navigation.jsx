@@ -107,9 +107,9 @@ export default function Navigation() {
                   className="text-lg md:text-2xl font-bold tracking-wide"
                   style={{ fontFamily: "var(--font-cinzel)" }}
                 >
-                  <span className="text-cream">Cocoa</span>
-                  <span className="gradient-text">&</span>
-                  <span className="text-rose">Cherry</span>
+                  <span className="text-[#c9a86c]">Cocoa</span>
+                  <span className="text-[#c9a86c]">&</span>
+                  <span className="text-[#c9a86c]">Cherry</span>
                 </motion.h2>
                 <span className="text-cream-muted text-[10px] tracking-[0.2em] uppercase hidden md:block">
                   Artisanal Cakes
