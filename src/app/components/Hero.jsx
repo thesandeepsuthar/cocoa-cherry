@@ -362,6 +362,7 @@ export default function Hero() {
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const [heroImage, setHeroImage] = useState(null);
+  const [isLoadingHero, setIsLoadingHero] = useState(true);
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -391,6 +392,7 @@ export default function Hero() {
   // Fetch active hero image from API
   useEffect(() => {
     const fetchHeroImage = async () => {
+      setIsLoadingHero(true);
       try {
         const res = await fetch("/api/hero");
         const data = await res.json();
@@ -399,9 +401,16 @@ export default function Hero() {
           const activeHero =
             data.data.find((img) => img.isActive) || data.data[0];
           setHeroImage(activeHero);
+        } else {
+          // Only set to null if API call succeeded but no data
+          setHeroImage(null);
         }
       } catch (error) {
         console.error("Error fetching hero image:", error);
+        // On error, set to null to show default
+        setHeroImage(null);
+      } finally {
+        setIsLoadingHero(false);
       }
     };
     fetchHeroImage();
@@ -642,15 +651,31 @@ export default function Hero() {
                   whileHover={{ scale: 1.02 }}
                   className="relative aspect-[4/5] sm:aspect-square rounded-[2.5rem] overflow-hidden border border-rose/20 shadow-2xl shadow-black/50"
                 >
-                  {/* Image */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transform hover:scale-110 transition-transform duration-700"
-                    style={{
-                      backgroundImage: heroImage
-                        ? `url('${heroImage.imageData}')`
-                        : "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_')",
-                    }}
-                  />
+                  {/* Loading skeleton */}
+                  {isLoadingHero && (
+                    <motion.div
+                      initial={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-noir-light"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-rose/10 via-gold/10 to-rose/10 animate-pulse" />
+                    </motion.div>
+                  )}
+
+                  {/* Image - only show when not loading or when we have an image */}
+                  {!isLoadingHero && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="absolute inset-0 bg-cover bg-center transform hover:scale-110 transition-transform duration-700"
+                      style={{
+                        backgroundImage: heroImage
+                          ? `url('${heroImage.imageData}')`
+                          : "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_')",
+                      }}
+                    />
+                  )}
 
                   {/* Overlay gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-noir/60 via-transparent to-transparent" />
