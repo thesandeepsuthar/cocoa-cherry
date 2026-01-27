@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../lib/mongodb";
 import { Hero } from "../../../lib/models";
 import { verifyAdminKey } from "../../../lib/auth";
+import { compressWithPreset, validateImage } from "../../../lib/imageProcessor";
 
 // GET /api/hero - Get all hero images
 export async function GET(request) {
   try {
-    await connectToDatabase();
+    await connectDB();
 
     const heroImages = await Hero.find({})
       .sort({ order: 1, createdAt: -1 })
@@ -36,7 +37,7 @@ export async function POST(request) {
       );
     }
 
-    await connectToDatabase();
+    await connectDB();
 
     const formData = await request.formData();
     const imageData = formData.get("imageData");
@@ -44,6 +45,7 @@ export async function POST(request) {
     const subtitle = formData.get("subtitle") || "Handcrafted with Love";
     const alt = formData.get("alt") || "Hero image for Cocoa & Cherry bakery";
     const isActive = formData.get("isActive") === "true";
+    const order = parseInt(formData.get("order")) || 0;
 
     if (!imageData) {
       return NextResponse.json(
@@ -52,17 +54,49 @@ export async function POST(request) {
       );
     }
 
+    // Validate image format and size (max 20MB upload)
+    const imageValidation = validateImage(imageData, 20);
+    if (!imageValidation.valid) {
+      return NextResponse.json(
+        { success: false, error: imageValidation.error },
+        { status: 400 },
+      );
+    }
+
+    // ========================================
+    // COMPRESS IMAGE USING SHARP
+    // Reduces size by 60-90% while keeping quality
+    // Hero images use 'gallery' preset (1200x1200, quality 80)
+    // ========================================
+    let compressedImageData = imageData;
+    let compressionInfo = null;
+
+    try {
+      const result = await compressWithPreset(imageData, 'gallery');
+      compressedImageData = result.base64;
+      compressionInfo = {
+        originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
+        compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
+        savings: result.savings,
+      };
+      console.log(`✅ Hero image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
+    } catch (compressionError) {
+      // If compression fails, use original image
+      console.error('⚠️ Compression failed, using original:', compressionError.message);
+    }
+
     // If setting as active, deactivate others
     if (isActive) {
       await Hero.updateMany({}, { isActive: false });
     }
 
     const newHero = new Hero({
-      imageData,
+      imageData: compressedImageData,
       title,
       subtitle,
       alt,
       isActive,
+      order,
     });
 
     const savedHero = await newHero.save();
@@ -70,6 +104,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       data: savedHero,
+      compression: compressionInfo,
       message: "Hero image created successfully",
     });
   } catch (error) {
@@ -92,7 +127,7 @@ export async function PUT(request) {
       );
     }
 
-    await connectToDatabase();
+    await connectDB();
 
     const formData = await request.formData();
     const id = formData.get("id");
@@ -106,8 +141,29 @@ export async function PUT(request) {
 
     const updateData = {};
 
-    if (formData.get("imageData"))
-      updateData.imageData = formData.get("imageData");
+    // Compress image if provided
+    if (formData.get("imageData")) {
+      const imageData = formData.get("imageData");
+      
+      // Validate image
+      const imageValidation = validateImage(imageData, 20);
+      if (!imageValidation.valid) {
+        return NextResponse.json(
+          { success: false, error: imageValidation.error },
+          { status: 400 },
+        );
+      }
+
+      // Compress image
+      try {
+        const result = await compressWithPreset(imageData, 'gallery');
+        updateData.imageData = result.base64;
+        console.log(`✅ Hero image compressed: ${(result.originalSize / 1024).toFixed(1)}KB → ${(result.compressedSize / 1024).toFixed(1)}KB (${result.savings} saved)`);
+      } catch (compressionError) {
+        console.error('⚠️ Compression failed, using original:', compressionError.message);
+        updateData.imageData = imageData; // Use original if compression fails
+      }
+    }
     if (formData.get("title")) updateData.title = formData.get("title");
     if (formData.get("subtitle"))
       updateData.subtitle = formData.get("subtitle");
@@ -159,7 +215,7 @@ export async function DELETE(request) {
       );
     }
 
-    await connectToDatabase();
+    await connectDB();
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
