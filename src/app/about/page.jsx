@@ -1,11 +1,30 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import Navigation from '@/app/components/Navigation';
 import Footer from '@/app/components/Footer';
 import FloatingActions from '@/app/components/FloatingActions';
 
 export default function AboutPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setIsModalOpen(false);
+    };
+    if (isModalOpen) {
+      window.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen]);
+
   return (
     <>
       <Navigation />
@@ -188,10 +207,104 @@ export default function AboutPage() {
                   ))}
                 </div>
               </motion.div>
+
+              {/* FSSAI Certificate Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="card-noir rounded-2xl p-5 sm:p-6 md:p-8 lg:p-10"
+              >
+                <div className="text-center mb-6 sm:mb-8">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-rose/20 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <span className="material-symbols-outlined text-3xl sm:text-4xl text-rose">
+                      verified
+                    </span>
+                  </div>
+                  <h2
+                    className="text-xl sm:text-2xl md:text-3xl font-bold text-rose mb-3 sm:mb-4"
+                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                  >
+                    FSSAI Certified
+                  </h2>
+                  <p className="text-cream-muted text-sm sm:text-base max-w-2xl mx-auto">
+                    We are proud to be FSSAI certified, ensuring the highest standards of food safety and quality. 
+                    Click on the certificate to view the full document.
+                  </p>
+                </div>
+                
+                <div className="flex justify-center">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setIsModalOpen(true)}
+                    className="relative w-full max-w-md cursor-pointer group"
+                  >
+                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden border-2 border-rose/20 group-hover:border-rose/40 transition-all shadow-lg group-hover:shadow-rose/20">
+                      <Image
+                        src="/fssai-certificate.jpg"
+                        alt="FSSAI Registration Certificate - Cocoa&Cherry"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-noir/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
+                        <span className="text-cream text-sm font-medium flex items-center gap-2">
+                          <span className="material-symbols-outlined text-lg">zoom_in</span>
+                          Click to view full certificate
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
       </main>
+
+      {/* Full Screen Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-noir/95 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={() => setIsModalOpen(false)}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-noir/80 backdrop-blur-sm border border-rose/20 flex items-center justify-center text-cream hover:bg-rose/20 transition-colors"
+            >
+              <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
+            </button>
+
+            {/* Image Container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative w-full h-full max-w-4xl max-h-[90vh] flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative w-full h-full rounded-xl overflow-hidden border-2 border-rose/20 shadow-2xl">
+                <Image
+                  src="/fssai-certificate.jpg"
+                  alt="FSSAI Registration Certificate - Cocoa&Cherry - Full View"
+                  fill
+                  className="object-contain"
+                  unoptimized
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Footer />
       <FloatingActions />
     </>
