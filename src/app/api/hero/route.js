@@ -85,11 +85,12 @@ export async function POST(request) {
       console.error('⚠️ Compression failed, using original:', compressionError.message);
     }
 
-    // If setting as active, deactivate others
+    // If setting as active, deactivate others first
     if (isActive) {
       await Hero.updateMany({}, { isActive: false });
     }
 
+    // Create and save the new hero document
     const newHero = new Hero({
       imageData: compressedImageData,
       title,
@@ -173,7 +174,7 @@ export async function PUT(request) {
     if (formData.get("order") !== null)
       updateData.order = parseInt(formData.get("order"));
 
-    // If setting as active, deactivate others
+    // If setting as active, deactivate others BEFORE updating
     if (updateData.isActive) {
       await Hero.updateMany({ _id: { $ne: id } }, { isActive: false });
     }

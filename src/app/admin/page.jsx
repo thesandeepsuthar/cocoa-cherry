@@ -2591,18 +2591,182 @@ function ItemCard({
   );
 }
 
+// Admin Authentication Form Component
+function AdminAuthForm({ onSuccess }) {
+  const [adminKey, setAdminKey] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/admin/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ key: adminKey }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Store the key in state for API calls (temporary, in-memory only)
+        onSuccess(adminKey);
+      } else {
+        setAttempts((prev) => prev + 1);
+        if (response.status === 429) {
+          setError(
+            `Too many attempts. Please try again in ${data.retryAfter || 15} seconds.`
+          );
+        } else {
+          setError(data.error || "Invalid admin key. Please try again.");
+        }
+      }
+    } catch (err) {
+      console.error("Authentication error:", err);
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-noir flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="card-noir rounded-2xl p-6 sm:p-8 shadow-xl max-w-md w-full"
+      >
+        <div className="text-center mb-6">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-rose/20 flex items-center justify-center">
+            <span className="material-symbols-outlined text-5xl sm:text-6xl text-rose">
+              lock
+            </span>
+          </div>
+          <h1
+            className="text-2xl sm:text-3xl font-bold text-cream mb-2"
+            style={{ fontFamily: "var(--font-cinzel)" }}
+          >
+            Admin Access
+          </h1>
+          <p className="text-cream-muted text-sm">
+            Enter your admin key to access the admin panel
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="adminKey"
+              className="block text-sm font-medium text-cream mb-2"
+            >
+              Admin Key
+            </label>
+            <input
+              id="adminKey"
+              type="password"
+              value={adminKey}
+              onChange={(e) => setAdminKey(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-noir-light border border-cream/20 text-cream placeholder-cream/40 focus:outline-none focus:border-rose focus:ring-2 focus:ring-rose/20 transition-all"
+              placeholder="Enter admin key"
+              required
+              autoFocus
+              disabled={loading}
+            />
+          </div>
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 rounded-lg bg-red-900/30 border border-red-500/30"
+            >
+              <p className="text-red-400 text-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg">error</span>
+                {error}
+              </p>
+            </motion.div>
+          )}
+
+          {attempts > 0 && attempts < 5 && (
+            <p className="text-cream-muted text-xs text-center">
+              Attempts: {attempts}/5
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || !adminKey.trim()}
+            className="w-full py-3 rounded-xl bg-rose text-noir font-bold hover:bg-rose/90 focus:outline-none focus:ring-2 focus:ring-rose focus:ring-offset-2 focus:ring-offset-noir transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <span className="material-symbols-outlined animate-spin">
+                  refresh
+                </span>
+                Verifying...
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined">login</span>
+                Access Admin Panel
+              </>
+            )}
+          </button>
+        </form>
+
+        <div className="mt-6 pt-6 border-t border-cream/10">
+          <p className="text-cream-muted text-xs text-center">
+            🔒 Your session will remain active for 24 hours
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // Admin Content Component
 function AdminContent() {
-  const searchParams = useSearchParams();
-  const adminKey = searchParams.get("key");
   const [activeTab, setActiveTab] = useState("gallery");
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [adminKey, setAdminKey] = useState(null);
 
+  // Check for existing session on mount
   useEffect(() => {
-    if (adminKey) setIsAuthorized(true);
-    setChecking(false);
-  }, [adminKey]);
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/admin/verify");
+        const data = await response.json();
+
+        if (data.success && data.authenticated) {
+          setIsAuthorized(true);
+          // For backward compatibility with API routes that use query params
+          // We'll need to get the key from somewhere or update API routes
+          // For now, we'll handle this by updating API routes to check cookies
+        } else {
+          setIsAuthorized(false);
+        }
+      } catch (err) {
+        console.error("Session check error:", err);
+        setIsAuthorized(false);
+      } finally {
+        setChecking(false);
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  const handleAuthSuccess = (key) => {
+    setAdminKey(key);
+    setIsAuthorized(true);
+  };
 
   if (checking) {
     return (
@@ -2612,30 +2776,8 @@ function AdminContent() {
     );
   }
 
-  if (!isAuthorized || !adminKey) {
-    return (
-      <div className="min-h-screen bg-noir flex items-center justify-center p-4">
-        <div className="card-noir rounded-2xl p-6 sm:p-8 shadow-xl max-w-sm w-full text-center">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-red-900/30 flex items-center justify-center">
-            <span className="material-symbols-outlined text-5xl sm:text-6xl text-red-400">
-              lock
-            </span>
-          </div>
-          <h1
-            className="text-xl sm:text-2xl font-bold text-cream mb-2"
-            style={{ fontFamily: "var(--font-cinzel)" }}
-          >
-            Access Denied
-          </h1>
-          <p className="text-cream-muted text-sm mb-4">
-            Valid admin key required
-          </p>
-          <code className="bg-noir-light px-3 py-2 rounded-lg text-xs break-all text-rose block border border-cream/10">
-            /admin?key=YOUR_KEY
-          </code>
-        </div>
-      </div>
-    );
+  if (!isAuthorized) {
+    return <AdminAuthForm onSuccess={handleAuthSuccess} />;
   }
 
   return (
@@ -2737,13 +2879,13 @@ function AdminContent() {
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-        {activeTab === "hero" && <HeroTab adminKey={adminKey} />}
-        {activeTab === "gallery" && <GalleryTab adminKey={adminKey} />}
-        {activeTab === "events" && <EventsTab adminKey={adminKey} />}
-        {activeTab === "reels" && <ReelsTab adminKey={adminKey} />}
-        {activeTab === "menu" && <MenuTab adminKey={adminKey} />}
-        {activeTab === "ratelist" && <RateListTab adminKey={adminKey} />}
-        {activeTab === "reviews" && <ReviewsTab adminKey={adminKey} />}
+        {activeTab === "hero" && <HeroTab adminKey={adminKey || ""} />}
+        {activeTab === "gallery" && <GalleryTab adminKey={adminKey || ""} />}
+        {activeTab === "events" && <EventsTab adminKey={adminKey || ""} />}
+        {activeTab === "reels" && <ReelsTab adminKey={adminKey || ""} />}
+        {activeTab === "menu" && <MenuTab adminKey={adminKey || ""} />}
+        {activeTab === "ratelist" && <RateListTab adminKey={adminKey || ""} />}
+        {activeTab === "reviews" && <ReviewsTab adminKey={adminKey || ""} />}
       </main>
     </div>
   );
