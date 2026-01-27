@@ -26,10 +26,10 @@ export default function Home() {
         <Navigation />
         <Hero />
         <Features />
-        <Menu />
+        <Menu isHomePage={true} />
         {/* <RateList /> */}
-        <Gallery />
-        <Events />
+        <Gallery isHomePage={true} />
+        <Events isHomePage={true} />
         <Reels />
         <Testimonials />
         {/* <SpecialOffer /> */}

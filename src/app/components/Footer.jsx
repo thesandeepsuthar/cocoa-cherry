@@ -6,11 +6,13 @@ import Image from "next/image";
 import { useRef } from "react";
 
 const quickLinks = [
-  { href: "#about", label: "About Us" },
-  { href: "#menu", label: "Menu & Flavors" },
-  { href: "#gallery", label: "Gallery" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#order", label: "Order Now" },
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About Us" },
+  { href: "/menu", label: "Menu & Flavors" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/events", label: "Events" },
+  { href: "/services", label: "Services" },
+  { href: "/contact", label: "Contact" },
   { href: "/terms-and-conditions", label: "Terms & Conditions" },
 ];
 
@@ -62,7 +64,7 @@ export default function Footer() {
           >
             {/* Logo */}
             <Link
-              href="#"
+              href="/"
               className="inline-flex items-center gap-3 mb-6 group"
             >
               <motion.div

@@ -67,16 +67,16 @@ export function verifyAdminKey(keyOrRequest) {
 
     // Fall back to query parameter (legacy support)
     if (keyOrRequest.url) {
-      try {
-        const { searchParams } = new URL(keyOrRequest.url);
+    try {
+      const { searchParams } = new URL(keyOrRequest.url);
         const providedKey = searchParams.get('key');
         if (providedKey) {
           return verifyKeyString(providedKey);
         }
-      } catch {
-        return false;
-      }
+    } catch {
+      return false;
     }
+  }
   }
 
   return false;

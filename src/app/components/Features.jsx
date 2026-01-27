@@ -156,10 +156,10 @@ export default function Features() {
               </p>
 
               <Link
-              href="#menu"
-              className="group inline-flex items-center gap-2 text-rose font-bold hover:text-rose-glow transition-colors"
+              href="/about"
+              className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-rose/10 border border-rose/20 text-rose font-bold hover:bg-rose/20 hover:border-rose/40 transition-all"
               >
-              <span>Explore our creations</span>
+              <span>Learn More About Us</span>
                 <motion.span
                 className="material-symbols-outlined"
                   animate={{ x: [0, 5, 0] }}

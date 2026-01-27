@@ -261,7 +261,7 @@ function GalleryCard({ image, index, onClick, isInView }) {
   );
 }
 
-export default function Gallery() {
+export default function Gallery({ isHomePage = false }) {
   const [galleryImages, setGalleryImages] = useState(defaultGalleryImages);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -326,7 +326,7 @@ export default function Gallery() {
     <>
       <section 
         ref={sectionRef}
-        className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light overflow-hidden" 
+        className={`relative ${isHomePage ? 'py-12 sm:py-16 md:py-24 lg:py-32' : 'pb-12 sm:pb-16 md:pb-24 lg:pb-32 pt-0'} bg-noir-light overflow-hidden`} 
         id="gallery"
         aria-labelledby="gallery-heading"
       >
@@ -423,72 +423,94 @@ export default function Gallery() {
                 </AnimatePresence>
               </motion.div>
 
-              {/* Load More / View All Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.5 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mt-8 md:mt-12"
-              >
-                {/* Load More Button - Only show if there are more images */}
-                {hasMore && (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={loadMore}
-                    disabled={loadingMore}
-                    className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full border-2 border-rose/50 text-cream font-bold text-sm md:text-base hover:bg-rose/10 hover:border-rose transition-all disabled:opacity-50"
+              {/* Load More / View All Buttons - Only show on dedicated gallery page */}
+              {!isHomePage && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: 0.5 }}
+                    className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mt-8 md:mt-12"
                   >
-                    {loadingMore ? (
-                      <>
-                        <span className="material-symbols-outlined text-lg md:text-xl animate-spin">progress_activity</span>
-                        <span>Loading...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="material-symbols-outlined text-lg md:text-xl">add</span>
-                        <span>Load More</span>
-                        <span className="px-1.5 py-0.5 md:px-2 rounded-full bg-rose/20 text-rose text-xs md:text-sm">
-                          +{Math.min(LOAD_MORE_COUNT, remainingCount)}
-                        </span>
-                      </>
+                    {/* Load More Button - Only show if there are more images */}
+                    {hasMore && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={loadMore}
+                        disabled={loadingMore}
+                        className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full border-2 border-rose/50 text-cream font-bold text-sm md:text-base hover:bg-rose/10 hover:border-rose transition-all disabled:opacity-50"
+                      >
+                        {loadingMore ? (
+                          <>
+                            <span className="material-symbols-outlined text-lg md:text-xl animate-spin">progress_activity</span>
+                            <span>Loading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="material-symbols-outlined text-lg md:text-xl">add</span>
+                            <span>Load More</span>
+                            <span className="px-1.5 py-0.5 md:px-2 rounded-full bg-rose/20 text-rose text-xs md:text-sm">
+                              +{Math.min(LOAD_MORE_COUNT, remainingCount)}
+                            </span>
+                          </>
+                        )}
+                      </motion.button>
                     )}
-                  </motion.button>
-                )}
 
-                {/* View All in Lightbox Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    setCurrentIndex(0);
-                    setLightboxOpen(true);
-                  }}
-                  className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
-              >
-                  <span className="material-symbols-outlined text-lg md:text-xl">photo_library</span>
-                  <span>View All ({galleryImages.length})</span>
-              </motion.button>
-            </motion.div>
+                    {/* View All in Lightbox Button */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setCurrentIndex(0);
+                        setLightboxOpen(true);
+                      }}
+                      className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-lg md:text-xl">photo_library</span>
+                      <span>View All ({galleryImages.length})</span>
+                    </motion.button>
+                  </motion.div>
 
-              {/* Progress indicator */}
-              {galleryImages.length > INITIAL_DISPLAY_COUNT && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="mt-8 flex flex-col items-center gap-2"
-                >
-                  <div className="w-48 h-1 bg-rose/20 rounded-full overflow-hidden">
+                  {/* Progress indicator */}
+                  {galleryImages.length > INITIAL_DISPLAY_COUNT && (
                     <motion.div
-                      className="h-full bg-gradient-to-r from-rose to-gold rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(displayCount / galleryImages.length) * 100}%` }}
-                      transition={{ duration: 0.5 }}
-                    />
-          </div>
-                  <p className="text-cream-muted/60 text-xs">
-                    Showing {displayCount} of {galleryImages.length} images
-                  </p>
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="mt-8 flex flex-col items-center gap-2"
+                    >
+                      <div className="w-48 h-1 bg-rose/20 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-gradient-to-r from-rose to-gold rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(displayCount / galleryImages.length) * 100}%` }}
+                          transition={{ duration: 0.5 }}
+                        />
+                      </div>
+                      <p className="text-cream-muted/60 text-xs">
+                        Showing {displayCount} of {galleryImages.length} images
+                      </p>
+                    </motion.div>
+                  )}
+                </>
+              )}
+
+              {/* View Gallery Button - Only show on home page */}
+              {isHomePage && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.5 }}
+                  className="text-center mt-8 md:mt-12"
+                >
+                  <Link
+                    href="/gallery"
+                    className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/20 hover:shadow-rose/40 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-lg md:text-xl">photo_library</span>
+                    <span>View Full Gallery</span>
+                  </Link>
                 </motion.div>
               )}
             </>

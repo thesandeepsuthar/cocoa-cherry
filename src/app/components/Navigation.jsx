@@ -11,11 +11,12 @@ import Link from "next/link";
 import Image from "next/image";
 
 const navLinks = [
-  { href: "#about", label: "About", icon: "info" },
-  { href: "#menu", label: "Menu", icon: "restaurant_menu" },
-  { href: "#gallery", label: "Gallery", icon: "photo_library" },
-  { href: "#faq", label: "FAQ", icon: "help" },
-  { href: "#contact", label: "Contact", icon: "mail" },
+  { href: "/about", label: "About", icon: "info" },
+  { href: "/menu", label: "Menu", icon: "restaurant_menu" },
+  { href: "/gallery", label: "Gallery", icon: "photo_library" },
+  { href: "/events", label: "Events", icon: "celebration" },
+  { href: "/services", label: "Services", icon: "room_service" },
+  { href: "/contact", label: "Contact", icon: "mail" },
 ];
 
 export default function Navigation() {
@@ -37,12 +38,14 @@ export default function Navigation() {
   // Close menu on route change
   useEffect(() => {
     const handleClick = () => setIsOpen(false);
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", handleClick);
+    // Close menu when clicking any link (both anchor and route links)
+    const links = document.querySelectorAll('a[href^="#"], a[href^="/"]');
+    links.forEach((link) => {
+      link.addEventListener("click", handleClick);
     });
     return () => {
-      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.removeEventListener("click", handleClick);
+      links.forEach((link) => {
+        link.removeEventListener("click", handleClick);
       });
     };
   }, []);
@@ -84,7 +87,7 @@ export default function Navigation() {
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <Link href="#" className="flex items-center gap-2 md:gap-3 group">
+            <Link href="/" className="flex items-center gap-2 md:gap-3 group">
               <motion.div
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}

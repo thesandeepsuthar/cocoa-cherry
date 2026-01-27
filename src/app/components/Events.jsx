@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
+import Link from 'next/link';
 
 // Default fallback events
 const defaultEvents = [
@@ -340,7 +341,7 @@ function EventCard({ event, onClick, index }) {
   );
 }
 
-export default function Events() {
+export default function Events({ isHomePage = false }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -388,7 +389,7 @@ export default function Events() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir overflow-hidden" 
+      className={`relative ${isHomePage ? 'py-12 sm:py-16 md:py-24 lg:py-32' : 'pb-12 sm:pb-16 md:pb-24 lg:pb-32 pt-0'} bg-noir overflow-hidden`}
       id="events"
     >
       {/* Background decorations */}
@@ -475,17 +476,26 @@ export default function Events() {
             <p className="text-cream-muted text-sm sm:text-base mb-3 sm:mb-4">
               Want us at your school or event?
             </p>
-            <motion.a
-              href="#order"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 rounded-full 
-                       bg-gradient-to-r from-gold to-gold/80 text-noir text-sm sm:text-base font-bold 
-                       shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all"
-            >
-              <span className="material-symbols-outlined text-lg sm:text-xl">mail</span>
-              Contact for Event Booking
-            </motion.a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <motion.a
+                href="#order"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 rounded-full 
+                         bg-gradient-to-r from-gold to-gold/80 text-noir text-sm sm:text-base font-bold 
+                         shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all"
+              >
+                <span className="material-symbols-outlined text-lg sm:text-xl">mail</span>
+                Contact for Event Booking
+              </motion.a>
+              <Link
+                href="/events"
+                className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm sm:text-base shadow-lg shadow-rose/20 hover:shadow-rose/40 transition-all"
+              >
+                <span className="material-symbols-outlined text-lg sm:text-xl">celebration</span>
+                <span>View All Events</span>
+              </Link>
+            </div>
           </motion.div>
         )}
       </div>

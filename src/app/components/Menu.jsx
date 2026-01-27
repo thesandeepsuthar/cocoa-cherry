@@ -3,9 +3,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 
 // Configuration
-const ITEMS_PER_CATEGORY = 8;
+const ITEMS_PER_CATEGORY = 8; // Default for full menu page
+const HOME_ITEMS_PER_CATEGORY = 2; // For home page preview
 
 // Default fallback menu items
 const defaultFlavors = [
@@ -485,7 +487,7 @@ function CategorySection({ category, items, onItemClick, orderItems }) {
   );
 }
 
-export default function Menu() {
+export default function Menu({ isHomePage = false }) {
   const [allFlavors, setAllFlavors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -521,13 +523,14 @@ export default function Menu() {
       if (!groups[category]) groups[category] = [];
       groups[category].push(item);
     });
+    const itemsPerCategory = isHomePage ? HOME_ITEMS_PER_CATEGORY : ITEMS_PER_CATEGORY;
     return Object.entries(groups)
       .sort((a, b) => b[1].length - a[1].length)
       .reduce((acc, [key, value]) => {
-        acc[key] = value.slice(0, ITEMS_PER_CATEGORY);
+        acc[key] = value.slice(0, itemsPerCategory);
         return acc;
       }, {});
-  }, [allFlavors]);
+  }, [allFlavors, isHomePage]);
 
   const totalItems = allFlavors.length;
   const totalCategories = Object.keys(categorizedItems).length;
@@ -576,7 +579,7 @@ export default function Menu() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light overflow-hidden" 
+      className={`relative ${isHomePage ? 'py-12 sm:py-16 md:py-24 lg:py-32' : 'pb-12 sm:pb-16 md:pb-24 lg:pb-32 pt-0'} bg-noir-light overflow-hidden`}
       id="menu"
     >
       {/* Background decorations */}
@@ -690,15 +693,24 @@ export default function Menu() {
           <p className="text-cream-muted text-xs sm:text-sm mb-3 sm:mb-4 px-4 sm:px-0">
             Don&apos;t see your favorite flavor? We can create custom flavors too!
           </p>
-          <motion.a
-            href="#order"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-rose/50 text-cream font-bold text-sm sm:text-base hover:bg-rose/10 hover:border-rose transition-all"
-          >
-            <span className="material-symbols-outlined text-base sm:text-lg">add_circle</span>
-            <span>Request Custom Flavor</span>
-          </motion.a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <motion.a
+              href="#order"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-rose/50 text-cream font-bold text-sm sm:text-base hover:bg-rose/10 hover:border-rose transition-all"
+            >
+              <span className="material-symbols-outlined text-base sm:text-lg">add_circle</span>
+              <span>Request Custom Flavor</span>
+            </motion.a>
+            <Link
+              href="/menu"
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm sm:text-base shadow-lg shadow-rose/20 hover:shadow-rose/40 transition-all"
+            >
+              <span className="material-symbols-outlined text-lg sm:text-xl">restaurant_menu</span>
+              <span>View Full Menu</span>
+            </Link>
+          </div>
         </motion.div>
       </div>
 
