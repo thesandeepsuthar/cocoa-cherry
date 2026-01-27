@@ -215,7 +215,7 @@ export default function FloatingActions() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-cream font-bold text-sm">Cocoa&Cherry</p>
+                      <p className="text-[#c9a86c] font-bold text-sm">Cocoa&Cherry</p>
                       <p className="text-[#25D366] text-xs flex items-center gap-1">
                         <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
                         Online now

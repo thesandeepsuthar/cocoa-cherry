@@ -70,8 +70,9 @@ export function LogoSVG({ size = 80, className = "" }) {
         fontSize="22"
         fontWeight="500"
         fill="#c9a86c"
+        style={{ fill: '#c9a86c' }}
       >
-        Cocoa&amp;cherry
+        Cocoa&amp;Cherry
       </text>
 
       {/* Bottom decorative line */}
@@ -145,8 +146,8 @@ export function MiniLoader({ className = "" }) {
       <svg width="20" height="20" viewBox="0 0 32 32">
         <defs>
           <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: "#9e4a5d" }} />
-            <stop offset="100%" style={{ stopColor: "#8a3d4f" }} />
+            <stop offset="0%" style={{ stopColor: "#c9a86c" }} />
+            <stop offset="100%" style={{ stopColor: "#c9a86c" }} />
           </linearGradient>
         </defs>
         <circle
@@ -154,8 +155,9 @@ export function MiniLoader({ className = "" }) {
           cy="16"
           r="14"
           fill="none"
-          stroke="#f3e7e9"
+          stroke="#c9a86c"
           strokeWidth="3"
+          opacity="0.3"
         />
         <path
           d="M16 2 A14 14 0 0 1 30 16"
@@ -202,7 +204,7 @@ export function CakeLoader({ size = 60 }) {
           cy="5"
           rx="4"
           ry="6"
-          fill="#f5a623"
+          fill="#c9a86c"
           animate={{ scale: [1, 1.2, 1], opacity: [1, 0.8, 1] }}
           transition={{ duration: 0.3, repeat: Infinity }}
         />

@@ -135,9 +135,9 @@ export default function Features() {
               <span className="block sm:inline">Why Choose </span>
               <span className="relative inline-block">
                 <span className="whitespace-nowrap">
-                  <span className="gradient-text">Cocoa</span>
-                  <span className="text-rose">&</span>
-                  <span className="text-gold">Cherry</span>
+                  <span className="text-[#c9a86c]">Cocoa</span>
+                  <span className="text-[#c9a86c]">&</span>
+                  <span className="text-[#c9a86c]">Cherry</span>
                 </span>
                 <motion.span 
                   className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 h-0.5 sm:h-1 bg-gradient-to-r from-rose to-gold rounded-full"

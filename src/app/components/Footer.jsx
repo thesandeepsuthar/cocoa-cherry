@@ -238,7 +238,7 @@ export default function Footer() {
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-cream-muted text-sm text-center md:text-left">
-              © {new Date().getFullYear()} Cocoa&Cherry. All rights reserved.
+              © {new Date().getFullYear()} <span className="text-[#c9a86c]">Cocoa&Cherry</span>. All rights reserved.
             </p>
 
             <div className="flex items-center gap-2 text-cream-muted text-sm">

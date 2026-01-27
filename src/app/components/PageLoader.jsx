@@ -82,7 +82,7 @@ export default function PageLoader() {
                 height="25"
                 rx="5"
                 fill="#2a1f1f"
-                stroke="#e4a0a0"
+                stroke="#c9a86c"
                 strokeWidth="2"
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: 1 }}
@@ -98,7 +98,7 @@ export default function PageLoader() {
                 height="22"
                 rx="4"
                 fill="#3d2b2b"
-                stroke="#e4a0a0"
+                stroke="#c9a86c"
                 strokeWidth="2"
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: 1 }}
@@ -114,7 +114,7 @@ export default function PageLoader() {
                 height="17"
                 rx="3"
                 fill="#4a3535"
-                stroke="#e4a0a0"
+                stroke="#c9a86c"
                 strokeWidth="2"
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: 1 }}
@@ -130,7 +130,7 @@ export default function PageLoader() {
                   cy="25"
                   rx="4"
                   ry="6"
-                  fill="#e4a0a0"
+                  fill="#c9a86c"
                   initial={{ scaleY: 0 }}
                   animate={{ scaleY: 1 }}
                   transition={{ delay: 0.8 + i * 0.1, duration: 0.3 }}
@@ -145,7 +145,7 @@ export default function PageLoader() {
                 width="6"
                 height="18"
                 rx="2"
-                fill="#d4a574"
+                fill="#c9a86c"
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: 1 }}
                 transition={{ delay: 1, duration: 0.3 }}
@@ -158,7 +158,7 @@ export default function PageLoader() {
                 cy="8"
                 rx="4"
                 ry="6"
-                fill="#fbbf24"
+                fill="#c9a86c"
                 initial={{ scale: 0 }}
                 animate={{ scale: [1, 1.2, 1], y: [0, -2, 0] }}
                 transition={{ delay: 1.2, duration: 0.5, repeat: Infinity }}
@@ -168,7 +168,7 @@ export default function PageLoader() {
                 cy="7"
                 rx="2"
                 ry="3"
-                fill="#fb923c"
+                fill="#c9a86c"
                 initial={{ scale: 0 }}
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ delay: 1.3, duration: 0.4, repeat: Infinity }}
@@ -186,7 +186,7 @@ export default function PageLoader() {
                   x={spark.x}
                   y={spark.y}
                   fontSize="10"
-                  fill="#d4a574"
+                  fill="#c9a86c"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
                   transition={{ delay: spark.delay, duration: 1, repeat: Infinity, repeatDelay: 1 }}
@@ -208,9 +208,9 @@ export default function PageLoader() {
               className="text-3xl md:text-4xl font-bold mb-2"
               style={{ fontFamily: 'var(--font-cinzel)' }}
             >
-              <span className="text-cream">Cocoa</span>
-              <span className="gradient-text">&</span>
-              <span className="text-rose">Cherry</span>
+              <span style={{ color: '#c9a86c' }}>Cocoa</span>
+              <span style={{ color: '#c9a86c' }}>&</span>
+              <span style={{ color: '#c9a86c' }}>Cherry</span>
             </h1>
             <motion.p 
               className="text-cream-muted text-sm tracking-widest uppercase"
@@ -224,7 +224,8 @@ export default function PageLoader() {
           {/* Progress bar */}
           <div className="w-48 h-1 bg-noir-light rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-rose to-gold rounded-full"
+              className="h-full rounded-full"
+              style={{ background: '#c9a86c' }}
               initial={{ width: 0 }}
               animate={{ width: `${Math.min(progress, 100)}%` }}
               transition={{ duration: 0.1 }}
