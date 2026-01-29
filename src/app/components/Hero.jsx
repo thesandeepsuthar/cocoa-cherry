@@ -7,6 +7,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 
 // Floating particle component
@@ -546,6 +547,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-cream-muted text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0 mb-6 sm:mb-8"
+                itemProp="description"
               >
                 Premium custom cakes from a certified home studio. Experience
                 the artistry of handcrafted desserts inspired by
@@ -663,22 +665,51 @@ export default function Hero() {
                   )}
 
                   {/* Image - only show when not loading or when we have an image */}
-                  {!isLoadingHero && (
+                  {!isLoadingHero && heroImage && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.5 }}
-                      className="absolute inset-0 bg-cover bg-center transform hover:scale-110 transition-transform duration-700"
-                      style={{
-                        backgroundImage: heroImage
-                          ? `url('${heroImage.imageData}')`
-                          : "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_')",
-                      }}
-                    />
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={heroImage.imageData}
+                        alt={heroImage.alt || heroImage.title || "Premium custom cake from Cocoa&Cherry - FSSAI Certified Home Bakery Ahmedabad"}
+                        fill
+                        priority
+                        fetchPriority="high"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                        className="object-cover transform hover:scale-110 transition-transform duration-700"
+                        quality={90}
+                        unoptimized={heroImage.imageData?.startsWith('data:')}
+                      />
+                    </motion.div>
+                  )}
+
+                  {/* Fallback default image */}
+                  {!isLoadingHero && !heroImage && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_"
+                        alt="Premium custom cakes from Cocoa&Cherry - FSSAI Certified Home Bakery in Ahmedabad, Gujarat"
+                        fill
+                        priority
+                        fetchPriority="high"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                        className="object-cover transform hover:scale-110 transition-transform duration-700"
+                        quality={90}
+                        unoptimized
+                      />
+                    </motion.div>
                   )}
 
                   {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-noir/60 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-noir/60 via-transparent to-transparent pointer-events-none" />
                 </motion.div>
 
                 {/* Floating badge */}

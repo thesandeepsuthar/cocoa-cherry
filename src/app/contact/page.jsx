@@ -6,6 +6,52 @@ import Navigation from '@/app/components/Navigation';
 import Footer from '@/app/components/Footer';
 import FloatingActions from '@/app/components/FloatingActions';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
+
+// SEO Structured Data for Contact Page
+const contactPageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ContactPage",
+      "name": "Contact Cocoa&Cherry - Custom Cakes Ahmedabad",
+      "description": "Get in touch with Cocoa&Cherry for custom cake orders in Ahmedabad. Call +91 97127 52469 or WhatsApp us for instant service.",
+      "url": `${siteUrl}/contact`,
+      "mainEntity": {
+        "@type": "ContactPoint",
+        "telephone": "+91-97127-52469",
+        "contactType": "Customer Service",
+        "email": "cocoacheery307@gmail.com",
+        "availableLanguage": ["English", "Hindi", "Gujarati"],
+        "areaServed": "Ahmedabad",
+        "hoursAvailable": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          "opens": "09:00",
+          "closes": "21:00"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": siteUrl
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Contact",
+          "item": `${siteUrl}/contact`
+        }
+      ]
+    }
+  ]
+};
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -48,8 +94,13 @@ export default function ContactPage() {
 
   return (
     <>
+      {/* SEO Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
+      />
       <Navigation />
-      <main className="min-h-screen bg-noir pt-16 sm:pt-20 md:pt-24">
+      <main className="min-h-screen bg-noir pt-16 sm:pt-20 md:pt-24" itemScope itemType="https://schema.org/ContactPage">
         {/* Hero Section */}
         <section className="relative pb-6 sm:pb-8 md:pb-12 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-rose/10 via-transparent to-noir" />

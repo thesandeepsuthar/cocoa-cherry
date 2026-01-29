@@ -1,17 +1,22 @@
 import { Cinzel, Work_Sans } from "next/font/google";
 import "./globals.css";
+import PageLoader from "./components/PageLoader";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "500", "600", "700", "800", "900"],
+  preload: true,
+  fallback: ["serif"],
 });
 
 const workSans = Work_Sans({
   variable: "--font-work-sans",
   subsets: ["latin"],
   display: "swap",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
@@ -63,6 +68,10 @@ export const metadata = {
   authors: [{ name: "Cocoa&Cherry", url: siteUrl }],
   creator: "Cocoa&Cherry",
   publisher: "Cocoa&Cherry",
+  
+  // Additional SEO
+  classification: "Food & Drink",
+  referrer: "origin-when-cross-origin",
   
   // Favicon & Icons
   icons: {
@@ -135,6 +144,12 @@ export const metadata = {
   verification: {
     // google: "your-google-verification-code", // Get from Google Search Console
     // yandex: "your-yandex-verification-code",
+    // bing: "your-bing-verification-code",
+  },
+  
+  // Format Detection
+  formatDetection: {
+    telephone: true,
   },
   
   // Canonical URL
@@ -564,6 +579,28 @@ export default function RootLayout({ children }) {
         
         {/* Preload critical assets for LCP optimization */}
         <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
+        
+        {/* DNS Prefetch for external resources */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
+        
+        {/* Preconnect to improve font loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Resource hints for better performance */}
+        <link rel="prefetch" href="/api/hero" as="fetch" crossOrigin="anonymous" />
+        
+        {/* Hreflang tags for international SEO */}
+        <link rel="alternate" hrefLang="en-IN" href={siteUrl} />
+        <link rel="alternate" hrefLang="x-default" href={siteUrl} />
+        
+        {/* Additional SEO Meta Tags */}
+        <meta name="language" content="English" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="distribution" content="global" />
+        <meta name="rating" content="general" />
       </head>
       <body
         className={`${cinzel.variable} ${workSans.variable} antialiased bg-noir overflow-x-hidden`}
@@ -573,6 +610,9 @@ export default function RootLayout({ children }) {
         
         {/* Ambient glow effect */}
         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-radial-glow pointer-events-none opacity-30" />
+        
+        {/* Page Loader - shows on initial load and navigation */}
+        <PageLoader />
         
         {children}
       </body>

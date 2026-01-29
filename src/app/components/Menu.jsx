@@ -524,12 +524,20 @@ export default function Menu({ isHomePage = false }) {
       groups[category].push(item);
     });
     const itemsPerCategory = isHomePage ? HOME_ITEMS_PER_CATEGORY : ITEMS_PER_CATEGORY;
-    return Object.entries(groups)
-      .sort((a, b) => b[1].length - a[1].length)
-      .reduce((acc, [key, value]) => {
-        acc[key] = value.slice(0, itemsPerCategory);
-        return acc;
-      }, {});
+    
+    // Get all categories sorted by item count
+    const sortedCategories = Object.entries(groups)
+      .sort((a, b) => b[1].length - a[1].length);
+    
+    // Limit to 2 categories on home page, show all on menu page
+    const categoriesToShow = isHomePage 
+      ? sortedCategories.slice(0, 2) 
+      : sortedCategories;
+    
+    return categoriesToShow.reduce((acc, [key, value]) => {
+      acc[key] = value.slice(0, itemsPerCategory);
+      return acc;
+    }, {});
   }, [allFlavors, isHomePage]);
 
   const totalItems = allFlavors.length;

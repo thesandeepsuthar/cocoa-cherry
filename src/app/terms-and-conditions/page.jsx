@@ -5,6 +5,42 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRef } from 'react';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
+
+// SEO Structured Data for Terms Page
+const termsPageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "name": "Terms and Conditions - Cocoa&Cherry",
+      "description": "Terms and conditions for ordering custom cakes from Cocoa&Cherry. Learn about our delivery policy, cancellation policy, and payment terms.",
+      "url": `${siteUrl}/terms-and-conditions`,
+      "about": {
+        "@type": "Bakery",
+        "name": "Cocoa&Cherry"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": siteUrl
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Terms and Conditions",
+          "item": `${siteUrl}/terms-and-conditions`
+        }
+      ]
+    }
+  ]
+};
+
 export default function TermsAndConditions() {
   const contentRef = useRef(null);
   const isInView = useInView(contentRef, { once: true, margin: "-50px" });
@@ -109,7 +145,12 @@ export default function TermsAndConditions() {
   ];
 
   return (
-    <main className="min-h-screen bg-noir">
+    <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/WebPage">
+      {/* SEO Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(termsPageSchema) }}
+      />
       {/* Background decorations */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-rose/5 rounded-full blur-[120px]" />

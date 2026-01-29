@@ -6,6 +6,78 @@ import Navigation from '@/app/components/Navigation';
 import Footer from '@/app/components/Footer';
 import FloatingActions from '@/app/components/FloatingActions';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
+
+// SEO Structured Data for Services Page
+const servicesPageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "serviceType": "Custom Cake Services",
+      "name": "Cake Services in Ahmedabad - Cocoa&Cherry",
+      "description": "Premium custom cake services including birthday cakes, wedding cakes, designer cakes, same-day delivery, and eggless options in Ahmedabad.",
+      "url": `${siteUrl}/services`,
+      "provider": {
+        "@type": "Bakery",
+        "name": "Cocoa&Cherry",
+        "telephone": "+91-97127-52469"
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": "Ahmedabad"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Cake Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Custom Cakes",
+              "description": "Personalized cakes designed to match your vision"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Wedding Cakes",
+              "description": "Elegant multi-tier wedding cakes"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Same Day Delivery",
+              "description": "Fast and reliable delivery service across Ahmedabad"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": siteUrl
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Services",
+          "item": `${siteUrl}/services`
+        }
+      ]
+    }
+  ]
+};
+
 export default function ServicesPage() {
   const services = [
     {
@@ -54,8 +126,13 @@ export default function ServicesPage() {
 
   return (
     <>
+      {/* SEO Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesPageSchema) }}
+      />
       <Navigation />
-      <main className="min-h-screen bg-noir pt-16 sm:pt-20 md:pt-24">
+      <main className="min-h-screen bg-noir pt-16 sm:pt-20 md:pt-24" itemScope itemType="https://schema.org/Service">
         {/* Hero Section */}
         <section className="relative pb-6 sm:pb-8 md:pb-12 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-rose/10 via-transparent to-noir" />
