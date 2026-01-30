@@ -7,6 +7,7 @@ export { default as Gallery } from './Gallery';
 export { default as Events } from './Events';
 export { default as Reels } from './Reels';
 export { default as Testimonials } from './Testimonials';
+export { default as Reviews } from './Reviews';
 export { default as FAQ } from './FAQ';
 export { default as Order } from './Order';
 export { default as Footer } from './Footer';

@@ -15,6 +15,7 @@ const navLinks = [
   { href: "/menu", label: "Menu", icon: "restaurant_menu" },
   { href: "/gallery", label: "Gallery", icon: "photo_library" },
   { href: "/events", label: "Events", icon: "celebration" },
+  { href: "/reviews", label: "Reviews", icon: "rate_review" },
   { href: "/services", label: "Services", icon: "room_service" },
   { href: "/contact", label: "Contact", icon: "mail" },
 ];

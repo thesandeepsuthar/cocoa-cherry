@@ -110,7 +110,7 @@ export default function Footer() {
                 whileTap={{ scale: 0.95 }}
                 className="w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-lg transition-all"
                 style={{
-                  background:
+                  backgroundImage:
                     "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
                 }}
               >
