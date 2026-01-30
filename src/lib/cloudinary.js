@@ -1,0 +1,205 @@
+import { v2 as cloudinary } from 'cloudinary';
+import sharp from 'sharp';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+/**
+ * Convert base64 image to buffer
+ */
+function base64ToBuffer(base64String) {
+  // Remove data URL prefix if present
+  const base64Data = base64String.includes(',') 
+    ? base64String.split(',')[1] 
+    : base64String;
+  
+  return Buffer.from(base64Data, 'base64');
+}
+
+/**
+ * Optimize image using Sharp before uploading
+ */
+async function optimizeImage(buffer, options = {}) {
+  const {
+    maxWidth = 1920,
+    maxHeight = 1920,
+    quality = 85,
+    format = 'avif' // Default to AVIF for best compression (50% smaller than WebP)
+  } = options;
+
+  try {
+    const optimized = await sharp(buffer)
+      .resize(maxWidth, maxHeight, {
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
+      .toFormat(format, { quality })
+      .toBuffer();
+
+    return optimized;
+  } catch (error) {
+    console.error('Image optimization error:', error);
+    // Return original buffer if optimization fails
+    return buffer;
+  }
+}
+
+/**
+ * Upload image to Cloudinary
+ * @param {string} base64Image - Base64 encoded image string
+ * @param {object} options - Upload options
+ * @returns {Promise<{url: string, public_id: string, secure_url: string}>}
+ */
+export async function uploadToCloudinary(base64Image, options = {}) {
+  try {
+    const {
+      folder = 'cocoa-cherry',
+      resourceType = 'image',
+      transformation = [],
+      publicId = null,
+      overwrite = false,
+    } = options;
+
+    // Convert base64 to buffer
+    const buffer = base64ToBuffer(base64Image);
+
+    // Get format from options (default to AVIF for best compression)
+    const imageFormat = options.format || 'avif';
+
+    // Optimize image before upload
+    const optimizedBuffer = await optimizeImage(buffer, {
+      maxWidth: options.maxWidth || 1920,
+      maxHeight: options.maxHeight || 1920,
+      quality: options.quality || 85,
+      format: imageFormat,
+    });
+
+    // Convert buffer to base64 for Cloudinary upload
+    const mimeType = imageFormat === 'avif' ? 'image/avif' : imageFormat === 'webp' ? 'image/webp' : 'image/jpeg';
+    const optimizedBase64 = `data:${mimeType};base64,${optimizedBuffer.toString('base64')}`;
+
+    // Upload to Cloudinary with AVIF format transformation
+    // Cloudinary will automatically convert and serve as AVIF
+    const uploadOptions = {
+      folder,
+      resource_type: resourceType,
+      overwrite,
+      transformation: [
+        {
+          quality: 'auto',
+          fetch_format: 'avif', // Request AVIF format from Cloudinary
+          ...transformation,
+        },
+      ],
+    };
+
+    if (publicId) {
+      uploadOptions.public_id = publicId;
+    }
+
+    const result = await cloudinary.uploader.upload(optimizedBase64, uploadOptions);
+
+    // Construct AVIF format URL by adding transformation to the base URL
+    // Cloudinary URL format: https://res.cloudinary.com/cloud_name/image/upload/v123/public_id
+    // We add: f_avif,q_auto transformation for AVIF format
+    let avifUrl = result.secure_url;
+    if (avifUrl.includes('/upload/')) {
+      // Insert AVIF transformation after /upload/
+      avifUrl = avifUrl.replace('/upload/', '/upload/f_avif,q_auto/');
+    }
+
+    return {
+      url: avifUrl, // AVIF format URL (with f_avif,q_auto transformation)
+      public_id: result.public_id,
+      secure_url: avifUrl, // AVIF format secure URL
+      width: result.width,
+      height: result.height,
+      format: 'avif', // Format is AVIF
+      bytes: result.bytes,
+      original_url: result.secure_url, // Keep original URL for reference
+    };
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    throw new Error(`Failed to upload image to Cloudinary: ${error.message}`);
+  }
+}
+
+/**
+ * Upload multiple images to Cloudinary
+ * @param {string[]} base64Images - Array of base64 encoded images
+ * @param {object} options - Upload options
+ * @returns {Promise<Array>}
+ */
+export async function uploadMultipleToCloudinary(base64Images, options = {}) {
+  try {
+    const uploadPromises = base64Images.map((image, index) => {
+      const imageOptions = {
+        ...options,
+        publicId: options.publicId ? `${options.publicId}-${index}` : null,
+      };
+      return uploadToCloudinary(image, imageOptions);
+    });
+
+    const results = await Promise.all(uploadPromises);
+    return results;
+  } catch (error) {
+    console.error('Cloudinary multiple upload error:', error);
+    throw new Error(`Failed to upload images to Cloudinary: ${error.message}`);
+  }
+}
+
+/**
+ * Delete image from Cloudinary
+ * @param {string} publicId - Cloudinary public ID
+ * @returns {Promise<object>}
+ */
+export async function deleteFromCloudinary(publicId) {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    return result;
+  } catch (error) {
+    console.error('Cloudinary delete error:', error);
+    throw new Error(`Failed to delete image from Cloudinary: ${error.message}`);
+  }
+}
+
+/**
+ * Extract public ID from Cloudinary URL
+ * @param {string} url - Cloudinary URL
+ * @returns {string|null}
+ */
+export function extractPublicId(url) {
+  if (!url || typeof url !== 'string') return null;
+  
+  try {
+    // Match Cloudinary URL pattern
+    const match = url.match(/\/v\d+\/(.+)\.(jpg|jpeg|png|gif|webp|svg)/i);
+    if (match && match[1]) {
+      return match[1];
+    }
+    
+    // If it's already a public_id format
+    if (!url.includes('http')) {
+      return url;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error extracting public ID:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if URL is a Cloudinary URL
+ * @param {string} url - URL to check
+ * @returns {boolean}
+ */
+export function isCloudinaryUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  return url.includes('cloudinary.com') || url.includes('res.cloudinary.com');
+}

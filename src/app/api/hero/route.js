@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../lib/mongodb";
 import { Hero } from "../../../lib/models";
 import { verifyAdminKey } from "../../../lib/auth";
-import { compressWithPreset, validateImage } from "../../../lib/imageProcessor";
+import { validateImage } from "../../../lib/imageProcessor";
+import { uploadToCloudinary } from "../../../lib/cloudinary";
 
 // GET /api/hero - Get all hero images
 export async function GET(request) {
@@ -63,26 +64,23 @@ export async function POST(request) {
       );
     }
 
-    // ========================================
-    // COMPRESS IMAGE USING SHARP
-    // Reduces size by 60-90% while keeping quality
-    // Hero images use 'gallery' preset (1200x1200, quality 80)
-    // ========================================
-    let compressedImageData = imageData;
-    let compressionInfo = null;
-
+    // Upload image to Cloudinary
+    let cloudinaryResult = null;
     try {
-      const result = await compressWithPreset(imageData, 'gallery');
-      compressedImageData = result.base64;
-      compressionInfo = {
-        originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
-        compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
-        savings: result.savings,
-      };
-      console.log(`✅ Hero image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
-    } catch (compressionError) {
-      // If compression fails, use original image
-      console.error('⚠️ Compression failed, using original:', compressionError.message);
+      cloudinaryResult = await uploadToCloudinary(imageData, {
+        folder: 'cocoa-cherry/hero',
+        maxWidth: 1920,
+        maxHeight: 1080,
+        quality: 90,
+        format: 'avif', // Use AVIF format for better compression
+      });
+      console.log(`✅ Hero image uploaded to Cloudinary: ${cloudinaryResult.url}`);
+    } catch (uploadError) {
+      console.error('Cloudinary upload error:', uploadError);
+      return NextResponse.json(
+        { success: false, error: 'Failed to upload image to Cloudinary' },
+        { status: 500 },
+      );
     }
 
     // If setting as active, deactivate others first
@@ -92,7 +90,8 @@ export async function POST(request) {
 
     // Create and save the new hero document
     const newHero = new Hero({
-      imageData: compressedImageData,
+      imageData: cloudinaryResult.secure_url,
+      publicId: cloudinaryResult.public_id,
       title,
       subtitle,
       alt,
@@ -105,7 +104,11 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       data: savedHero,
-      compression: compressionInfo,
+      cloudinary: {
+        url: cloudinaryResult.url,
+        public_id: cloudinaryResult.public_id,
+        size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
+      },
       message: "Hero image created successfully",
     });
   } catch (error) {

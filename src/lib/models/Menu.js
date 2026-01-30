@@ -14,8 +14,12 @@ const MenuSchema = new mongoose.Schema({
     maxlength: [500, 'Description cannot exceed 500 characters'],
   },
   imageData: {
-    type: String, // Base64 encoded image
+    type: String, // Cloudinary URL
     required: [true, 'Image is required'],
+  },
+  publicId: {
+    type: String, // Cloudinary public_id for deletion
+    default: null,
   },
   badge: {
     type: String, // "Best Seller", "New", etc.

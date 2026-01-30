@@ -2,8 +2,12 @@ import mongoose from 'mongoose';
 
 const HeroSchema = new mongoose.Schema({
   imageData: {
-    type: String, // Base64 encoded image
+    type: String, // Cloudinary URL
     required: true,
+  },
+  publicId: {
+    type: String, // Cloudinary public_id for deletion
+    default: null,
   },
   title: {
     type: String,

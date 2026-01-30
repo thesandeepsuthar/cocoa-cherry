@@ -3,7 +3,8 @@ import connectDB from '@/lib/mongodb';
 import { Menu } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString } from '@/lib/security';
-import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
+import { validateImage } from '@/lib/imageProcessor';
+import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
 // Validate MongoDB ObjectId
@@ -68,9 +69,18 @@ export async function PUT(request, { params }) {
     await connectDB();
     const body = await request.json();
 
+    // Get current menu item to check for existing Cloudinary public_id
+    const currentMenuItem = await Menu.findById(id);
+    if (!currentMenuItem) {
+      return NextResponse.json(
+        { success: false, error: 'Menu item not found' },
+        { status: 404 }
+      );
+    }
+
     // Build update object with validation
     const updateData = { updatedAt: new Date() };
-    let compressionInfo = null;
+    let cloudinaryResult = null;
 
     if (body.imageData) {
       const imageValidation = validateImage(body.imageData, 20);
@@ -81,19 +91,34 @@ export async function PUT(request, { params }) {
         );
       }
 
-      // Compress the image
+      // Delete old image from Cloudinary if it exists
+      if (currentMenuItem.publicId) {
+        try {
+          await deleteFromCloudinary(currentMenuItem.publicId);
+          console.log(`🗑️ Deleted old menu image from Cloudinary: ${currentMenuItem.publicId}`);
+        } catch (deleteError) {
+          console.error('⚠️ Failed to delete old image from Cloudinary:', deleteError.message);
+        }
+      }
+
+      // Upload new image to Cloudinary
       try {
-        const result = await compressWithPreset(body.imageData, 'menu');
-        updateData.imageData = result.base64;
-        compressionInfo = {
-          originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
-          compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
-          savings: result.savings,
-        };
-        console.log(`✅ Menu image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
-      } catch (compressionError) {
-        console.error('⚠️ Compression failed, using original:', compressionError.message);
-        updateData.imageData = body.imageData;
+        cloudinaryResult = await uploadToCloudinary(body.imageData, {
+          folder: 'cocoa-cherry/menu',
+          maxWidth: 1920,
+          maxHeight: 1920,
+          quality: 85,
+          format: 'avif', // Use AVIF format for better compression
+        });
+        updateData.imageData = cloudinaryResult.secure_url;
+        updateData.publicId = cloudinaryResult.public_id;
+        console.log(`✅ New menu image uploaded to Cloudinary: ${cloudinaryResult.url}`);
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return NextResponse.json(
+          { success: false, error: 'Failed to upload image to Cloudinary' },
+          { status: 500 }
+        );
       }
     }
 
@@ -129,16 +154,7 @@ export async function PUT(request, { params }) {
     let swappedWith = null;
     if (typeof body.order === 'number') {
       const targetOrder = body.order;
-      
-      const currentItem = await Menu.findById(id);
-      if (!currentItem) {
-        return NextResponse.json(
-          { success: false, error: 'Menu item not found' },
-          { status: 404 }
-        );
-      }
-
-      const currentOrder = currentItem.order;
+      const currentOrder = currentMenuItem.order;
 
       if (currentOrder !== targetOrder) {
         const itemWithTargetOrder = await Menu.findOne({ 
@@ -159,7 +175,7 @@ export async function PUT(request, { params }) {
             newOrder: currentOrder,
           };
           
-          console.log(`🔄 Order swapped: "${currentItem.name}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.name}" (${targetOrder}→${currentOrder})`);
+          console.log(`🔄 Order swapped: "${currentMenuItem.name}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.name}" (${targetOrder}→${currentOrder})`);
         }
       }
 
@@ -182,7 +198,11 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedMenuItem,
-      compression: compressionInfo,
+      cloudinary: cloudinaryResult ? {
+        url: cloudinaryResult.url,
+        public_id: cloudinaryResult.public_id,
+        size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
+      } : null,
       swappedWith: swappedWith,
       message: swappedWith 
         ? `Order swapped with "${swappedWith.name}"` 
@@ -225,6 +245,16 @@ export async function DELETE(request, { params }) {
         { success: false, error: 'Menu item not found' },
         { status: 404 }
       );
+    }
+
+    // Delete image from Cloudinary if public_id exists
+    if (deletedMenuItem.publicId) {
+      try {
+        await deleteFromCloudinary(deletedMenuItem.publicId);
+        console.log(`🗑️ Deleted menu image from Cloudinary: ${deletedMenuItem.publicId}`);
+      } catch (deleteError) {
+        console.error('⚠️ Failed to delete image from Cloudinary:', deleteError.message);
+      }
     }
 
     return NextResponse.json({

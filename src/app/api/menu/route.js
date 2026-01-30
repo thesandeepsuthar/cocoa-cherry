@@ -3,7 +3,8 @@ import connectDB from '@/lib/mongodb';
 import { Menu } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, validateRequired } from '@/lib/security';
-import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
+import { validateImage } from '@/lib/imageProcessor';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 // GET - Fetch all menu items (Public)
 export async function GET() {
@@ -57,26 +58,6 @@ export async function POST(request) {
       );
     }
 
-    // ========================================
-    // COMPRESS IMAGE USING SHARP
-    // Reduces size by 60-90% while keeping quality
-    // ========================================
-    let compressedImageData = imageData;
-    let compressionInfo = null;
-
-    try {
-      const result = await compressWithPreset(imageData, 'menu');
-      compressedImageData = result.base64;
-      compressionInfo = {
-        originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
-        compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
-        savings: result.savings,
-      };
-      console.log(`✅ Menu image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
-    } catch (compressionError) {
-      console.error('⚠️ Compression failed, using original:', compressionError.message);
-    }
-
     // Sanitize text inputs
     const sanitizedName = sanitizeString(name);
     const sanitizedDescription = sanitizeString(description);
@@ -96,10 +77,30 @@ export async function POST(request) {
       );
     }
 
+    // Upload image to Cloudinary
+    let cloudinaryResult = null;
+    try {
+      cloudinaryResult = await uploadToCloudinary(imageData, {
+        folder: 'cocoa-cherry/menu',
+        maxWidth: 1920,
+        maxHeight: 1920,
+        quality: 85,
+        format: 'avif', // Use AVIF format for better compression
+      });
+      console.log(`✅ Menu image uploaded to Cloudinary: ${cloudinaryResult.url}`);
+    } catch (uploadError) {
+      console.error('Cloudinary upload error:', uploadError);
+      return NextResponse.json(
+        { success: false, error: 'Failed to upload image to Cloudinary' },
+        { status: 500 }
+      );
+    }
+
     const newMenuItem = await Menu.create({
       name: sanitizedName,
       description: sanitizedDescription,
-      imageData: compressedImageData,
+      imageData: cloudinaryResult.secure_url,
+      publicId: cloudinaryResult.public_id,
       badge: sanitizedBadge,
       price: typeof price === 'number' ? price : null,
       discountPrice: typeof discountPrice === 'number' ? discountPrice : null,
@@ -110,7 +111,11 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       data: newMenuItem,
-      compression: compressionInfo,
+      cloudinary: {
+        url: cloudinaryResult.url,
+        public_id: cloudinaryResult.public_id,
+        size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
+      },
       message: 'Menu item added successfully',
     });
   } catch (error) {

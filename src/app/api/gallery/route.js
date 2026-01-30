@@ -3,7 +3,8 @@ import connectDB from '@/lib/mongodb';
 import { Gallery } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, validateRequired } from '@/lib/security';
-import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
+import { validateImage } from '@/lib/imageProcessor';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 // GET - Fetch all gallery images (Public)
 export async function GET() {
@@ -74,27 +75,6 @@ export async function POST(request) {
       );
     }
 
-    // ========================================
-    // COMPRESS IMAGE USING SHARP
-    // Reduces size by 60-90% while keeping quality
-    // ========================================
-    let compressedImageData = imageData;
-    let compressionInfo = null;
-
-    try {
-      const result = await compressWithPreset(imageData, 'gallery');
-      compressedImageData = result.base64;
-      compressionInfo = {
-        originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
-        compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
-        savings: result.savings,
-      };
-      console.log(`✅ Image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
-    } catch (compressionError) {
-      // If compression fails, use original image
-      console.error('⚠️ Compression failed, using original:', compressionError.message);
-    }
-
     // Sanitize text inputs
     const sanitizedCaption = sanitizeString(caption);
     const sanitizedAlt = sanitizeString(alt || caption);
@@ -106,9 +86,29 @@ export async function POST(request) {
       );
     }
 
-    // Store compressed image in database
+    // Upload image to Cloudinary
+    let cloudinaryResult = null;
+    try {
+      cloudinaryResult = await uploadToCloudinary(imageData, {
+        folder: 'cocoa-cherry/gallery',
+        maxWidth: 1920,
+        maxHeight: 1920,
+        quality: 85,
+        format: 'avif', // Use AVIF format for better compression
+      });
+      console.log(`✅ Image uploaded to Cloudinary: ${cloudinaryResult.url}`);
+    } catch (uploadError) {
+      console.error('Cloudinary upload error:', uploadError);
+      return NextResponse.json(
+        { success: false, error: 'Failed to upload image to Cloudinary' },
+        { status: 500 }
+      );
+    }
+
+    // Store Cloudinary URL in database
     const newImage = await Gallery.create({
-      imageData: compressedImageData,
+      imageData: cloudinaryResult.secure_url, // Store Cloudinary URL instead of base64
+      publicId: cloudinaryResult.public_id, // Store public_id for future deletion
       caption: sanitizedCaption,
       alt: sanitizedAlt,
       order: typeof order === 'number' ? order : 0,
@@ -117,8 +117,12 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       data: newImage,
-      compression: compressionInfo,
-      message: 'Image added successfully',
+      cloudinary: {
+        url: cloudinaryResult.url,
+        public_id: cloudinaryResult.public_id,
+        size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
+      },
+      message: 'Image uploaded and added successfully',
     });
   } catch (error) {
     console.error('Gallery POST error:', error);

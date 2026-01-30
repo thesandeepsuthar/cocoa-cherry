@@ -10,6 +10,7 @@
     "seed:reviews": "node scripts/seed-reviews.mjs"
   },
   "dependencies": {
+    "cloudinary": "^2.9.0",
     "dotenv": "^16.6.1",
     "framer-motion": "^12.24.0",
     "mongoose": "^9.1.2",

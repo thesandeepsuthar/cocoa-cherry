@@ -3,7 +3,8 @@ import connectDB from '@/lib/mongodb';
 import { Gallery } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString } from '@/lib/security';
-import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
+import { validateImage } from '@/lib/imageProcessor';
+import { uploadToCloudinary, deleteFromCloudinary, extractPublicId } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
 // Validate MongoDB ObjectId
@@ -68,11 +69,20 @@ export async function PUT(request, { params }) {
     await connectDB();
     const body = await request.json();
 
+    // Get current image to check for existing Cloudinary public_id
+    const currentImage = await Gallery.findById(id);
+    if (!currentImage) {
+      return NextResponse.json(
+        { success: false, error: 'Image not found' },
+        { status: 404 }
+      );
+    }
+
     // Build update object with only allowed fields
     const updateData = { updatedAt: new Date() };
-    let compressionInfo = null;
+    let cloudinaryResult = null;
 
-    // If new image is provided, validate and compress it
+    // If new image is provided, upload to Cloudinary
     if (body.imageData) {
       const imageValidation = validateImage(body.imageData, 20);
       if (!imageValidation.valid) {
@@ -82,19 +92,35 @@ export async function PUT(request, { params }) {
         );
       }
 
-      // Compress the image
+      // Delete old image from Cloudinary if it exists
+      if (currentImage.publicId) {
+        try {
+          await deleteFromCloudinary(currentImage.publicId);
+          console.log(`🗑️ Deleted old image from Cloudinary: ${currentImage.publicId}`);
+        } catch (deleteError) {
+          console.error('⚠️ Failed to delete old image from Cloudinary:', deleteError.message);
+          // Continue with upload even if deletion fails
+        }
+      }
+
+      // Upload new image to Cloudinary
       try {
-        const result = await compressWithPreset(body.imageData, 'gallery');
-        updateData.imageData = result.base64;
-        compressionInfo = {
-          originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
-          compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
-          savings: result.savings,
-        };
-        console.log(`✅ Image compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
-      } catch (compressionError) {
-        console.error('⚠️ Compression failed, using original:', compressionError.message);
-      updateData.imageData = body.imageData;
+        cloudinaryResult = await uploadToCloudinary(body.imageData, {
+          folder: 'cocoa-cherry/gallery',
+          maxWidth: 1920,
+          maxHeight: 1920,
+          quality: 85,
+          format: 'avif', // Use AVIF format for better compression
+        });
+        updateData.imageData = cloudinaryResult.secure_url;
+        updateData.publicId = cloudinaryResult.public_id;
+        console.log(`✅ New image uploaded to Cloudinary: ${cloudinaryResult.url}`);
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return NextResponse.json(
+          { success: false, error: 'Failed to upload image to Cloudinary' },
+          { status: 500 }
+        );
       }
     }
 
@@ -114,17 +140,7 @@ export async function PUT(request, { params }) {
     let swappedWith = null;
     if (typeof body.order === 'number') {
       const targetOrder = body.order;
-      
-      // Get current item to find its current order
-      const currentItem = await Gallery.findById(id);
-      if (!currentItem) {
-        return NextResponse.json(
-          { success: false, error: 'Image not found' },
-          { status: 404 }
-        );
-      }
-
-      const currentOrder = currentItem.order;
+      const currentOrder = currentImage.order;
 
       // Only swap if order is actually changing
       if (currentOrder !== targetOrder) {
@@ -148,7 +164,7 @@ export async function PUT(request, { params }) {
             newOrder: currentOrder,
           };
           
-          console.log(`🔄 Order swapped: "${currentItem.caption}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.caption}" (${targetOrder}→${currentOrder})`);
+          console.log(`🔄 Order swapped: "${currentImage.caption}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.caption}" (${targetOrder}→${currentOrder})`);
         }
       }
 
@@ -171,7 +187,11 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedImage,
-      compression: compressionInfo,
+      cloudinary: cloudinaryResult ? {
+        url: cloudinaryResult.url,
+        public_id: cloudinaryResult.public_id,
+        size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
+      } : null,
       swappedWith: swappedWith,
       message: swappedWith 
         ? `Order swapped with "${swappedWith.caption}"` 
@@ -214,6 +234,17 @@ export async function DELETE(request, { params }) {
         { success: false, error: 'Image not found' },
         { status: 404 }
       );
+    }
+
+    // Delete image from Cloudinary if public_id exists
+    if (deletedImage.publicId) {
+      try {
+        await deleteFromCloudinary(deletedImage.publicId);
+        console.log(`🗑️ Deleted image from Cloudinary: ${deletedImage.publicId}`);
+      } catch (deleteError) {
+        console.error('⚠️ Failed to delete image from Cloudinary:', deleteError.message);
+        // Continue even if Cloudinary deletion fails
+      }
     }
 
     return NextResponse.json({

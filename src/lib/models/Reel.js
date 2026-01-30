@@ -6,8 +6,12 @@ const ReelSchema = new mongoose.Schema({
     required: true,
   },
   thumbnailData: {
-    type: String, // Base64 encoded thumbnail image
+    type: String, // Cloudinary URL
     required: true,
+  },
+  thumbnailPublicId: {
+    type: String, // Cloudinary public_id for deletion
+    default: null,
   },
   caption: {
     type: String,

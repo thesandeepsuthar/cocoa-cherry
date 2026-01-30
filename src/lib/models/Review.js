@@ -24,7 +24,11 @@ const ReviewSchema = new mongoose.Schema({
     required: true,
   },
   avatarData: {
-    type: String, // Base64 encoded avatar (optional)
+    type: String, // Cloudinary URL (optional)
+    default: null,
+  },
+  avatarPublicId: {
+    type: String, // Cloudinary public_id for deletion
     default: null,
   },
   isApproved: {

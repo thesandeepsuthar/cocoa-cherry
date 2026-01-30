@@ -23,12 +23,20 @@ const EventSchema = new mongoose.Schema({
     maxlength: [1000, 'Description cannot exceed 1000 characters'],
   },
   images: [{
-    type: String, // Base64 encoded images
+    type: String, // Cloudinary URLs
     required: true,
   }],
+  imagePublicIds: [{
+    type: String, // Cloudinary public_ids for deletion
+    default: null,
+  }],
   coverImage: {
-    type: String, // Base64 encoded cover image (first/main image)
+    type: String, // Cloudinary URL
     required: [true, 'Cover image is required'],
+  },
+  coverImagePublicId: {
+    type: String, // Cloudinary public_id for deletion
+    default: null,
   },
   highlights: {
     type: String, // Short highlights like "500+ students served"
