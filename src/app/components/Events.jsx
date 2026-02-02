@@ -400,7 +400,7 @@ export default function Events({ isHomePage = false }) {
                       bg-rose/5 rounded-full blur-[50px] sm:blur-[60px] md:blur-[80px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 pt-3 sm:px-6 md:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

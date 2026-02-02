@@ -189,7 +189,7 @@ export default function ReviewsPage() {
       
       <Navigation />
       <main 
-        className="min-h-screen bg-noir pt-16 sm:pt-20 md:pt-24" 
+        className="min-h-screen bg-noir pt-8 sm:pt-20 md:pt-24 overflow-x-hidden w-full" 
         itemScope 
         itemType="https://schema.org/CollectionPage"
       >

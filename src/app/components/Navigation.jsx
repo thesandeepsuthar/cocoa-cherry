@@ -226,12 +226,42 @@ export default function Navigation() {
             >
               {/* Menu Header */}
               <div className="flex items-center justify-between p-4 md:p-6 border-b border-rose/10">
-                <span
-                  className="text-cream font-bold text-base md:text-lg"
-                  style={{ fontFamily: "var(--font-cinzel)" }}
+                <Link 
+                  href="/" 
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 md:gap-3 group"
                 >
-                  Menu
-                </span>
+                  <motion.div
+                    whileHover={{ scale: 1.05, rotate: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative w-10 h-10 md:w-12 md:h-12"
+                  >
+                    {/* Glow effect behind logo */}
+                    <div className="absolute inset-0 bg-rose/20 rounded-full blur-xl group-hover:bg-rose/40 transition-colors" />
+                    <Image
+                      src="/logo.svg"
+                      alt="Cocoa&Cherry Logo"
+                      width={48}
+                      height={48}
+                      className="relative w-full h-full drop-shadow-lg rounded-full"
+                      priority
+                    />
+                  </motion.div>
+
+                  <div className="flex flex-col">
+                    <motion.h2
+                      className="text-base md:text-xl font-bold tracking-wide"
+                      style={{ fontFamily: "var(--font-cinzel)" }}
+                    >
+                      <span className="text-[#c9a86c]">Cocoa</span>
+                      <span className="text-[#c9a86c]">&</span>
+                      <span className="text-[#c9a86c]">Cherry</span>
+                    </motion.h2>
+                    <span className="text-cream-muted text-[9px] md:text-[10px] tracking-[0.2em] uppercase">
+                      Artisanal Cakes
+                    </span>
+                  </div>
+                </Link>
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsOpen(false)}

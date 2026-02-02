@@ -132,7 +132,7 @@ export default function ServicesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesPageSchema) }}
       />
       <Navigation />
-      <main className="min-h-screen bg-noir pt-16 sm:pt-20 md:pt-24" itemScope itemType="https://schema.org/Service">
+      <main className="min-h-screen bg-noir pt-8 sm:pt-20 md:pt-24" itemScope itemType="https://schema.org/Service">
         {/* Hero Section */}
         <section className="relative pb-6 sm:pb-8 md:pb-12 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-rose/10 via-transparent to-noir" />

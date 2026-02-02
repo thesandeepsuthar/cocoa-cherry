@@ -106,7 +106,7 @@ export default function Features() {
         <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-gold/5 rounded-full blur-[80px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 pt-3 sm:px-6 md:px-8">
         {/* Section Header */}
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center mb-12 sm:mb-16 md:mb-20">
             <motion.div

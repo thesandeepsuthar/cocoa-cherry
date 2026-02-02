@@ -598,7 +598,7 @@ export default function Menu({ isHomePage = false }) {
                       bg-gold/5 rounded-full blur-[60px] sm:blur-[80px] md:blur-[100px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 py-4 sm:px-6 md:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

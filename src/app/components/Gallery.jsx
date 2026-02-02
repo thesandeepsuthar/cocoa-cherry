@@ -336,7 +336,7 @@ export default function Gallery({ isHomePage = false }) {
           <div className="absolute bottom-1/4 left-0 w-[300px] h-[300px] bg-gold/5 rounded-full blur-[80px]" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 md:px-8">
+        <div className="relative max-w-7xl mx-auto px-4 pt-3 md:px-8">
           {/* Section Header */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
