@@ -107,20 +107,25 @@ export async function uploadToCloudinary(base64Image, options = {}) {
     // Cloudinary URL format: https://res.cloudinary.com/cloud_name/image/upload/v123/public_id
     // We add: f_avif,q_auto transformation for AVIF format
     let avifUrl = result.secure_url;
-    if (avifUrl.includes('/upload/')) {
-      // Insert AVIF transformation after /upload/
-      avifUrl = avifUrl.replace('/upload/', '/upload/f_avif,q_auto/');
+    
+    // Ensure AVIF transformation is in the URL
+    if (avifUrl && avifUrl.includes('/upload/')) {
+      // Check if transformation already exists
+      if (!avifUrl.includes('f_avif')) {
+        // Insert AVIF transformation after /upload/
+        avifUrl = avifUrl.replace('/upload/', '/upload/f_avif,q_auto/');
+      }
     }
 
     return {
-      url: avifUrl, // AVIF format URL (with f_avif,q_auto transformation)
+      url: avifUrl,
       public_id: result.public_id,
-      secure_url: avifUrl, // AVIF format secure URL
+      secure_url: avifUrl,
       width: result.width,
       height: result.height,
-      format: 'avif', // Format is AVIF
+      format: 'avif',
       bytes: result.bytes,
-      original_url: result.secure_url, // Keep original URL for reference
+      original_url: result.secure_url,
     };
   } catch (error) {
     console.error('Cloudinary upload error:', error);

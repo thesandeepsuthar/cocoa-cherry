@@ -681,7 +681,7 @@ export default function Hero() {
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                         className="object-cover transform hover:scale-110 transition-transform duration-700"
                         quality={90}
-                        unoptimized={heroImage.imageData?.startsWith('data:')}
+                        unoptimized={true}
                       />
                     </motion.div>
                   )}
