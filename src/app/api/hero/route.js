@@ -144,8 +144,9 @@ export async function PUT(request) {
     }
 
     const updateData = {};
+    let cloudinaryInfo = null;
 
-    // Compress image if provided
+    // Upload new image to Cloudinary if provided
     if (formData.get("imageData")) {
       const imageData = formData.get("imageData");
       
@@ -158,16 +159,33 @@ export async function PUT(request) {
         );
       }
 
-      // Compress image
+      // Upload image to Cloudinary
       try {
-        const result = await compressWithPreset(imageData, 'gallery');
-        updateData.imageData = result.base64;
-        console.log(`✅ Hero image compressed: ${(result.originalSize / 1024).toFixed(1)}KB → ${(result.compressedSize / 1024).toFixed(1)}KB (${result.savings} saved)`);
-      } catch (compressionError) {
-        console.error('⚠️ Compression failed, using original:', compressionError.message);
-        updateData.imageData = imageData; // Use original if compression fails
+        const cloudinaryResult = await uploadToCloudinary(imageData, {
+          folder: 'cocoa-cherry/hero',
+          maxWidth: 1920,
+          maxHeight: 1080,
+          quality: 90,
+          format: 'avif',
+        });
+        
+        updateData.imageData = cloudinaryResult.secure_url;
+        updateData.publicId = cloudinaryResult.public_id;
+        cloudinaryInfo = {
+          url: cloudinaryResult.url,
+          public_id: cloudinaryResult.public_id,
+          size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
+        };
+        console.log(`✅ Hero image uploaded to Cloudinary: ${cloudinaryResult.url}`);
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return NextResponse.json(
+          { success: false, error: 'Failed to upload image to Cloudinary' },
+          { status: 500 },
+        );
       }
     }
+
     if (formData.get("title")) updateData.title = formData.get("title");
     if (formData.get("subtitle"))
       updateData.subtitle = formData.get("subtitle");
@@ -194,11 +212,17 @@ export async function PUT(request) {
       );
     }
 
-    return NextResponse.json({
+    const response = {
       success: true,
       data: updatedHero,
       message: "Hero image updated successfully",
-    });
+    };
+
+    if (cloudinaryInfo) {
+      response.cloudinary = cloudinaryInfo;
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Error updating hero image:", error);
     return NextResponse.json(
@@ -231,14 +255,29 @@ export async function DELETE(request) {
       );
     }
 
-    const deletedHero = await Hero.findByIdAndDelete(id);
+    const heroImage = await Hero.findById(id);
 
-    if (!deletedHero) {
+    if (!heroImage) {
       return NextResponse.json(
         { success: false, error: "Hero image not found" },
         { status: 404 },
       );
     }
+
+    // Delete from Cloudinary if public_id exists
+    if (heroImage.publicId) {
+      try {
+        const { deleteFromCloudinary } = await import("../../../lib/cloudinary");
+        await deleteFromCloudinary(heroImage.publicId);
+        console.log(`✅ Hero image deleted from Cloudinary: ${heroImage.publicId}`);
+      } catch (cloudinaryError) {
+        console.warn(`⚠️ Failed to delete from Cloudinary: ${cloudinaryError.message}`);
+        // Continue with database deletion even if Cloudinary deletion fails
+      }
+    }
+
+    // Delete from database
+    await Hero.findByIdAndDelete(id);
 
     return NextResponse.json({
       success: true,
