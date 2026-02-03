@@ -553,15 +553,59 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
       <head>
-        {/* Preconnect to external domains for performance */}
+        {/* ═══════════════════════════════════════════════════════════
+            LCP OPTIMIZATION - Critical Performance Hints
+        ═══════════════════════════════════════════════════════════ */}
+        
+        {/* Preconnect to Cloudinary for hero image loading (LCP critical) */}
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        
+        {/* Preconnect to Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Preload critical fonts for faster text rendering */}
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Work+Sans:wght@400;500;600;700&display=swap"
+          as="style"
+        />
         
         {/* Material Icons */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
+        
+        {/* Inline critical CSS for above-fold content */}
+        <style dangerouslySetInnerHTML={{__html: `
+          /* Critical Hero Section Styles */
+          html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+          body { 
+            font-family: var(--font-work-sans), system-ui, sans-serif;
+            background-color: #0d0a0b;
+            color: #faf5f0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+          }
+          h1, h2, h3, h4, h5, h6 { 
+            font-family: var(--font-cinzel), serif;
+            letter-spacing: 0.02em;
+          }
+          /* Hero image container - prevent layout shift */
+          .hero-image-container {
+            aspect-ratio: 4/5;
+            overflow: hidden;
+            border-radius: 2.5rem;
+          }
+          @media (min-width: 640px) {
+            .hero-image-container {
+              aspect-ratio: 1;
+            }
+          }
+        `}} />
         
         {/* JSON-LD Structured Data */}
         <script
@@ -584,10 +628,6 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
-        
-        {/* Preconnect to improve font loading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* Resource hints for better performance */}
         <link rel="prefetch" href="/api/hero" as="fetch" crossOrigin="anonymous" />

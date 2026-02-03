@@ -647,13 +647,13 @@ export default function Hero() {
                 transition={{ duration: 10, repeat: Infinity }}
               />
 
-              {/* Main image container */}
+              {/* Main image container - LCP optimized */}
               <div className="relative">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="relative aspect-[4/5] sm:aspect-square rounded-[2.5rem] overflow-hidden border border-rose/20 shadow-2xl shadow-black/50"
+                  className="hero-image-container relative rounded-[2.5rem] overflow-hidden border border-rose/20 shadow-2xl shadow-black/50"
                 >
-                  {/* Loading skeleton */}
+                  {/* Loading skeleton - prevents layout shift */}
                   {isLoadingHero && (
                     <motion.div
                       initial={{ opacity: 1 }}
@@ -678,15 +678,16 @@ export default function Hero() {
                         fill
                         priority
                         fetchPriority="high"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
                         className="object-cover transform hover:scale-110 transition-transform duration-700"
-                        quality={90}
+                        quality={85}
                         unoptimized={true}
+                        loading="eager"
                       />
                     </motion.div>
                   )}
 
-                  {/* Fallback default image */}
+                  {/* Fallback default image - Cloudinary optimized */}
                   {!isLoadingHero && !heroImage && (
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -695,15 +696,16 @@ export default function Hero() {
                       className="absolute inset-0"
                     >
                       <Image
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLvlTV_u74c3xXEZVCw_4ZE19xGblBcSqm-6xJU1fSZTWqHApB1OgNk8z_FG5T30Norl78hoSSiI5Hhed_MT7PSMOGeaSmmSnhc8UtQqHfkbbN6ChozNWTv9EIjJYj0DKrOqTpl2GlwotUnvKhxViEMSmlRzmLb32EErbRp5aBP1N2YROv16hg4sDpXG8hT2fKDbdnrctGwRJ0QupJNCSIus5GaDH5FVLa2SkNZZLRZ3IOtKgWOJUW0dybKqVgN7htYsdD9KYxBEi_"
+                        src="https://res.cloudinary.com/cocoa-cherry/image/upload/f_avif,q_auto,w_1200/cocoa-cherry/default-hero"
                         alt="Premium custom cakes from Cocoa&Cherry - FSSAI Certified Home Bakery in Ahmedabad, Gujarat"
                         fill
                         priority
                         fetchPriority="high"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
                         className="object-cover transform hover:scale-110 transition-transform duration-700"
-                        quality={90}
+                        quality={85}
                         unoptimized
+                        loading="eager"
                       />
                     </motion.div>
                   )}

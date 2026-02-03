@@ -179,6 +179,24 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   LCP OPTIMIZATION - Hero Image Container
+═══════════════════════════════════════════════════════════ */
+
+.hero-image-container {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 2.5rem;
+  /* Prevent layout shift during image load */
+  background-color: #1a1517;
+}
+
+@media (min-width: 640px) {
+  .hero-image-container {
+    aspect-ratio: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
    ANIMATED BACKGROUNDS
 ═══════════════════════════════════════════════════════════ */
 
