@@ -3,7 +3,8 @@ import connectDB from '@/lib/mongodb';
 import { Reel } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, validateRequired, isValidUrl } from '@/lib/security';
-import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
+import { validateImage } from '@/lib/imageProcessor';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 // GET - Fetch all reels (Public)
 export async function GET() {
@@ -65,24 +66,23 @@ export async function POST(request) {
       );
     }
 
-    // ========================================
-    // COMPRESS THUMBNAIL USING SHARP
-    // Reduces size by 60-90% while keeping quality
-    // ========================================
-    let compressedThumbnail = thumbnailData;
-    let compressionInfo = null;
-
+    // Upload thumbnail to Cloudinary
+    let thumbnailResult = null;
     try {
-      const result = await compressWithPreset(thumbnailData, 'thumbnail');
-      compressedThumbnail = result.base64;
-      compressionInfo = {
-        originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
-        compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
-        savings: result.savings,
-      };
-      console.log(`✅ Thumbnail compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
-    } catch (compressionError) {
-      console.error('⚠️ Compression failed, using original:', compressionError.message);
+      thumbnailResult = await uploadToCloudinary(thumbnailData, {
+        folder: 'cocoa-cherry/reels',
+        maxWidth: 1080,
+        maxHeight: 1920,
+        quality: 85,
+        format: 'avif',
+      });
+      console.log(`✅ Reel thumbnail uploaded to Cloudinary: ${thumbnailResult.url}`);
+    } catch (uploadError) {
+      console.error('Cloudinary upload error:', uploadError);
+      return NextResponse.json(
+        { success: false, error: 'Failed to upload thumbnail to Cloudinary' },
+        { status: 500 }
+      );
     }
 
     // Sanitize caption
@@ -96,7 +96,8 @@ export async function POST(request) {
 
     const newReel = await Reel.create({
       videoUrl: videoUrl.trim(),
-      thumbnailData: compressedThumbnail,
+      thumbnailData: thumbnailResult.secure_url,
+      thumbnailPublicId: thumbnailResult.public_id,
       caption: sanitizedCaption,
       order: typeof order === 'number' ? order : 0,
     });
@@ -104,7 +105,11 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       data: newReel,
-      compression: compressionInfo,
+      cloudinary: {
+        url: thumbnailResult.url,
+        public_id: thumbnailResult.public_id,
+        size: `${(thumbnailResult.bytes / 1024).toFixed(1)}KB`,
+      },
       message: 'Reel added successfully',
     });
   } catch (error) {

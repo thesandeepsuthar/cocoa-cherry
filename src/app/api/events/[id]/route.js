@@ -3,7 +3,8 @@ import connectDB from '@/lib/mongodb';
 import { Event } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString } from '@/lib/security';
-import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
+import { validateImage } from '@/lib/imageProcessor';
+import { uploadToCloudinary, uploadMultipleToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
 // Validate MongoDB ObjectId
@@ -68,49 +69,115 @@ export async function PUT(request, { params }) {
     await connectDB();
     const body = await request.json();
 
+    const event = await Event.findById(id);
+    if (!event) {
+      return NextResponse.json(
+        { success: false, error: 'Event not found' },
+        { status: 404 }
+      );
+    }
+
     // Build update object with only allowed fields
     const updateData = { updatedAt: new Date() };
-    let compressionInfo = null;
 
     // Handle cover image update
     if (body.coverImage) {
-      const imageValidation = validateImage(body.coverImage, 20);
-      if (!imageValidation.valid) {
-        return NextResponse.json(
-          { success: false, error: `Cover image: ${imageValidation.error}` },
-          { status: 400 }
-        );
-      }
+      // Check if it's a new image (base64) or existing URL
+      const isNewImage = body.coverImage.startsWith('data:') || (body.coverImage.includes('base64') && !body.coverImage.includes('cloudinary'));
+      
+      if (isNewImage) {
+        const imageValidation = validateImage(body.coverImage, 20);
+        if (!imageValidation.valid) {
+          return NextResponse.json(
+            { success: false, error: `Cover image: ${imageValidation.error}` },
+            { status: 400 }
+          );
+        }
 
-      try {
-        const result = await compressWithPreset(body.coverImage, 'gallery');
-        updateData.coverImage = result.base64;
-        compressionInfo = {
-          originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
-          compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
-          savings: result.savings,
-        };
-      } catch (compressionError) {
-        console.error('⚠️ Cover compression failed, using original:', compressionError.message);
+        try {
+          const coverImageResult = await uploadToCloudinary(body.coverImage, {
+            folder: 'cocoa-cherry/events',
+            maxWidth: 1920,
+            maxHeight: 1920,
+            quality: 85,
+            format: 'avif',
+          });
+          updateData.coverImage = coverImageResult.secure_url;
+          updateData.coverImagePublicId = coverImageResult.public_id;
+          console.log(`✅ Cover image uploaded to Cloudinary: ${coverImageResult.url}`);
+        } catch (uploadError) {
+          console.error('Cloudinary upload error:', uploadError);
+          return NextResponse.json(
+            { success: false, error: 'Failed to upload cover image' },
+            { status: 500 }
+          );
+        }
+      } else {
+        // It's already a Cloudinary URL, keep it
         updateData.coverImage = body.coverImage;
       }
     }
 
     // Handle additional images update
-    if (body.images && Array.isArray(body.images)) {
-      const compressedImages = [];
-      for (const img of body.images) {
-        try {
-          const imgValidation = validateImage(img, 20);
-          if (imgValidation.valid) {
-            const result = await compressWithPreset(img, 'gallery');
-            compressedImages.push(result.base64);
-          }
-        } catch (err) {
-          console.error('⚠️ Image compression failed, skipping:', err.message);
+    if (body.images && Array.isArray(body.images) && body.images.length > 0) {
+      const newImages = [];
+      const existingImages = [];
+
+      // Separate new images from existing ones
+      body.images.forEach(img => {
+        if (img.startsWith('data:') || (img.includes('base64') && !img.includes('cloudinary'))) {
+          newImages.push(img);
+        } else {
+          existingImages.push(img);
         }
+      });
+
+      // Upload new images to Cloudinary
+      if (newImages.length > 0) {
+        // Validate new images
+        for (const img of newImages) {
+          const imgValidation = validateImage(img, 20);
+          if (!imgValidation.valid) {
+            return NextResponse.json(
+              { success: false, error: `Invalid image: ${imgValidation.error}` },
+              { status: 400 }
+            );
+          }
+        }
+
+        try {
+          const imagesResults = await uploadMultipleToCloudinary(newImages, {
+            folder: 'cocoa-cherry/events',
+            maxWidth: 1920,
+            maxHeight: 1920,
+            quality: 85,
+            format: 'avif',
+          });
+
+          // Combine existing and newly uploaded images
+          const allImageUrls = [
+            ...existingImages,
+            ...imagesResults.map(r => r.secure_url),
+          ];
+          const allPublicIds = [
+            ...(event.imagePublicIds || []),
+            ...imagesResults.map(r => r.public_id),
+          ];
+
+          updateData.images = allImageUrls;
+          updateData.imagePublicIds = allPublicIds;
+          console.log(`✅ ${imagesResults.length} images uploaded to Cloudinary`);
+        } catch (uploadError) {
+          console.error('Cloudinary upload error:', uploadError);
+          return NextResponse.json(
+            { success: false, error: 'Failed to upload images' },
+            { status: 500 }
+          );
+        }
+      } else {
+        // Only existing images, no new uploads
+        updateData.images = existingImages;
       }
-      updateData.images = compressedImages;
     }
 
     // Handle text fields
@@ -142,16 +209,7 @@ export async function PUT(request, { params }) {
     let swappedWith = null;
     if (typeof body.order === 'number') {
       const targetOrder = body.order;
-      
-      const currentItem = await Event.findById(id);
-      if (!currentItem) {
-        return NextResponse.json(
-          { success: false, error: 'Event not found' },
-          { status: 404 }
-        );
-      }
-
-      const currentOrder = currentItem.order;
+      const currentOrder = event.order;
 
       if (currentOrder !== targetOrder) {
         const itemWithTargetOrder = await Event.findOne({ 
@@ -172,7 +230,7 @@ export async function PUT(request, { params }) {
             newOrder: currentOrder,
           };
           
-          console.log(`🔄 Order swapped: "${currentItem.title}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.title}" (${targetOrder}→${currentOrder})`);
+          console.log(`🔄 Order swapped: "${event.title}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.title}" (${targetOrder}→${currentOrder})`);
         }
       }
 
@@ -195,7 +253,6 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedEvent,
-      compression: compressionInfo,
       swappedWith: swappedWith,
       message: swappedWith 
         ? `Order swapped with "${swappedWith.title}"` 
@@ -231,14 +288,37 @@ export async function DELETE(request, { params }) {
 
     await connectDB();
 
-    const deletedEvent = await Event.findByIdAndDelete(id);
-
-    if (!deletedEvent) {
+    const event = await Event.findById(id);
+    if (!event) {
       return NextResponse.json(
         { success: false, error: 'Event not found' },
         { status: 404 }
       );
     }
+
+    // Delete cover image from Cloudinary if public_id exists
+    if (event.coverImagePublicId) {
+      try {
+        await deleteFromCloudinary(event.coverImagePublicId);
+        console.log(`✅ Cover image deleted from Cloudinary: ${event.coverImagePublicId}`);
+      } catch (cloudinaryError) {
+        console.warn(`⚠️ Failed to delete cover image: ${cloudinaryError.message}`);
+      }
+    }
+
+    // Delete additional images from Cloudinary
+    if (event.imagePublicIds && Array.isArray(event.imagePublicIds)) {
+      try {
+        for (const publicId of event.imagePublicIds) {
+          await deleteFromCloudinary(publicId);
+        }
+        console.log(`✅ ${event.imagePublicIds.length} images deleted from Cloudinary`);
+      } catch (cloudinaryError) {
+        console.warn(`⚠️ Failed to delete images: ${cloudinaryError.message}`);
+      }
+    }
+
+    const deletedEvent = await Event.findByIdAndDelete(id);
 
     return NextResponse.json({
       success: true,

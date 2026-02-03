@@ -3,7 +3,8 @@ import connectDB from '@/lib/mongodb';
 import { Reel } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, isValidUrl } from '@/lib/security';
-import { compressWithPreset, validateImage } from '@/lib/imageProcessor';
+import { validateImage } from '@/lib/imageProcessor';
+import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
 // Validate MongoDB ObjectId
@@ -68,9 +69,16 @@ export async function PUT(request, { params }) {
     await connectDB();
     const body = await request.json();
 
+    const reel = await Reel.findById(id);
+    if (!reel) {
+      return NextResponse.json(
+        { success: false, error: 'Reel not found' },
+        { status: 404 }
+      );
+    }
+
     // Build update object with validation
     const updateData = { updatedAt: new Date() };
-    let compressionInfo = null;
 
     if (body.videoUrl !== undefined) {
       if (!isValidUrl(body.videoUrl)) {
@@ -82,27 +90,40 @@ export async function PUT(request, { params }) {
       updateData.videoUrl = body.videoUrl.trim();
     }
 
+    // Handle thumbnail upload to Cloudinary
     if (body.thumbnailData) {
-      const imageValidation = validateImage(body.thumbnailData, 20);
-      if (!imageValidation.valid) {
-        return NextResponse.json(
-          { success: false, error: imageValidation.error },
-          { status: 400 }
-        );
-      }
+      // Check if it's a new image (base64) or existing URL
+      const isNewImage = body.thumbnailData.startsWith('data:') || (body.thumbnailData.includes('base64') && !body.thumbnailData.includes('cloudinary'));
+      
+      if (isNewImage) {
+        const imageValidation = validateImage(body.thumbnailData, 20);
+        if (!imageValidation.valid) {
+          return NextResponse.json(
+            { success: false, error: imageValidation.error },
+            { status: 400 }
+          );
+        }
 
-      // Compress the thumbnail
-      try {
-        const result = await compressWithPreset(body.thumbnailData, 'thumbnail');
-        updateData.thumbnailData = result.base64;
-        compressionInfo = {
-          originalSize: `${(result.originalSize / 1024).toFixed(1)}KB`,
-          compressedSize: `${(result.compressedSize / 1024).toFixed(1)}KB`,
-          savings: result.savings,
-        };
-        console.log(`✅ Thumbnail compressed: ${compressionInfo.originalSize} → ${compressionInfo.compressedSize} (${compressionInfo.savings} saved)`);
-      } catch (compressionError) {
-        console.error('⚠️ Compression failed, using original:', compressionError.message);
+        try {
+          const thumbnailResult = await uploadToCloudinary(body.thumbnailData, {
+            folder: 'cocoa-cherry/reels',
+            maxWidth: 1080,
+            maxHeight: 1920,
+            quality: 85,
+            format: 'avif',
+          });
+          updateData.thumbnailData = thumbnailResult.secure_url;
+          updateData.thumbnailPublicId = thumbnailResult.public_id;
+          console.log(`✅ Reel thumbnail uploaded to Cloudinary: ${thumbnailResult.url}`);
+        } catch (uploadError) {
+          console.error('Cloudinary upload error:', uploadError);
+          return NextResponse.json(
+            { success: false, error: 'Failed to upload thumbnail' },
+            { status: 500 }
+          );
+        }
+      } else {
+        // It's already a Cloudinary URL, keep it
         updateData.thumbnailData = body.thumbnailData;
       }
     }
@@ -119,16 +140,7 @@ export async function PUT(request, { params }) {
     let swappedWith = null;
     if (typeof body.order === 'number') {
       const targetOrder = body.order;
-      
-      const currentItem = await Reel.findById(id);
-      if (!currentItem) {
-        return NextResponse.json(
-          { success: false, error: 'Reel not found' },
-          { status: 404 }
-        );
-      }
-
-      const currentOrder = currentItem.order;
+      const currentOrder = reel.order;
 
       if (currentOrder !== targetOrder) {
         const itemWithTargetOrder = await Reel.findOne({ 
@@ -149,7 +161,7 @@ export async function PUT(request, { params }) {
             newOrder: currentOrder,
           };
           
-          console.log(`🔄 Order swapped: "${currentItem.caption}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.caption}" (${targetOrder}→${currentOrder})`);
+          console.log(`🔄 Order swapped: "${reel.caption}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.caption}" (${targetOrder}→${currentOrder})`);
         }
       }
 
@@ -172,7 +184,6 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedReel,
-      compression: compressionInfo,
       swappedWith: swappedWith,
       message: swappedWith 
         ? `Order swapped with "${swappedWith.caption}"` 
@@ -208,14 +219,25 @@ export async function DELETE(request, { params }) {
 
     await connectDB();
 
-    const deletedReel = await Reel.findByIdAndDelete(id);
-
-    if (!deletedReel) {
+    const reel = await Reel.findById(id);
+    if (!reel) {
       return NextResponse.json(
         { success: false, error: 'Reel not found' },
         { status: 404 }
       );
     }
+
+    // Delete thumbnail from Cloudinary if public_id exists
+    if (reel.thumbnailPublicId) {
+      try {
+        await deleteFromCloudinary(reel.thumbnailPublicId);
+        console.log(`✅ Reel thumbnail deleted from Cloudinary: ${reel.thumbnailPublicId}`);
+      } catch (cloudinaryError) {
+        console.warn(`⚠️ Failed to delete thumbnail from Cloudinary: ${cloudinaryError.message}`);
+      }
+    }
+
+    const deletedReel = await Reel.findByIdAndDelete(id);
 
     return NextResponse.json({
       success: true,
