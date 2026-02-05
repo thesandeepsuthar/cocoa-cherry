@@ -22,9 +22,12 @@ const defaultFlavors = [
 // Extract category from name
 const getCategoryFromName = (name) => {
   const nameLower = name.toLowerCase();
-  if (nameLower.includes('cake')) return 'Cakes';
-  if (nameLower.includes('brownie')) return 'Brownies';
+  // Check most specific terms first
   if (nameLower.includes('cheesecake')) return 'Cheesecakes';
+  if (nameLower.includes('cupcake')) return 'Cupcakes';
+  if (nameLower.includes('cake')) return 'Cakes';
+
+  if (nameLower.includes('brownie')) return 'Brownies';
   if (nameLower.includes('cookie') || nameLower.includes('khatai')) return 'Cookies';
   if (nameLower.includes('chocolate') && !nameLower.includes('cake') && !nameLower.includes('brownie')) return 'Chocolates';
   if (nameLower.includes('bomboloni')) return 'Bomboloni';
