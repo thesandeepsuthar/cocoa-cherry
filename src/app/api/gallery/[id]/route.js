@@ -3,7 +3,6 @@ import connectDB from '@/lib/mongodb';
 import { Gallery } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString } from '@/lib/security';
-import { validateImage } from '@/lib/imageProcessor';
 import { uploadToCloudinary, deleteFromCloudinary, extractPublicId } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
@@ -84,14 +83,6 @@ export async function PUT(request, { params }) {
 
     // If new image is provided, upload to Cloudinary
     if (body.imageData) {
-      const imageValidation = validateImage(body.imageData, 20);
-      if (!imageValidation.valid) {
-        return NextResponse.json(
-          { success: false, error: imageValidation.error },
-          { status: 400 }
-        );
-      }
-
       // Delete old image from Cloudinary if it exists
       if (currentImage.publicId) {
         try {
@@ -107,10 +98,6 @@ export async function PUT(request, { params }) {
       try {
         cloudinaryResult = await uploadToCloudinary(body.imageData, {
           folder: 'cocoa-cherry/gallery',
-          maxWidth: 1920,
-          maxHeight: 1920,
-          quality: 85,
-          format: 'avif', // Use AVIF format for better compression
         });
         updateData.imageData = cloudinaryResult.secure_url;
         updateData.publicId = cloudinaryResult.public_id;

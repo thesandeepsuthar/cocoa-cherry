@@ -3,7 +3,6 @@ import connectDB from '@/lib/mongodb';
 import { Menu } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, validateRequired } from '@/lib/security';
-import { validateImage } from '@/lib/imageProcessor';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
 // GET - Fetch all menu items (Public)
@@ -49,15 +48,6 @@ export async function POST(request) {
 
     const { name, description, imageData, badge, price, discountPrice, priceUnit, order } = body;
 
-    // Validate image
-    const imageValidation = validateImage(imageData, 20);
-    if (!imageValidation.valid) {
-      return NextResponse.json(
-        { success: false, error: imageValidation.error },
-        { status: 400 }
-      );
-    }
-
     // Sanitize text inputs
     const sanitizedName = sanitizeString(name);
     const sanitizedDescription = sanitizeString(description);
@@ -82,10 +72,6 @@ export async function POST(request) {
     try {
       cloudinaryResult = await uploadToCloudinary(imageData, {
         folder: 'cocoa-cherry/menu',
-        maxWidth: 1920,
-        maxHeight: 1920,
-        quality: 85,
-        format: 'avif', // Use AVIF format for better compression
       });
       console.log(`✅ Menu image uploaded to Cloudinary: ${cloudinaryResult.url}`);
     } catch (uploadError) {

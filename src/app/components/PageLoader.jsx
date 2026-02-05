@@ -118,7 +118,7 @@ export default function PageLoader() {
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             <span className="text-gold">Cocoa</span>
-            <span className="text-rose">&</span>
+            <span className="text-gold">&</span>
             <span className="text-gold">Cherry</span>
           </h1>
           <p className="text-cream-muted text-xs sm:text-sm tracking-widest uppercase">

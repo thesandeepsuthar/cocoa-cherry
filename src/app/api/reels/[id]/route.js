@@ -3,7 +3,6 @@ import connectDB from '@/lib/mongodb';
 import { Reel } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, isValidUrl } from '@/lib/security';
-import { validateImage } from '@/lib/imageProcessor';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
@@ -92,25 +91,13 @@ export async function PUT(request, { params }) {
 
     // Handle thumbnail upload to Cloudinary
     if (body.thumbnailData) {
-      // Check if it's a new image (base64) or existing URL
-      const isNewImage = body.thumbnailData.startsWith('data:') || (body.thumbnailData.includes('base64') && !body.thumbnailData.includes('cloudinary'));
+      // Check if it's a Cloudinary URL or needs to be uploaded
+      const isCloudinaryUrl = body.thumbnailData.includes('cloudinary.com');
       
-      if (isNewImage) {
-        const imageValidation = validateImage(body.thumbnailData, 20);
-        if (!imageValidation.valid) {
-          return NextResponse.json(
-            { success: false, error: imageValidation.error },
-            { status: 400 }
-          );
-        }
-
+      if (!isCloudinaryUrl) {
         try {
           const thumbnailResult = await uploadToCloudinary(body.thumbnailData, {
             folder: 'cocoa-cherry/reels',
-            maxWidth: 1080,
-            maxHeight: 1920,
-            quality: 85,
-            format: 'avif',
           });
           updateData.thumbnailData = thumbnailResult.secure_url;
           updateData.thumbnailPublicId = thumbnailResult.public_id;

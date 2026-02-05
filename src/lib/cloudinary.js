@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from 'cloudinary';
-import sharp from 'sharp';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -9,53 +8,44 @@ cloudinary.config({
 });
 
 /**
- * Convert base64 image to buffer
- */
-function base64ToBuffer(base64String) {
-  // Remove data URL prefix if present
-  const base64Data = base64String.includes(',') 
-    ? base64String.split(',')[1] 
-    : base64String;
-  
-  return Buffer.from(base64Data, 'base64');
-}
-
-/**
- * Optimize image using Sharp before uploading
- */
-async function optimizeImage(buffer, options = {}) {
-  const {
-    maxWidth = 1920,
-    maxHeight = 1920,
-    quality = 85,
-    format = 'avif' // Default to AVIF for best compression (50% smaller than WebP)
-  } = options;
-
-  try {
-    const optimized = await sharp(buffer)
-      .resize(maxWidth, maxHeight, {
-        fit: 'inside',
-        withoutEnlargement: true,
-      })
-      .toFormat(format, { quality })
-      .toBuffer();
-
-    return optimized;
-  } catch (error) {
-    console.error('Image optimization error:', error);
-    // Return original buffer if optimization fails
-    return buffer;
-  }
-}
-
-/**
  * Upload image to Cloudinary
- * @param {string} base64Image - Base64 encoded image string
+ * @param {string} imageData - Image URL, base64 data URL, or Cloudinary URL
  * @param {object} options - Upload options
  * @returns {Promise<{url: string, public_id: string, secure_url: string}>}
  */
-export async function uploadToCloudinary(base64Image, options = {}) {
+export async function uploadToCloudinary(imageData, options = {}) {
   try {
+    // Validate input
+    if (!imageData || typeof imageData !== 'string') {
+      throw new Error('Image data is required and must be a string');
+    }
+
+    // If it's already a Cloudinary URL, return it without uploading
+    if (imageData.includes('cloudinary.com')) {
+      // Extract public_id from URL if possible
+      const publicIdMatch = imageData.match(/\/v\d+\/([^\.]+)/);
+      const publicId = publicIdMatch ? publicIdMatch[1] : null;
+      
+      return {
+        url: imageData,
+        public_id: publicId,
+        secure_url: imageData,
+        width: null,
+        height: null,
+        format: 'avif',
+        bytes: null,
+        original_url: imageData,
+      };
+    }
+
+    // Validate that it's either a URL or base64 data URL
+    const isBase64 = imageData.startsWith('data:image/');
+    const isUrl = imageData.startsWith('http://') || imageData.startsWith('https://');
+    
+    if (!isBase64 && !isUrl) {
+      throw new Error('Image data must be a valid URL or base64 data URL');
+    }
+
     const {
       folder = 'cocoa-cherry',
       resourceType = 'image',
@@ -64,26 +54,7 @@ export async function uploadToCloudinary(base64Image, options = {}) {
       overwrite = false,
     } = options;
 
-    // Convert base64 to buffer
-    const buffer = base64ToBuffer(base64Image);
-
-    // Get format from options (default to AVIF for best compression)
-    const imageFormat = options.format || 'avif';
-
-    // Optimize image before upload
-    const optimizedBuffer = await optimizeImage(buffer, {
-      maxWidth: options.maxWidth || 1920,
-      maxHeight: options.maxHeight || 1920,
-      quality: options.quality || 85,
-      format: imageFormat,
-    });
-
-    // Convert buffer to base64 for Cloudinary upload
-    const mimeType = imageFormat === 'avif' ? 'image/avif' : imageFormat === 'webp' ? 'image/webp' : 'image/jpeg';
-    const optimizedBase64 = `data:${mimeType};base64,${optimizedBuffer.toString('base64')}`;
-
     // Upload to Cloudinary with AVIF format transformation
-    // Cloudinary will automatically convert and serve as AVIF
     const uploadOptions = {
       folder,
       resource_type: resourceType,
@@ -101,7 +72,11 @@ export async function uploadToCloudinary(base64Image, options = {}) {
       uploadOptions.public_id = publicId;
     }
 
-    const result = await cloudinary.uploader.upload(optimizedBase64, uploadOptions);
+    // Cloudinary's uploader.upload() can handle:
+    // - Remote URLs (http/https)
+    // - Base64 data URLs (data:image/...)
+    // - File paths (for local files)
+    const result = await cloudinary.uploader.upload(imageData, uploadOptions);
 
     // Construct AVIF format URL by adding transformation to the base URL
     // Cloudinary URL format: https://res.cloudinary.com/cloud_name/image/upload/v123/public_id
@@ -129,24 +104,26 @@ export async function uploadToCloudinary(base64Image, options = {}) {
     };
   } catch (error) {
     console.error('Cloudinary upload error:', error);
+    console.error('Image data type:', typeof imageData);
+    console.error('Image data preview:', imageData?.substring(0, 100));
     throw new Error(`Failed to upload image to Cloudinary: ${error.message}`);
   }
 }
 
 /**
  * Upload multiple images to Cloudinary
- * @param {string[]} base64Images - Array of base64 encoded images
+ * @param {string[]} imageDataArray - Array of image URLs or base64 data URLs
  * @param {object} options - Upload options
  * @returns {Promise<Array>}
  */
-export async function uploadMultipleToCloudinary(base64Images, options = {}) {
+export async function uploadMultipleToCloudinary(imageDataArray, options = {}) {
   try {
-    const uploadPromises = base64Images.map((image, index) => {
+    const uploadPromises = imageDataArray.map((imageData, index) => {
       const imageOptions = {
         ...options,
         publicId: options.publicId ? `${options.publicId}-${index}` : null,
       };
-      return uploadToCloudinary(image, imageOptions);
+      return uploadToCloudinary(imageData, imageOptions);
     });
 
     const results = await Promise.all(uploadPromises);

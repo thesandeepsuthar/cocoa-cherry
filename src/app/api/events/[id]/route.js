@@ -3,7 +3,6 @@ import connectDB from '@/lib/mongodb';
 import { Event } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString } from '@/lib/security';
-import { validateImage } from '@/lib/imageProcessor';
 import { uploadToCloudinary, uploadMultipleToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
@@ -82,25 +81,13 @@ export async function PUT(request, { params }) {
 
     // Handle cover image update
     if (body.coverImage) {
-      // Check if it's a new image (base64) or existing URL
-      const isNewImage = body.coverImage.startsWith('data:') || (body.coverImage.includes('base64') && !body.coverImage.includes('cloudinary'));
+      // Check if it's a Cloudinary URL or needs to be uploaded
+      const isCloudinaryUrl = body.coverImage.includes('cloudinary.com');
       
-      if (isNewImage) {
-        const imageValidation = validateImage(body.coverImage, 20);
-        if (!imageValidation.valid) {
-          return NextResponse.json(
-            { success: false, error: `Cover image: ${imageValidation.error}` },
-            { status: 400 }
-          );
-        }
-
+      if (!isCloudinaryUrl) {
         try {
           const coverImageResult = await uploadToCloudinary(body.coverImage, {
             folder: 'cocoa-cherry/events',
-            maxWidth: 1920,
-            maxHeight: 1920,
-            quality: 85,
-            format: 'avif',
           });
           updateData.coverImage = coverImageResult.secure_url;
           updateData.coverImagePublicId = coverImageResult.public_id;
@@ -125,33 +112,18 @@ export async function PUT(request, { params }) {
 
       // Separate new images from existing ones
       body.images.forEach(img => {
-        if (img.startsWith('data:') || (img.includes('base64') && !img.includes('cloudinary'))) {
-          newImages.push(img);
-        } else {
+        if (img.includes('cloudinary.com')) {
           existingImages.push(img);
+        } else {
+          newImages.push(img);
         }
       });
 
       // Upload new images to Cloudinary
       if (newImages.length > 0) {
-        // Validate new images
-        for (const img of newImages) {
-          const imgValidation = validateImage(img, 20);
-          if (!imgValidation.valid) {
-            return NextResponse.json(
-              { success: false, error: `Invalid image: ${imgValidation.error}` },
-              { status: 400 }
-            );
-          }
-        }
-
         try {
           const imagesResults = await uploadMultipleToCloudinary(newImages, {
             folder: 'cocoa-cherry/events',
-            maxWidth: 1920,
-            maxHeight: 1920,
-            quality: 85,
-            format: 'avif',
           });
 
           // Combine existing and newly uploaded images

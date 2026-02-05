@@ -5,6 +5,139 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
+// Toast Notification Component
+function Toast({ message, type = "success", onClose }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  const icons = {
+    success: "check_circle",
+    error: "error",
+    info: "info",
+  };
+
+  const colors = {
+    success: "bg-emerald-500",
+    error: "bg-red-500",
+    info: "bg-blue-500",
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -50, x: "-50%" }}
+      animate={{ opacity: 1, y: 0, x: "-50%" }}
+      exit={{ opacity: 0, y: -50, x: "-50%" }}
+      className={`fixed top-4 left-1/2 z-50 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 min-w-[250px] max-w-[90vw]`}
+    >
+      <span className="material-symbols-outlined">{icons[type]}</span>
+      <span className="flex-1 text-sm font-medium">{message}</span>
+      <button
+        onClick={onClose}
+        className="ml-2 hover:opacity-80 transition-opacity"
+      >
+        <span className="material-symbols-outlined text-sm">close</span>
+      </button>
+    </motion.div>
+  );
+}
+
+// Toast Container
+function ToastContainer({ toasts, removeToast }) {
+  return (
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 space-y-2">
+      <AnimatePresence>
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Confirmation Dialog Component
+function ConfirmationDialog({ isOpen, onClose, onConfirm, title, message }) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-noir/90 backdrop-blur-md"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="relative w-full max-w-md bg-noir-light rounded-2xl overflow-hidden shadow-2xl border border-cream/10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="p-6 border-b border-cream/10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                <span className="material-symbols-outlined text-red-400 text-2xl">
+                  warning
+                </span>
+              </div>
+              <h3 className="text-xl font-bold text-cream" style={{ fontFamily: "var(--font-cinzel)" }}>
+                {title || "Confirm Delete"}
+              </h3>
+            </div>
+            <p className="text-cream-muted text-sm mt-2">{message || "Are you sure you want to delete this item? This action cannot be undone."}</p>
+          </div>
+
+          {/* Actions */}
+          <div className="p-6 flex gap-3">
+            <motion.button
+              onClick={onClose}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex-1 py-3 rounded-xl border-2 border-cream/20 text-cream font-bold hover:bg-cream/5 transition-colors"
+            >
+              Cancel
+            </motion.button>
+            <motion.button
+              onClick={() => {
+                onConfirm();
+                onClose();
+              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-bold shadow-lg hover:shadow-red-500/30 transition-all"
+            >
+              Delete
+            </motion.button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 // Tabs
 const TABS = [
   { id: "hero", label: "Hero", icon: "image" },
@@ -134,7 +267,7 @@ function InputField({
 }
 
 // Hero Tab
-function HeroTab({ adminKey }) {
+function HeroTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -197,23 +330,37 @@ function HeroTab({ adminKey }) {
       if (data.success) {
         fetchItems();
         closeForm();
-      } else alert(data.error);
+        showToast(editingItem ? "Hero image updated successfully!" : "Hero image added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
     } catch (error) {
-      alert("Failed to save");
+      showToast("Failed to save", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this hero image?")) return;
-    try {
-      const res = await fetch(`/api/hero?id=${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) fetchItems();
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    showConfirm(
+      "Delete Hero Image",
+      "Are you sure you want to delete this hero image? This action cannot be undone.",
+      async () => {
+        try {
+          const res = await fetch(`/api/hero?id=${id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (data.success) {
+            fetchItems();
+            showToast("Hero image deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("Failed to delete", "error");
+        }
+      }
+    );
   };
 
   const handleEdit = (item) => {
@@ -369,7 +516,7 @@ function HeroTab({ adminKey }) {
 }
 
 // Gallery Tab
-function GalleryTab({ adminKey }) {
+function GalleryTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -424,25 +571,39 @@ function GalleryTab({ adminKey }) {
       if (data.success) {
         fetchItems();
         closeForm();
-      } else alert(data.error);
+        showToast(editingItem ? "Gallery image updated successfully!" : "Gallery image added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
     } catch (error) {
-      alert("Failed to save");
+      showToast("Failed to save", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this image?")) return;
-    try {
-      const res = await fetch(`/api/gallery/${id}?key=${adminKey}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (data.success) fetchItems();
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    showConfirm(
+      "Delete Gallery Image",
+      "Are you sure you want to delete this gallery image? This action cannot be undone.",
+      async () => {
+        try {
+          const res = await fetch(`/api/gallery/${id}?key=${adminKey}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            fetchItems();
+            showToast("Gallery image deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("Failed to delete", "error");
+        }
+      }
+    );
   };
 
   const handleEdit = (item) => {
@@ -568,7 +729,7 @@ function GalleryTab({ adminKey }) {
 }
 
 // Events Tab
-function EventsTab({ adminKey }) {
+function EventsTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -629,25 +790,39 @@ function EventsTab({ adminKey }) {
       if (data.success) {
         fetchItems();
         closeForm();
-      } else alert(data.error);
+        showToast(editingItem ? "Event updated successfully!" : "Event added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
     } catch (error) {
-      alert("Failed to save");
+      showToast("Failed to save", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this event?")) return;
-    try {
-      const res = await fetch(`/api/events/${id}?key=${adminKey}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (data.success) fetchItems();
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    showConfirm(
+      "Delete Event",
+      "Are you sure you want to delete this event? This action cannot be undone.",
+      async () => {
+        try {
+          const res = await fetch(`/api/events/${id}?key=${adminKey}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            fetchItems();
+            showToast("Event deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("Failed to delete", "error");
+        }
+      }
+    );
   };
 
   const handleEdit = (item) => {
@@ -975,7 +1150,7 @@ function EventsTab({ adminKey }) {
 }
 
 // Reels Tab
-function ReelsTab({ adminKey }) {
+function ReelsTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -1035,25 +1210,39 @@ function ReelsTab({ adminKey }) {
       if (data.success) {
         fetchItems();
         closeForm();
-      } else alert(data.error);
+        showToast(editingItem ? "Reel updated successfully!" : "Reel added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
     } catch (error) {
-      alert("Failed to save");
+      showToast("Failed to save", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this reel?")) return;
-    try {
-      const res = await fetch(`/api/reels/${id}?key=${adminKey}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (data.success) fetchItems();
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    showConfirm(
+      "Delete Reel",
+      "Are you sure you want to delete this reel? This action cannot be undone.",
+      async () => {
+        try {
+          const res = await fetch(`/api/reels/${id}?key=${adminKey}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            fetchItems();
+            showToast("Reel deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("Failed to delete", "error");
+        }
+      }
+    );
   };
 
   const handleEdit = (item) => {
@@ -1205,7 +1394,7 @@ function ReelsTab({ adminKey }) {
 }
 
 // Menu Tab
-function MenuTab({ adminKey }) {
+function MenuTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -1280,25 +1469,39 @@ function MenuTab({ adminKey }) {
       if (data.success) {
         fetchItems();
         closeForm();
-      } else alert(data.error);
+        showToast(editingItem ? "Menu item updated successfully!" : "Menu item added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
     } catch (error) {
-      alert("Failed to save");
+      showToast("Failed to save", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this item?")) return;
-    try {
-      const res = await fetch(`/api/menu/${id}?key=${adminKey}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (data.success) fetchItems();
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    showConfirm(
+      "Delete Menu Item",
+      "Are you sure you want to delete this menu item? This action cannot be undone.",
+      async () => {
+        try {
+          const res = await fetch(`/api/menu/${id}?key=${adminKey}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            fetchItems();
+            showToast("Menu item deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("Failed to delete", "error");
+        }
+      }
+    );
   };
 
   const handleEdit = (item) => {
@@ -1594,7 +1797,7 @@ function MenuTab({ adminKey }) {
 }
 
 // Rate List Tab
-function RateListTab({ adminKey }) {
+function RateListTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -1681,25 +1884,39 @@ function RateListTab({ adminKey }) {
       if (data.success) {
         fetchItems();
         closeForm();
-      } else alert(data.error);
+        showToast(editingItem ? "Rate item updated successfully!" : "Rate item added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
     } catch (error) {
-      alert("Failed to save");
+      showToast("Failed to save", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this rate item?")) return;
-    try {
-      const res = await fetch(`/api/ratelist/${id}?key=${adminKey}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (data.success) fetchItems();
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    showConfirm(
+      "Delete Rate Item",
+      "Are you sure you want to delete this rate item? This action cannot be undone.",
+      async () => {
+        try {
+          const res = await fetch(`/api/ratelist/${id}?key=${adminKey}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            fetchItems();
+            showToast("Rate item deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("Failed to delete", "error");
+        }
+      }
+    );
   };
 
   const handleEdit = (item) => {
@@ -2200,7 +2417,7 @@ function RateListTab({ adminKey }) {
 }
 
 // Reviews Tab
-function ReviewsTab({ adminKey }) {
+function ReviewsTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -2235,15 +2452,27 @@ function ReviewsTab({ adminKey }) {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this review?")) return;
-    try {
-      const res = await fetch(`/api/reviews/${id}?key=${adminKey}`, {
-        method: "DELETE",
-      });
-      if ((await res.json()).success) fetchItems();
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    showConfirm(
+      "Delete Review",
+      "Are you sure you want to delete this review? This action cannot be undone.",
+      async () => {
+        try {
+          const res = await fetch(`/api/reviews/${id}?key=${adminKey}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            fetchItems();
+            showToast("Review deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("Failed to delete", "error");
+        }
+      }
+    );
   };
 
   const filteredItems = items.filter((item) => {
@@ -2736,6 +2965,55 @@ function AdminContent() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
   const [adminKey, setAdminKey] = useState(null);
+  const [counts, setCounts] = useState({
+    hero: 0,
+    gallery: 0,
+    events: 0,
+    reels: 0,
+    menu: 0,
+    ratelist: 0,
+    reviews: 0,
+  });
+  
+  // Toast state
+  const [toasts, setToasts] = useState([]);
+  
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
+
+  // Toast helper functions
+  const showToast = useCallback((message, type = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
+
+  // Confirmation dialog helper
+  const showConfirm = useCallback((title, message, onConfirm) => {
+    setConfirmDialog({
+      isOpen: true,
+      title,
+      message,
+      onConfirm,
+    });
+  }, []);
+
+  const closeConfirm = useCallback(() => {
+    setConfirmDialog({
+      isOpen: false,
+      title: "",
+      message: "",
+      onConfirm: null,
+    });
+  }, []);
 
   // Check for existing session on mount
   useEffect(() => {
@@ -2879,14 +3157,26 @@ function AdminContent() {
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-        {activeTab === "hero" && <HeroTab adminKey={adminKey || ""} />}
-        {activeTab === "gallery" && <GalleryTab adminKey={adminKey || ""} />}
-        {activeTab === "events" && <EventsTab adminKey={adminKey || ""} />}
-        {activeTab === "reels" && <ReelsTab adminKey={adminKey || ""} />}
-        {activeTab === "menu" && <MenuTab adminKey={adminKey || ""} />}
-        {activeTab === "ratelist" && <RateListTab adminKey={adminKey || ""} />}
-        {activeTab === "reviews" && <ReviewsTab adminKey={adminKey || ""} />}
+        {activeTab === "hero" && <HeroTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "gallery" && <GalleryTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "events" && <EventsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "reels" && <ReelsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "menu" && <MenuTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "ratelist" && <RateListTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "reviews" && <ReviewsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
       </main>
+
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={closeConfirm}
+        onConfirm={confirmDialog.onConfirm || (() => {})}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+      />
     </div>
   );
 }

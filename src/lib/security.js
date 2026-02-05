@@ -59,54 +59,6 @@ export function isValidPhone(phone) {
   return /^\+?[0-9]{10,15}$/.test(cleaned);
 }
 
-/**
- * Validate base64 image and check size
- * @param {string} base64String - The base64 image string
- * @param {number} maxSizeMB - Maximum size in megabytes (default 20MB)
- * @returns {{ valid: boolean, error?: string, sizeMB?: number }}
- */
-export function validateBase64Image(base64String, maxSizeMB = 20) {
-  if (typeof base64String !== 'string') {
-    return { valid: false, error: 'Invalid image data' };
-  }
-
-  // Check if it's a valid base64 image format
-  if (!base64String.startsWith('data:image/')) {
-    return { valid: false, error: 'Invalid image format. Must be a valid image file.' };
-  }
-
-  // Extract the base64 part (after the comma)
-  const base64Part = base64String.split(',')[1];
-  if (!base64Part) {
-    return { valid: false, error: 'Invalid base64 encoding' };
-  }
-
-  // Calculate approximate size in bytes
-  // Base64 encodes 3 bytes into 4 characters
-  const sizeInBytes = (base64Part.length * 3) / 4;
-  const sizeMB = sizeInBytes / (1024 * 1024);
-
-  if (sizeMB > maxSizeMB) {
-    return { 
-      valid: false, 
-      error: `Image size (${sizeMB.toFixed(2)}MB) exceeds maximum allowed size (${maxSizeMB}MB)`,
-      sizeMB 
-    };
-  }
-
-  // Check for allowed image types
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-  const mimeType = base64String.split(';')[0].split(':')[1];
-  
-  if (!allowedTypes.includes(mimeType)) {
-    return { 
-      valid: false, 
-      error: `Invalid image type: ${mimeType}. Allowed: JPEG, PNG, GIF, WebP` 
-    };
-  }
-
-  return { valid: true, sizeMB };
-}
 
 /**
  * Validate URL format

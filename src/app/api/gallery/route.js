@@ -3,7 +3,6 @@ import connectDB from '@/lib/mongodb';
 import { Gallery } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, validateRequired } from '@/lib/security';
-import { validateImage } from '@/lib/imageProcessor';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
 // GET - Fetch all gallery images (Public)
@@ -66,15 +65,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate image format and size (max 20MB upload)
-    const imageValidation = validateImage(imageData, 20);
-    if (!imageValidation.valid) {
-      return NextResponse.json(
-        { success: false, error: imageValidation.error },
-        { status: 400 }
-      );
-    }
-
     // Sanitize text inputs
     const sanitizedCaption = sanitizeString(caption);
     const sanitizedAlt = sanitizeString(alt || caption);
@@ -91,10 +81,6 @@ export async function POST(request) {
     try {
       cloudinaryResult = await uploadToCloudinary(imageData, {
         folder: 'cocoa-cherry/gallery',
-        maxWidth: 1920,
-        maxHeight: 1920,
-        quality: 85,
-        format: 'avif', // Use AVIF format for better compression
       });
       console.log(`✅ Image uploaded to Cloudinary: ${cloudinaryResult.url}`);
     } catch (uploadError) {
@@ -107,7 +93,7 @@ export async function POST(request) {
 
     // Store Cloudinary URL in database
     const newImage = await Gallery.create({
-      imageData: cloudinaryResult.secure_url, // Store Cloudinary URL instead of base64
+      imageData: cloudinaryResult.secure_url, // Store Cloudinary URL
       publicId: cloudinaryResult.public_id, // Store public_id for future deletion
       caption: sanitizedCaption,
       alt: sanitizedAlt,

@@ -5,10 +5,6 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Configuration
-const ITEMS_PER_CATEGORY = 8; // Default for full menu page
-const HOME_ITEMS_PER_CATEGORY = 2; // For home page preview
-
 // Default fallback menu items
 const defaultFlavors = [
   {
@@ -502,6 +498,8 @@ export default function Menu({ isHomePage = false }) {
         const data = await res.json();
         if (data.success && data.data.length > 0) {
           setAllFlavors(data.data);
+          console.log("+++++",data.data.length);
+          
         } else {
           setAllFlavors(defaultFlavors);
         }
@@ -523,21 +521,27 @@ export default function Menu({ isHomePage = false }) {
       if (!groups[category]) groups[category] = [];
       groups[category].push(item);
     });
-    const itemsPerCategory = isHomePage ? HOME_ITEMS_PER_CATEGORY : ITEMS_PER_CATEGORY;
     
     // Get all categories sorted by item count
     const sortedCategories = Object.entries(groups)
       .sort((a, b) => b[1].length - a[1].length);
     
-    // Limit to 2 categories on home page, show all on menu page
-    const categoriesToShow = isHomePage 
-      ? sortedCategories.slice(0, 2) 
-      : sortedCategories;
-    
-    return categoriesToShow.reduce((acc, [key, value]) => {
-      acc[key] = value.slice(0, itemsPerCategory);
-      return acc;
-    }, {});
+    if (isHomePage) {
+      // On home page: Show only 2 items total from the first category
+      if (sortedCategories.length > 0) {
+        const firstCategory = sortedCategories[0];
+        return {
+          [firstCategory[0]]: firstCategory[1].slice(0, 2)
+        };
+      }
+      return {};
+    } else {
+      // On menu page: Show all items in all categories
+      return sortedCategories.reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
+    }
   }, [allFlavors, isHomePage]);
 
   const totalItems = allFlavors.length;

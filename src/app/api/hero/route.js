@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../lib/mongodb";
 import { Hero } from "../../../lib/models";
 import { verifyAdminKey } from "../../../lib/auth";
-import { validateImage } from "../../../lib/imageProcessor";
 import { uploadToCloudinary } from "../../../lib/cloudinary";
 
 // GET /api/hero - Get all hero images
@@ -55,24 +54,11 @@ export async function POST(request) {
       );
     }
 
-    // Validate image format and size (max 20MB upload)
-    const imageValidation = validateImage(imageData, 20);
-    if (!imageValidation.valid) {
-      return NextResponse.json(
-        { success: false, error: imageValidation.error },
-        { status: 400 },
-      );
-    }
-
     // Upload image to Cloudinary
     let cloudinaryResult = null;
     try {
       cloudinaryResult = await uploadToCloudinary(imageData, {
         folder: 'cocoa-cherry/hero',
-        maxWidth: 1920,
-        maxHeight: 1080,
-        quality: 90,
-        format: 'avif', // Use AVIF format for better compression
       });
       console.log(`✅ Hero image uploaded to Cloudinary: ${cloudinaryResult.url}`);
     } catch (uploadError) {
@@ -150,23 +136,10 @@ export async function PUT(request) {
     if (formData.get("imageData")) {
       const imageData = formData.get("imageData");
       
-      // Validate image
-      const imageValidation = validateImage(imageData, 20);
-      if (!imageValidation.valid) {
-        return NextResponse.json(
-          { success: false, error: imageValidation.error },
-          { status: 400 },
-        );
-      }
-
       // Upload image to Cloudinary
       try {
         const cloudinaryResult = await uploadToCloudinary(imageData, {
           folder: 'cocoa-cherry/hero',
-          maxWidth: 1920,
-          maxHeight: 1080,
-          quality: 90,
-          format: 'avif',
         });
         
         updateData.imageData = cloudinaryResult.secure_url;

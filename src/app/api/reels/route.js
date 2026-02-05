@@ -3,7 +3,6 @@ import connectDB from '@/lib/mongodb';
 import { Reel } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, validateRequired, isValidUrl } from '@/lib/security';
-import { validateImage } from '@/lib/imageProcessor';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
 // GET - Fetch all reels (Public)
@@ -57,24 +56,11 @@ export async function POST(request) {
       );
     }
 
-    // Validate thumbnail image
-    const imageValidation = validateImage(thumbnailData, 20);
-    if (!imageValidation.valid) {
-      return NextResponse.json(
-        { success: false, error: imageValidation.error },
-        { status: 400 }
-      );
-    }
-
     // Upload thumbnail to Cloudinary
     let thumbnailResult = null;
     try {
       thumbnailResult = await uploadToCloudinary(thumbnailData, {
         folder: 'cocoa-cherry/reels',
-        maxWidth: 1080,
-        maxHeight: 1920,
-        quality: 85,
-        format: 'avif',
       });
       console.log(`✅ Reel thumbnail uploaded to Cloudinary: ${thumbnailResult.url}`);
     } catch (uploadError) {
