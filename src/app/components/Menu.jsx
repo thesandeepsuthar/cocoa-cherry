@@ -51,17 +51,42 @@ const getCategoryIcon = (category) => {
 };
 
 // Quick View Modal Component
-function QuickViewModal({ item, onClose, onAddToOrder, isInOrder }) {
+function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNavigate }) {
   const hasDiscount = item.discountPrice !== null && item.discountPrice !== undefined && item.discountPrice < item.price;
   const discountPercentage = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
+
+  // Find current item index
+  const currentIndex = allItems.findIndex(i => i._id === item._id);
+  const canGoPrev = currentIndex > 0;
+  const canGoNext = currentIndex < allItems.length - 1;
+
+  const handlePrevious = () => {
+    if (canGoPrev) {
+      onNavigate(allItems[currentIndex - 1]);
+    }
+  };
+
+  const handleNext = () => {
+    if (canGoNext) {
+      onNavigate(allItems[currentIndex + 1]);
+    }
+  };
 
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose();
     };
+    const handleArrowKeys = (e) => {
+      if (e.key === 'ArrowLeft') handlePrevious();
+      if (e.key === 'ArrowRight') handleNext();
+    };
     window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+    window.addEventListener('keydown', handleArrowKeys);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('keydown', handleArrowKeys);
+    };
+  }, [currentIndex, allItems]);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -93,6 +118,11 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder }) {
         >
           <span className="material-symbols-outlined">close</span>
         </button>
+
+        {/* Navigation Counter */}
+        <div className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-full bg-noir/80 backdrop-blur-sm text-cream text-xs font-bold">
+          {currentIndex + 1} / {allItems.length}
+        </div>
 
         {/* Image */}
         <div className="relative h-64 sm:h-80 overflow-hidden">
@@ -133,7 +163,7 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder }) {
               {item.name}
             </h3>
             <span className="flex-shrink-0 px-2 py-1 rounded-lg bg-rose/10 text-rose text-xs font-medium border border-rose/20">
-              {getCategoryFromName(item.name)}
+              {item.category || getCategoryFromName(item.name)}
             </span>
           </div>
 
@@ -182,6 +212,43 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder }) {
               <span>{isInOrder ? 'Remove' : 'Add to Order'}</span>
             </motion.button>
           </div>
+
+          {/* Navigation Buttons */}
+          <div className="flex gap-3 mt-4">
+            <motion.button
+              onClick={handlePrevious}
+              disabled={!canGoPrev}
+              whileHover={canGoPrev ? { scale: 1.02 } : {}}
+              whileTap={canGoPrev ? { scale: 0.98 } : {}}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${
+                canGoPrev
+                  ? 'bg-cream/10 text-cream border border-cream/20 hover:bg-cream/20'
+                  : 'bg-noir/50 text-cream/30 border border-cream/10 cursor-not-allowed'
+              }`}
+            >
+              <span className="material-symbols-outlined">chevron_left</span>
+              <span>Previous</span>
+            </motion.button>
+            <motion.button
+              onClick={handleNext}
+              disabled={!canGoNext}
+              whileHover={canGoNext ? { scale: 1.02 } : {}}
+              whileTap={canGoNext ? { scale: 0.98 } : {}}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${
+                canGoNext
+                  ? 'bg-cream/10 text-cream border border-cream/20 hover:bg-cream/20'
+                  : 'bg-noir/50 text-cream/30 border border-cream/10 cursor-not-allowed'
+              }`}
+            >
+              <span>Next</span>
+              <span className="material-symbols-outlined">chevron_right</span>
+            </motion.button>
+          </div>
+
+          {/* Navigation Info */}
+          <p className="text-center text-cream/40 text-xs mt-4">
+            Use arrow keys or buttons to navigate • Press ESC to close
+          </p>
         </div>
       </motion.div>
     </motion.div>
@@ -737,6 +804,8 @@ export default function Menu({ isHomePage = false }) {
             onClose={() => setSelectedItem(null)}
             onAddToOrder={toggleItemInOrder}
             isInOrder={orderItems.some(o => o._id === selectedItem._id)}
+            allItems={allFlavors}
+            onNavigate={setSelectedItem}
           />
         )}
       </AnimatePresence>
