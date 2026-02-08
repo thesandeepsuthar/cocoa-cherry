@@ -144,6 +144,7 @@ const TABS = [
   { id: "gallery", label: "Gallery", icon: "photo_library" },
   { id: "events", label: "Events", icon: "celebration" },
   { id: "reels", label: "Reels", icon: "movie" },
+  { id: "categories", label: "Categories", icon: "category" },
   { id: "menu", label: "Menu", icon: "restaurant_menu" },
   { id: "ratelist", label: "Rates", icon: "payments" },
   { id: "reviews", label: "Reviews", icon: "rate_review" },
@@ -1407,16 +1408,23 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
     price: "",
     discountPrice: "",
     priceUnit: "per kg",
+    categoryId: "",
     order: 0,
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   const fetchItems = useCallback(async () => {
     try {
       const res = await fetch("/api/menu");
       const data = await res.json();
       if (data.success) setItems(data.data);
+      
+      // Fetch categories
+      const catRes = await fetch("/api/categories");
+      const catData = await catRes.json();
+      if (catData.success) setCategories(catData.data);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -1459,7 +1467,9 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
         discountPrice: formData.discountPrice
           ? parseFloat(formData.discountPrice)
           : null,
+        categoryId: formData.categoryId || null,
       };
+      console.log('Submitting menu data:', dataToSend);
       const res = await fetch(url, {
         method: editingItem ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -1514,6 +1524,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
       price: item.price?.toString() || "",
       discountPrice: item.discountPrice?.toString() || "",
       priceUnit: item.priceUnit || "per kg",
+      categoryId: (item.category && item.category._id) || "",
       order: item.order,
     });
     setErrors({});
@@ -1531,6 +1542,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
       price: "",
       discountPrice: "",
       priceUnit: "per kg",
+      categoryId: "",
       order: 0,
     });
     setErrors({});
@@ -1696,19 +1708,39 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
                     <option value="Popular">Popular</option>
                   </select>
                 </div>
-                <InputField
-                  label="Order"
-                  type="number"
-                  value={formData.order}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      order: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  min="0"
-                />
+                <div>
+                  <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                    Category
+                  </label>
+                  <select
+                    value={formData.categoryId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, categoryId: e.target.value })
+                    }
+                    className="w-full h-10 rounded-lg border border-cream/10 px-3 text-sm bg-noir-light text-cream"
+                  >
+                    <option value="">Select category</option>
+                    {categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
+
+              <InputField
+                label="Order"
+                type="number"
+                value={formData.order}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    order: parseInt(e.target.value) || 0,
+                  })
+                }
+                min="0"
+              />
               <FormButtons
                 onCancel={closeForm}
                 submitting={submitting}
@@ -1757,6 +1789,11 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
                 <h3 className="font-bold text-cream text-sm sm:text-base mb-1">
                   {item.name}
                 </h3>
+                {item.category && (
+                  <p className="text-xs text-rose/80 font-medium mb-1">
+                    {typeof item.category === 'object' ? item.category.name : item.category}
+                  </p>
+                )}
                 <p className="text-xs sm:text-sm text-cream-muted line-clamp-2 mb-2">
                   {item.description}
                 </p>
@@ -1791,6 +1828,268 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
 
       {items.length === 0 && (
         <EmptyState icon="restaurant_menu" text="No menu items yet" />
+      )}
+    </div>
+  );
+}
+
+// Categories Tab
+function CategoriesTab({ adminKey, showToast, showConfirm }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    order: 0,
+    isActive: true,
+  });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const fetchItems = useCallback(async () => {
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      if (data.success) setItems(data.data);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name?.trim()) newErrors.name = "Category name is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setSubmitting(true);
+    try {
+      const url = editingItem
+        ? `/api/categories/${editingItem._id}?key=${adminKey}`
+        : `/api/categories?key=${adminKey}`;
+      const res = await fetch(url, {
+        method: editingItem ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          description: formData.description,
+          order: formData.order,
+          isActive: formData.isActive,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchItems();
+        closeForm();
+        showToast(editingItem ? "Category updated successfully!" : "Category added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
+    } catch (error) {
+      showToast("Failed to save", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    showConfirm(
+      "Delete Category",
+      "Are you sure you want to delete this category? Menu items in this category will not be deleted.",
+      async () => {
+        try {
+          const res = await fetch(`/api/categories/${id}?key=${adminKey}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            fetchItems();
+            showToast("Category deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("Failed to delete", "error");
+        }
+      }
+    );
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setFormData({
+      name: item.name,
+      description: item.description || "",
+      order: item.order || 0,
+      isActive: item.isActive !== false,
+    });
+    setErrors({});
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingItem(null);
+    setFormData({
+      name: "",
+      description: "",
+      order: 0,
+      isActive: true,
+    });
+    setErrors({});
+  };
+
+  if (loading) return <LoadingSpinner />;
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+        <h2
+          className="text-xl sm:text-2xl font-bold text-cream"
+          style={{ fontFamily: "var(--font-cinzel)" }}
+        >
+          Categories ({items.length})
+        </h2>
+        <button
+          onClick={() => {
+            closeForm();
+            setShowForm(true);
+          }}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg hover:opacity-90 
+                         text-sm font-medium shadow-md bg-gradient-to-r from-rose to-rose-dark text-noir"
+        >
+          <span className="material-symbols-outlined text-lg">add</span>
+          Add Category
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {showForm && (
+          <FormModal
+            title={editingItem ? "Edit Category" : "Add Category"}
+            onClose={closeForm}
+          >
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <InputField
+                label="Category Name"
+                value={formData.name}
+                onChange={(e) => {
+                  setFormData({ ...formData, name: e.target.value });
+                  setErrors({ ...errors, name: "" });
+                }}
+                placeholder="e.g., Cakes"
+                required
+                error={errors.name}
+              />
+
+              <div>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-cream/10 px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40"
+                  rows={2}
+                  placeholder="Optional description for this category..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                <InputField
+                  label="Order"
+                  type="number"
+                  value={formData.order}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      order: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  min="0"
+                />
+                <div>
+                  <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={formData.isActive ? "active" : "inactive"}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        isActive: e.target.value === "active",
+                      })
+                    }
+                    className="w-full h-10 rounded-lg border border-cream/10 px-3 text-sm bg-noir-light text-cream"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              <FormButtons
+                onCancel={closeForm}
+                submitting={submitting}
+                submitText={editingItem ? "Update" : "Add"}
+              />
+            </form>
+          </FormModal>
+        )}
+      </AnimatePresence>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        {items.map((item) => (
+          <div key={item._id} className="card-noir rounded-xl overflow-hidden p-4 sm:p-5">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h3 className="font-bold text-cream text-base sm:text-lg mb-1">
+                  {item.name}
+                </h3>
+                {item.description && (
+                  <p className="text-xs sm:text-sm text-cream-muted">
+                    {item.description}
+                  </p>
+                )}
+              </div>
+              <span
+                className={`px-2 py-1 rounded text-xs font-bold ${
+                  item.isActive
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "bg-red-500/20 text-red-400"
+                }`}
+              >
+                {item.isActive ? "Active" : "Inactive"}
+              </span>
+            </div>
+            <div className="text-xs sm:text-sm text-cream/40 mb-4">
+              Order: {item.order}
+            </div>
+            <ActionButtons
+              onEdit={() => handleEdit(item)}
+              onDelete={() => handleDelete(item._id)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {items.length === 0 && (
+        <EmptyState icon="category" text="No categories yet" />
       )}
     </div>
   );
@@ -3161,6 +3460,7 @@ function AdminContent() {
         {activeTab === "gallery" && <GalleryTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "events" && <EventsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "reels" && <ReelsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "categories" && <CategoriesTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "menu" && <MenuTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "ratelist" && <RateListTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "reviews" && <ReviewsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}

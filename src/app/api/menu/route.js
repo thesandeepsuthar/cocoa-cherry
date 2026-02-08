@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Menu } from '@/lib/models';
+import { Menu, Category } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, validateRequired } from '@/lib/security';
 import { uploadToCloudinary } from '@/lib/cloudinary';
+import mongoose from 'mongoose';
 
 // GET - Fetch all menu items (Public)
 export async function GET() {
   try {
     await connectDB();
-    const menuItems = await Menu.find({ isActive: true }).sort({ order: 1, createdAt: -1 });
+    const menuItems = await Menu.find({ isActive: true }).populate({ path: 'category', select: 'name', strictPopulate: false }).sort({ order: 1, createdAt: -1 });
+    
+    console.log('Menu GET - fetched items:', menuItems.length);
+    console.log('First item category:', menuItems[0]?.category);
     
     return NextResponse.json({
       success: true,
@@ -22,6 +26,17 @@ export async function GET() {
       { status: 500 }
     );
   }
+}
+
+// Helper: findOrCreate category by name
+async function findOrCreateCategoryByName(name) {
+  if (!name) return null;
+  const sanitized = sanitizeString(name).slice(0, 100);
+  let category = await Category.findOne({ name: sanitized });
+  if (!category) {
+    category = await Category.create({ name: sanitized });
+  }
+  return category;
 }
 
 // POST - Add new menu item (Admin only)
@@ -46,7 +61,7 @@ export async function POST(request) {
       );
     }
 
-    const { name, description, imageData, badge, price, discountPrice, priceUnit, order } = body;
+    const { name, description, imageData, badge, price, discountPrice, priceUnit, order, categoryId, categoryName } = body;
 
     // Sanitize text inputs
     const sanitizedName = sanitizeString(name);
@@ -82,9 +97,20 @@ export async function POST(request) {
       );
     }
 
+    // Resolve category if provided
+    let categoryRef = null;
+    if (categoryId && mongoose.Types.ObjectId.isValid(categoryId)) {
+      const cat = await Category.findById(categoryId);
+      if (cat) categoryRef = cat._id;
+    } else if (categoryName) {
+      const cat = await findOrCreateCategoryByName(categoryName);
+      if (cat) categoryRef = cat._id;
+    }
+
     const newMenuItem = await Menu.create({
       name: sanitizedName,
       description: sanitizedDescription,
+      category: categoryRef,
       imageData: cloudinaryResult.secure_url,
       publicId: cloudinaryResult.public_id,
       badge: sanitizedBadge,
@@ -94,9 +120,11 @@ export async function POST(request) {
       order: typeof order === 'number' ? order : 0,
     });
 
+    const populated = await Menu.findById(newMenuItem._id).populate({ path: 'category', select: 'name', strictPopulate: false });
+
     return NextResponse.json({
       success: true,
-      data: newMenuItem,
+      data: populated,
       cloudinary: {
         url: cloudinaryResult.url,
         public_id: cloudinaryResult.public_id,

@@ -163,7 +163,7 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
               {item.name}
             </h3>
             <span className="flex-shrink-0 px-2 py-1 rounded-lg bg-rose/10 text-rose text-xs font-medium border border-rose/20">
-              {item.category || getCategoryFromName(item.name)}
+              {(item.category ? (typeof item.category === 'string' ? item.category : item.category.name) : null) || getCategoryFromName(item.name)}
             </span>
           </div>
 
@@ -558,6 +558,7 @@ export default function Menu({ isHomePage = false }) {
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -567,8 +568,9 @@ export default function Menu({ isHomePage = false }) {
         const res = await fetch('/api/menu');
         const data = await res.json();
         if (data.success && data.data.length > 0) {
+          console.log("Menu items fetched:", data.data);
+          console.log("First item category:", data.data[0]?.category);
           setAllFlavors(data.data);
-          console.log("+++++",data.data.length);
           
         } else {
           setAllFlavors(defaultFlavors);
@@ -587,15 +589,38 @@ export default function Menu({ isHomePage = false }) {
   const categorizedItems = useMemo(() => {
     const groups = {};
     allFlavors.forEach((item) => {
-      const category = getCategoryFromName(item.name);
+      // Extract category name - handle both object and string formats, including null
+      let category = null;
+      
+      if (item.category) {
+        if (typeof item.category === 'string') {
+          category = item.category;
+        } else if (item.category.name) {
+          category = item.category.name;
+        }
+      }
+      
+      // Fallback to heuristic if no category assigned
+      if (!category) {
+        category = getCategoryFromName(item.name);
+      }
+      
       if (!groups[category]) groups[category] = [];
       groups[category].push(item);
     });
     
     // Get all categories sorted by item count
-    const sortedCategories = Object.entries(groups)
+    let sortedCategories = Object.entries(groups)
       .sort((a, b) => b[1].length - a[1].length);
     
+    console.log(`[${isHomePage ? 'HOME' : 'MENU'}] Total items: ${allFlavors.length}, All categories:`, sortedCategories.map(([cat, items]) => `${cat}: ${items.length} items`));
+
+    // Apply filter if a specific category is selected (not 'All')
+    if (selectedCategory !== 'All' && selectedCategory !== null) {
+      sortedCategories = sortedCategories.filter(([cat]) => cat === selectedCategory);
+      console.log(`[${isHomePage ? 'HOME' : 'MENU'}] Filtered by: ${selectedCategory}`, sortedCategories.map(([cat, items]) => `${cat}: ${items.length} items`));
+    }
+
     if (isHomePage) {
       // On home page: Show only 2 items total from the first category
       if (sortedCategories.length > 0) {
@@ -606,13 +631,13 @@ export default function Menu({ isHomePage = false }) {
       }
       return {};
     } else {
-      // On menu page: Show all items in all categories
+      // On menu page: Show all items in filtered categories
       return sortedCategories.reduce((acc, [key, value]) => {
         acc[key] = value;
         return acc;
       }, {});
     }
-  }, [allFlavors, isHomePage]);
+  }, [allFlavors, isHomePage, selectedCategory]);
 
   const totalItems = allFlavors.length;
   const totalCategories = Object.keys(categorizedItems).length;
@@ -705,7 +730,7 @@ export default function Menu({ isHomePage = false }) {
 
           {/* Quick Stats */}
           {!loading && (
-            <div className="flex items-center justify-center gap-4 sm:gap-6">
+            <div className="flex items-center justify-center gap-4 sm:gap-6 mb-6">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-noir/50 border border-cream/10">
                 <span className="material-symbols-outlined text-rose text-sm">category</span>
                 <span className="text-cream text-xs font-medium">{totalCategories} Categories</span>
@@ -715,6 +740,42 @@ export default function Menu({ isHomePage = false }) {
                 <span className="text-cream text-xs font-medium">{totalItems} Items</span>
               </div>
             </div>
+          )}
+
+          {/* Category Filter */}
+          {!isHomePage && !loading && Object.keys(categorizedItems).length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8 px-4 sm:px-0"
+            >
+              <button
+                onClick={() => setSelectedCategory('All')}
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
+                  selectedCategory === 'All'
+                    ? 'bg-gradient-to-r from-rose to-rose-dark text-white'
+                    : 'bg-noir/50 text-cream border border-cream/20 hover:border-rose/50 hover:bg-rose/10'
+                }`}
+              >
+                All Items
+              </button>
+              {Object.keys(categorizedItems).map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 ${
+                    selectedCategory === category
+                      ? 'bg-gradient-to-r from-rose to-rose-dark text-white'
+                      : 'bg-noir/50 text-cream border border-cream/20 hover:border-rose/50 hover:bg-rose/10'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-sm">{getCategoryIcon(category)}</span>
+                  <span>{category}</span>
+                  <span className="text-[10px] opacity-75">({categorizedItems[category].length})</span>
+                </button>
+              ))}
+            </motion.div>
           )}
         </motion.div>
 

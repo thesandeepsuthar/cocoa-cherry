@@ -13,6 +13,12 @@ const MenuSchema = new mongoose.Schema({
     trim: true,
     maxlength: [500, 'Description cannot exceed 500 characters'],
   },
+  // Category reference (optional)
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    default: null,
+  },
   imageData: {
     type: String, // Cloudinary URL
     required: [true, 'Image is required'],

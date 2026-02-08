@@ -17,8 +17,6 @@ const nextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  // Enable static optimization
-  swcMinify: true,
 };
 
 export default nextConfig;

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { Menu } from '@/lib/models';
+import { Menu, Category } from '@/lib/models';
 import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString } from '@/lib/security';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
@@ -9,6 +9,17 @@ import mongoose from 'mongoose';
 // Validate MongoDB ObjectId
 function isValidObjectId(id) {
   return mongoose.Types.ObjectId.isValid(id);
+}
+
+// Helper: findOrCreate category by name
+async function findOrCreateCategoryByName(name) {
+  if (!name) return null;
+  const sanitized = sanitizeString(name).slice(0, 100);
+  let category = await Category.findOne({ name: sanitized });
+  if (!category) {
+    category = await Category.create({ name: sanitized });
+  }
+  return category;
 }
 
 // GET - Fetch single menu item
@@ -24,7 +35,7 @@ export async function GET(request, { params }) {
     }
 
     await connectDB();
-    const menuItem = await Menu.findById(id);
+    const menuItem = await Menu.findById(id).populate({ path: 'category', select: 'name', strictPopulate: false });
     
     if (!menuItem) {
       return NextResponse.json(
@@ -67,6 +78,8 @@ export async function PUT(request, { params }) {
 
     await connectDB();
     const body = await request.json();
+    
+    console.log('Menu PUT received:', { id, body });
 
     // Get current menu item to check for existing Cloudinary public_id
     const currentMenuItem = await Menu.findById(id);
@@ -137,6 +150,27 @@ export async function PUT(request, { params }) {
       updateData.isActive = body.isActive;
     }
 
+    // Handle category update: accept categoryId (ObjectId), categoryName (string), or null to unset
+    if (body.categoryId !== undefined) {
+      console.log('Updating category with categoryId:', body.categoryId);
+      if (body.categoryId === null || body.categoryId === '') {
+        updateData.category = null;
+      } else if (isValidObjectId(body.categoryId)) {
+        updateData.category = body.categoryId;
+        console.log('Category set to:', body.categoryId);
+      }
+    } else if (body.categoryName !== undefined) {
+      console.log('Updating category with categoryName:', body.categoryName);
+      if (body.categoryName === null || body.categoryName === '') {
+        updateData.category = null;
+      } else {
+        const cat = await findOrCreateCategoryByName(body.categoryName);
+        if (cat) updateData.category = cat._id;
+      }
+    }
+    
+    console.log('UpdateData before save:', updateData);
+
     // Handle order swapping
     let swappedWith = null;
     if (typeof body.order === 'number') {
@@ -173,7 +207,7 @@ export async function PUT(request, { params }) {
       id,
       updateData,
       { new: true }
-    );
+    ).populate({ path: 'category', select: 'name', strictPopulate: false });
 
     if (!updatedMenuItem) {
       return NextResponse.json(
