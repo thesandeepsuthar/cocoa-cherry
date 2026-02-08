@@ -585,35 +585,44 @@ export default function Menu({ isHomePage = false }) {
     fetchMenu();
   }, []);
 
-  // Group items by category
+  // Group items by category - DYNAMIC from database
   const categorizedItems = useMemo(() => {
     const groups = {};
+    
+    // Only process items that have a category assigned in the database
     allFlavors.forEach((item) => {
-      // Extract category name - handle both object and string formats, including null
       let category = null;
+      let categoryId = null;
       
+      // Extract category name and ID from the populated category object
       if (item.category) {
         if (typeof item.category === 'string') {
+          // Legacy support for string category names
           category = item.category;
-        } else if (item.category.name) {
+        } else if (typeof item.category === 'object' && item.category.name) {
+          // Modern approach: extract from category object
           category = item.category.name;
+          categoryId = item.category._id;
         }
       }
       
-      // Fallback to heuristic if no category assigned
-      if (!category) {
-        category = getCategoryFromName(item.name);
+      // Only add items that have a category assigned in database
+      if (category) {
+        if (!groups[category]) {
+          groups[category] = [];
+        }
+        groups[category].push({
+          ...item,
+          _categoryId: categoryId  // Store category ID for reference
+        });
       }
-      
-      if (!groups[category]) groups[category] = [];
-      groups[category].push(item);
     });
     
     // Get all categories sorted by item count
     let sortedCategories = Object.entries(groups)
       .sort((a, b) => b[1].length - a[1].length);
     
-    console.log(`[${isHomePage ? 'HOME' : 'MENU'}] Total items: ${allFlavors.length}, All categories:`, sortedCategories.map(([cat, items]) => `${cat}: ${items.length} items`));
+    console.log(`[${isHomePage ? 'HOME' : 'MENU'}] Total items: ${allFlavors.length}, Items with category: ${Object.values(groups).flat().length}, All categories:`, sortedCategories.map(([cat, items]) => `${cat}: ${items.length} items`));
 
     // Apply filter if a specific category is selected (not 'All')
     if (selectedCategory !== 'All' && selectedCategory !== null) {
