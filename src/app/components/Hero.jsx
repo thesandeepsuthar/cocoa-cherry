@@ -365,14 +365,6 @@ export default function Hero() {
   const [heroImage, setHeroImage] = useState(null);
   const [isLoadingHero, setIsLoadingHero] = useState(true);
   const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
 
   // Fetch menu items from API
   useEffect(() => {
@@ -432,7 +424,7 @@ export default function Hero() {
     <>
       <section
         ref={containerRef}
-        className="relative min-h-screen flex items-center overflow-hidden bg-noir"
+        className="relative flex items-center overflow-hidden bg-noir"
         id="home"
       >
         {/* Animated background elements */}
@@ -491,8 +483,7 @@ export default function Hero() {
         </div>
 
         {/* Main content */}
-        <motion.div
-          style={{ y, opacity, scale }}
+        <div
           className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-20"
         >
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
@@ -753,7 +744,7 @@ export default function Hero() {
               </div>
             </motion.div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Scroll indicator */}
         <motion.div
