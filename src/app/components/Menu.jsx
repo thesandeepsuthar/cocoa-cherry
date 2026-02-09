@@ -51,24 +51,27 @@ const getCategoryIcon = (category) => {
 };
 
 // Quick View Modal Component
-function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNavigate }) {
+function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNavigate, categoryItems }) {
   const hasDiscount = item.discountPrice !== null && item.discountPrice !== undefined && item.discountPrice < item.price;
   const discountPercentage = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
 
-  // Find current item index
-  const currentIndex = allItems.findIndex(i => i._id === item._id);
+  // Use categoryItems if provided (filtered by category), otherwise use all items
+  const itemsToNavigate = categoryItems && categoryItems.length > 0 ? categoryItems : allItems;
+
+  // Find current item index in the navigation list
+  const currentIndex = itemsToNavigate.findIndex(i => i._id === item._id);
   const canGoPrev = currentIndex > 0;
-  const canGoNext = currentIndex < allItems.length - 1;
+  const canGoNext = currentIndex < itemsToNavigate.length - 1;
 
   const handlePrevious = () => {
     if (canGoPrev) {
-      onNavigate(allItems[currentIndex - 1]);
+      onNavigate(itemsToNavigate[currentIndex - 1]);
     }
   };
 
   const handleNext = () => {
     if (canGoNext) {
-      onNavigate(allItems[currentIndex + 1]);
+      onNavigate(itemsToNavigate[currentIndex + 1]);
     }
   };
 
@@ -121,7 +124,7 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
 
         {/* Navigation Counter */}
         <div className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-full bg-noir/80 backdrop-blur-sm text-cream text-xs font-bold">
-          {currentIndex + 1} / {allItems.length}
+          {currentIndex + 1} / {itemsToNavigate.length}
         </div>
 
         {/* Image */}
@@ -468,7 +471,7 @@ function CategorySection({ category, items, onItemClick, orderItems }) {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                onClick={() => onItemClick(item)}
+                onClick={() => onItemClick(item, category)}
                 className="flex-shrink-0 w-[160px] sm:w-[200px] md:w-[240px] cursor-pointer group"
               >
                 <div className={`card-noir overflow-hidden h-full transition-all ${
@@ -557,8 +560,9 @@ export default function Menu({ isHomePage = false }) {
   const [allFlavors, setAllFlavors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [orderItems, setOrderItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedItemCategory, setSelectedItemCategory] = useState(null);
+  const [orderItems, setOrderItems] = useState([]);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -828,7 +832,10 @@ export default function Menu({ isHomePage = false }) {
                 key={category}
                 category={category}
                 items={items}
-                onItemClick={setSelectedItem}
+                onItemClick={(item, cat) => {
+                  setSelectedItem(item);
+                  setSelectedItemCategory(cat);
+                }}
                 orderItems={orderItems}
               />
             ))}
@@ -871,10 +878,14 @@ export default function Menu({ isHomePage = false }) {
         {selectedItem && (
           <QuickViewModal
             item={selectedItem}
-            onClose={() => setSelectedItem(null)}
+            onClose={() => {
+              setSelectedItem(null);
+              setSelectedItemCategory(null);
+            }}
             onAddToOrder={toggleItemInOrder}
             isInOrder={orderItems.some(o => o._id === selectedItem._id)}
             allItems={allFlavors}
+            categoryItems={selectedItemCategory ? categorizedItems[selectedItemCategory] || [] : []}
             onNavigate={setSelectedItem}
           />
         )}
