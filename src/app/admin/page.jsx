@@ -3398,22 +3398,23 @@ function AdminContent() {
       </header>
 
       {/* Tabs - Responsive design */}
-      <div className="glass-strong border-b border-rose/10">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4">
-          {/* Mobile: Equal width tabs with icons */}
-          <div className="flex sm:hidden">
+      <div className="glass-strong border-b border-rose/10 sticky top-16 z-30">
+        <div className="max-w-7xl mx-auto px-0 sm:px-4">
+          {/* Mobile: Scrollable horizontal tabs with icons only */}
+          <div className="flex sm:hidden overflow-x-auto hide-scrollbar">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs font-medium border-b-2 transition-all ${
+                className={`flex-shrink-0 flex flex-col items-center justify-center gap-1 py-3 px-3 min-w-[60px] text-xs font-medium border-b-2 transition-all ${
                   activeTab === tab.id
                     ? "border-rose text-rose bg-rose/5"
                     : "border-transparent text-cream-muted hover:text-cream hover:bg-cream/5"
                 }`}
+                title={tab.label}
               >
                 <span
-                  className={`material-symbols-outlined text-xl transition-transform ${activeTab === tab.id ? "scale-110" : ""}`}
+                  className={`material-symbols-outlined text-lg transition-transform ${activeTab === tab.id ? "scale-110" : ""}`}
                   style={{
                     fontVariationSettings:
                       activeTab === tab.id ? "'FILL' 1" : "'FILL' 0",
@@ -3421,13 +3422,39 @@ function AdminContent() {
                 >
                   {tab.icon}
                 </span>
-                <span className="truncate max-w-full">{tab.label}</span>
+                <span className="text-[10px] truncate">{tab.label}</span>
               </button>
             ))}
           </div>
 
-          {/* Desktop: Horizontal tabs with icons and labels */}
-          <div className="hidden sm:flex gap-1">
+          {/* Tablet: Scrollable tabs with icons and labels */}
+          <div className="hidden sm:flex md:hidden overflow-x-auto hide-scrollbar">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-shrink-0 flex items-center gap-2 px-4 py-3.5 text-xs font-medium border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? "border-rose text-rose bg-rose/5"
+                    : "border-transparent text-cream-muted hover:text-cream hover:bg-cream/5"
+                }`}
+              >
+                <span
+                  className="material-symbols-outlined text-base"
+                  style={{
+                    fontVariationSettings:
+                      activeTab === tab.id ? "'FILL' 1" : "'FILL' 0",
+                  }}
+                >
+                  {tab.icon}
+                </span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Desktop: Full width tabs with icons and labels */}
+          <div className="hidden md:flex gap-1">
             {TABS.map((tab) => (
               <button
                 key={tab.id}

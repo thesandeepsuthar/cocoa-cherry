@@ -95,15 +95,27 @@ export default function Loader({
   fullScreen = false,
 }) {
   const sizes = {
-    sm: 40,
+    xs: 32,
+    sm: 48,
     md: 80,
     lg: 120,
+    xl: 160,
   };
 
   const loaderSize = sizes[size] || sizes.md;
 
+  const textSizes = {
+    xs: "text-xs",
+    sm: "text-sm",
+    md: "text-base",
+    lg: "text-lg",
+    xl: "text-xl",
+  };
+
+  const textSize = textSizes[size] || textSizes.md;
+
   const content = (
-    <div className="flex flex-col items-center justify-center gap-4">
+    <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 px-4">
       {/* Static Logo */}
       <div className="relative">
         <LogoSVG size={loaderSize} />
@@ -114,7 +126,7 @@ export default function Loader({
         <motion.p
           animate={{ opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="text-accent text-sm font-medium"
+          className={`${textSize} font-medium text-gold text-center`}
         >
           {text}
         </motion.p>
@@ -124,14 +136,14 @@ export default function Loader({
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-background-light/95 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-noir/95 backdrop-blur-sm flex items-center justify-center z-50">
         {content}
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center py-12">{content}</div>
+    <div className="flex items-center justify-center py-8 sm:py-12">{content}</div>
   );
 }
 
@@ -173,14 +185,17 @@ export function MiniLoader({ className = "" }) {
 
 // Cake bounce loader - matches brand colors
 export function CakeLoader({ size = 60 }) {
+  const responsiveSize = typeof size === 'number' ? size : 60;
+  
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-2 sm:gap-3">
       <motion.svg
-        width={size}
-        height={size}
+        width={responsiveSize}
+        height={responsiveSize}
         viewBox="0 0 64 64"
         animate={{ y: [0, -10, 0] }}
         transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
+        className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20"
       >
         {/* Cake body - brand burgundy */}
         <rect x="12" y="28" width="40" height="24" rx="4" fill="#8b4a5c" />
@@ -212,7 +227,7 @@ export function CakeLoader({ size = 60 }) {
 
       {/* Shadow */}
       <motion.div
-        className="w-12 h-2 rounded-full"
+        className="w-8 h-1.5 sm:w-12 sm:h-2 rounded-full"
         style={{ backgroundColor: "rgba(139, 74, 92, 0.3)" }}
         animate={{ scale: [1, 0.8, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}

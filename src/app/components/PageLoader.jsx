@@ -75,22 +75,22 @@ export default function PageLoader() {
         }
       `}} />
       <div
-        className="fixed inset-0 z-[9999] bg-noir flex flex-col items-center justify-center"
+        className="fixed inset-0 z-[9999] bg-noir flex flex-col items-center justify-center p-4"
         style={{ 
           opacity: showLoader ? 1 : 0,
           transition: 'opacity 0.3s ease-out',
           pointerEvents: showLoader ? 'auto' : 'none'
         }}
       >
-        {/* Simple static logo with rotating border */}
-        <div className="relative mb-6 flex items-center justify-center w-36 h-36 sm:w-40 sm:h-40">
-          {/* Rotating border - outer circle */}
+        {/* Simple static logo with rotating border - Responsive */}
+        <div className="relative mb-4 sm:mb-6 flex items-center justify-center">
+          {/* Rotating border - outer circle - Responsive sizes */}
           <div 
             className="absolute rounded-full rotating-border"
             style={{
-              width: '144px',
-              height: '144px',
-              padding: '6px',
+              width: 'clamp(100px, 25vw, 160px)',
+              height: 'clamp(100px, 25vw, 160px)',
+              padding: 'clamp(4px, 1vw, 8px)',
               background: 'conic-gradient(from 0deg, #e4a0a0 0%, #d4a574 33%, #faf5f0 66%, #e4a0a0 100%)',
             }}
           >
@@ -98,30 +98,36 @@ export default function PageLoader() {
             <div className="w-full h-full rounded-full bg-noir"></div>
           </div>
           
-          {/* Logo - centered on top */}
-          <div className="relative z-10 rounded-full overflow-hidden w-32 h-32 sm:w-36 sm:h-36">
+          {/* Logo - centered on top - Responsive */}
+          <div 
+            className="relative z-10 rounded-full overflow-hidden flex-shrink-0"
+            style={{
+              width: 'clamp(80px, 20vw, 144px)',
+              height: 'clamp(80px, 20vw, 144px)',
+            }}
+          >
             <Image
               src="/logo.svg"
               alt="Cocoa&Cherry Logo"
               width={144}
               height={144}
               priority
-              className="w-full h-full rounded-full"
+              className="w-full h-full rounded-full object-cover"
             />
           </div>
         </div>
 
-        {/* Brand name - static */}
+        {/* Brand name - static - Responsive text */}
         <div className="text-center">
           <h1 
-            className="text-2xl sm:text-3xl font-bold mb-2"
+            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             <span className="text-gold">Cocoa</span>
             <span className="text-gold">&</span>
             <span className="text-gold">Cherry</span>
           </h1>
-          <p className="text-cream-muted text-xs sm:text-sm tracking-widest uppercase">
+          <p className="text-cream-muted text-[10px] xs:text-xs sm:text-sm tracking-widest uppercase">
             Premium Home Bakery
           </p>
         </div>
