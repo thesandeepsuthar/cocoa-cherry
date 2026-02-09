@@ -1469,7 +1469,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
           : null,
         categoryId: formData.categoryId || null,
       };
-      console.log('Submitting menu data:', dataToSend);
+    
       const res = await fetch(url, {
         method: editingItem ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },

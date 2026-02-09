@@ -103,7 +103,7 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-noir/90 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-noir/90 backdrop-blur-md"
       onClick={onClose}
     >
       <motion.div
@@ -111,24 +111,24 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-noir-light rounded-3xl overflow-hidden shadow-2xl border border-cream/10"
+        className="relative w-full max-w-sm sm:max-w-md md:max-w-lg bg-noir-light rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-cream/10 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-noir/80 backdrop-blur-sm flex items-center justify-center text-cream hover:bg-rose/20 transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-noir/80 backdrop-blur-sm flex items-center justify-center text-cream hover:bg-rose/20 transition-colors"
         >
-          <span className="material-symbols-outlined">close</span>
+          <span className="material-symbols-outlined text-lg sm:text-xl">close</span>
         </button>
 
         {/* Navigation Counter */}
-        <div className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-full bg-noir/80 backdrop-blur-sm text-cream text-xs font-bold">
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-noir/80 backdrop-blur-sm text-cream text-[10px] sm:text-xs font-bold">
           {currentIndex + 1} / {itemsToNavigate.length}
         </div>
 
         {/* Image */}
-        <div className="relative h-64 sm:h-80 overflow-hidden">
+        <div className="relative h-48 sm:h-64 md:h-80 overflow-hidden">
           <Image
             src={item.imageData}
             alt={item.name}
@@ -139,20 +139,20 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
           <div className="absolute inset-0 bg-gradient-to-t from-noir-light via-transparent to-transparent" />
           
           {/* Badges */}
-          <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-wrap gap-1.5 sm:gap-2">
             {item.badge && (
-              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-rose to-rose-dark text-white text-xs font-bold shadow-lg">
+              <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-rose to-rose-dark text-white text-[10px] sm:text-xs font-bold shadow-lg">
                 {item.badge}
               </span>
             )}
             {hasDiscount && (
-              <span className="px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold shadow-lg">
+              <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500 text-white text-[10px] sm:text-xs font-bold shadow-lg">
                 {discountPercentage}% OFF
               </span>
             )}
             {isInOrder && (
-              <span className="px-3 py-1 rounded-full bg-gold text-noir text-xs font-bold shadow-lg flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm">check_circle</span>
+              <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gold text-noir text-[10px] sm:text-xs font-bold shadow-lg flex items-center gap-1">
+                <span className="material-symbols-outlined text-xs">check_circle</span>
                 In Order
               </span>
             )}
@@ -160,42 +160,42 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          <div className="flex items-start justify-between gap-4 mb-3">
-            <h3 className="text-2xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>
+        <div className="p-4 sm:p-5 md:p-6">
+          <div className="flex items-start justify-between gap-3 mb-2 sm:mb-3">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-cream line-clamp-2" style={{ fontFamily: 'var(--font-cinzel)' }}>
               {item.name}
             </h3>
-            <span className="flex-shrink-0 px-2 py-1 rounded-lg bg-rose/10 text-rose text-xs font-medium border border-rose/20">
+            <span className="flex-shrink-0 px-2 py-1 rounded-lg bg-rose/10 text-rose text-[10px] sm:text-xs font-medium border border-rose/20 whitespace-nowrap">
               {(item.category ? (typeof item.category === 'string' ? item.category : item.category.name) : null) || getCategoryFromName(item.name)}
             </span>
           </div>
 
-          <p className="text-cream-muted text-sm leading-relaxed mb-5">
+          <p className="text-cream-muted text-xs sm:text-sm leading-relaxed mb-4 sm:mb-5 line-clamp-3">
             {item.description}
           </p>
 
           {/* Price */}
           {item.price > 0 && (
-            <div className="flex items-center gap-3 mb-6 p-4 rounded-2xl bg-noir/50 border border-cream/5">
-              <span className="material-symbols-outlined text-gold text-2xl">payments</span>
-              <div>
+            <div className="flex items-center gap-2 sm:gap-3 mb-5 sm:mb-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-noir/50 border border-cream/5">
+              <span className="material-symbols-outlined text-gold text-xl sm:text-2xl flex-shrink-0">payments</span>
+              <div className="min-w-0">
                 {hasDiscount ? (
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-rose">₹{item.discountPrice}</span>
-                    <span className="text-cream/40 line-through">₹{item.price}</span>
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="text-lg sm:text-2xl font-bold text-rose">₹{item.discountPrice}</span>
+                    <span className="text-cream/40 line-through text-xs sm:text-sm">₹{item.price}</span>
                   </div>
                 ) : (
-                  <span className="text-2xl font-bold text-cream">₹{item.price}</span>
+                  <span className="text-lg sm:text-2xl font-bold text-cream">₹{item.price}</span>
                 )}
                 {item.priceUnit && (
-                  <span className="text-cream/50 text-sm ml-1">/{item.priceUnit.replace('per ', '')}</span>
+                  <span className="text-cream/50 text-xs sm:text-sm ml-1">/{item.priceUnit.replace('per ', '')}</span>
                 )}
               </div>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 mb-4">
             <motion.button
               onClick={() => {
                 onAddToOrder(item);
@@ -203,53 +203,54 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-lg shadow-lg transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base shadow-lg transition-all ${
                 isInOrder
                   ? 'bg-red-500/20 text-red-400 border-2 border-red-500/30 hover:bg-red-500/30'
                   : 'bg-gradient-to-r from-rose to-rose-dark text-white shadow-rose/30 hover:shadow-rose/50'
               }`}
             >
-              <span className="material-symbols-outlined">
+              <span className="material-symbols-outlined text-base sm:text-lg">
                 {isInOrder ? 'remove_shopping_cart' : 'add_shopping_cart'}
               </span>
-              <span>{isInOrder ? 'Remove' : 'Add to Order'}</span>
+              <span className="hidden xs:inline">{isInOrder ? 'Remove' : 'Add to Order'}</span>
+              <span className="xs:hidden">{isInOrder ? 'Remove' : 'Add'}</span>
             </motion.button>
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex gap-3 mt-4">
+          <div className="flex gap-2 sm:gap-3">
             <motion.button
               onClick={handlePrevious}
               disabled={!canGoPrev}
               whileHover={canGoPrev ? { scale: 1.02 } : {}}
               whileTap={canGoPrev ? { scale: 0.98 } : {}}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all ${
                 canGoPrev
                   ? 'bg-cream/10 text-cream border border-cream/20 hover:bg-cream/20'
                   : 'bg-noir/50 text-cream/30 border border-cream/10 cursor-not-allowed'
               }`}
             >
-              <span className="material-symbols-outlined">chevron_left</span>
-              <span>Previous</span>
+              <span className="material-symbols-outlined text-base sm:text-lg">chevron_left</span>
+              <span className="hidden sm:inline">Previous</span>
             </motion.button>
             <motion.button
               onClick={handleNext}
               disabled={!canGoNext}
               whileHover={canGoNext ? { scale: 1.02 } : {}}
               whileTap={canGoNext ? { scale: 0.98 } : {}}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all ${
                 canGoNext
                   ? 'bg-cream/10 text-cream border border-cream/20 hover:bg-cream/20'
                   : 'bg-noir/50 text-cream/30 border border-cream/10 cursor-not-allowed'
               }`}
             >
-              <span>Next</span>
-              <span className="material-symbols-outlined">chevron_right</span>
+              <span className="hidden sm:inline">Next</span>
+              <span className="material-symbols-outlined text-base sm:text-lg">chevron_right</span>
             </motion.button>
           </div>
 
           {/* Navigation Info */}
-          <p className="text-center text-cream/40 text-xs mt-4">
+          <p className="text-center text-cream/40 text-[10px] sm:text-xs mt-3 sm:mt-4">
             Use arrow keys or buttons to navigate • Press ESC to close
           </p>
         </div>
@@ -572,8 +573,7 @@ export default function Menu({ isHomePage = false }) {
         const res = await fetch('/api/menu');
         const data = await res.json();
         if (data.success && data.data.length > 0) {
-          console.log("Menu items fetched:", data.data);
-          console.log("First item category:", data.data[0]?.category);
+        
           setAllFlavors(data.data);
           
         } else {

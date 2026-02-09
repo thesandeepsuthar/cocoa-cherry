@@ -134,9 +134,7 @@ export async function PUT(request, { params }) {
             item: itemWithTargetOrder.item,
             oldOrder: targetOrder,
             newOrder: currentOrder,
-          };
-          
-          console.log(`🔄 Order swapped: "${currentItem.item}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.item}" (${targetOrder}→${currentOrder})`);
+          }; 
         }
       }
 
