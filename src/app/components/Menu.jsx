@@ -622,9 +622,15 @@ export default function Menu({ isHomePage = false }) {
       }
     });
     
-    // Get all categories sorted by item count
+    // Get all categories sorted by item count, with "Other" always last
     let sortedCategories = Object.entries(groups)
-      .sort((a, b) => b[1].length - a[1].length);
+      .sort((a, b) => {
+        // If one is "Other", it goes to the end
+        if (a[0] === 'Other') return 1;
+        if (b[0] === 'Other') return -1;
+        // Otherwise sort by item count (descending)
+        return b[1].length - a[1].length;
+      });
     
     console.log(`[${isHomePage ? 'HOME' : 'MENU'}] Total items: ${allFlavors.length}, Items with category: ${Object.values(groups).flat().length}, All categories:`, sortedCategories.map(([cat, items]) => `${cat}: ${items.length} items`));
 
@@ -654,6 +660,7 @@ export default function Menu({ isHomePage = false }) {
 
   const totalItems = allFlavors.length;
   const totalCategories = Object.keys(categorizedItems).length;
+
 
   // Toggle item in order
   const toggleItemInOrder = (item) => {
