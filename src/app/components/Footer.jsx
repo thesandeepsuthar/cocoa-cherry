@@ -5,17 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRef } from "react";
 
-const quickLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About Us" },
-  { href: "/menu", label: "Menu & Flavors" },
-  { href: "/gallery", label: "Gallery" },
-  { href: "/events", label: "Events" },
-  { href: "/services", label: "Services" },
-  { href: "/contact", label: "Contact" },
-  { href: "/terms-and-conditions", label: "Terms & Conditions" },
-];
-
 const instagramUrl =
   "https://www.instagram.com/cocoa_cherry_?igsh=dzIzaG43YTlqd3h2";
 
@@ -54,13 +43,12 @@ export default function Footer() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 md:px-8 py-10 sm:py-14 md:py-16 lg:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
           {/* Brand Column */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
-            className="lg:col-span-2"
           >
             {/* Logo */}
             <Link
@@ -151,42 +139,11 @@ export default function Footer() {
             </div>
           </motion.div>
 
-          {/* Quick Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <h3
-              className="text-cream font-bold mb-5"
-              style={{ fontFamily: "var(--font-cinzel)" }}
-            >
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
-              {quickLinks.map((link, index) => (
-                <motion.li
-                  key={index}
-                  whileHover={{ x: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <Link
-                    href={link.href}
-                    className="text-cream-muted hover:text-rose transition-colors inline-flex items-center gap-2 text-sm group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-rose/50 group-hover:bg-rose transition-colors" />
-                    {link.label}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-
           {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
             <h3
               className="text-cream font-bold mb-5"
@@ -227,6 +184,32 @@ export default function Footer() {
               <p className="text-cream-muted text-sm">
                 Mon - Sun: 9:00 AM - 9:00 PM
               </p>
+            </div>
+          </motion.div>
+
+          {/* Google Map */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h3
+              className="text-cream font-bold mb-5"
+              style={{ fontFamily: "var(--font-cinzel)" }}
+            >
+              Find Us
+            </h3>
+            <div className="rounded-xl overflow-hidden border border-rose/10 shadow-lg h-64 sm:h-80 md:h-96 lg:h-[450px] xl:h-[500px] w-full">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3673.1642523130936!2d72.59182568667045!3d22.98098676426952!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e85f3d78a29f1%3A0xccee1c13d2f52326!2sGanesh%20Park%20Society%2C%20Rajeswari%20Society%2C%20Isanpur%2C%20Ahmedabad%2C%20Gujarat%20382443!5e0!3m2!1sen!2sin!4v1770628794695!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+              />
             </div>
           </motion.div>
         </div>

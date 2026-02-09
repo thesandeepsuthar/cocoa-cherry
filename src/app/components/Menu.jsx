@@ -639,7 +639,7 @@ export default function Menu({ isHomePage = false }) {
       if (sortedCategories.length > 0) {
         const firstCategory = sortedCategories[0];
         return {
-          [firstCategory[0]]: firstCategory[1].slice(0, 2)
+          [firstCategory[0]]: firstCategory[1].slice(0, 4)
         };
       }
       return {};
@@ -843,34 +843,36 @@ export default function Menu({ isHomePage = false }) {
         )}
 
         {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.5 }}
-          className="text-center mt-8 sm:mt-12"
-        >
-          <p className="text-cream-muted text-xs sm:text-sm mb-3 sm:mb-4 px-4 sm:px-0">
-            Don&apos;t see your favorite flavor? We can create custom flavors too!
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <motion.a
-              href="#order"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-rose/50 text-cream font-bold text-sm sm:text-base hover:bg-rose/10 hover:border-rose transition-all"
-            >
-              <span className="material-symbols-outlined text-base sm:text-lg">add_circle</span>
-              <span>Request Custom Flavor</span>
-            </motion.a>
-            <Link
-              href="/menu"
-              className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm sm:text-base shadow-lg shadow-rose/20 hover:shadow-rose/40 transition-all"
-            >
-              <span className="material-symbols-outlined text-lg sm:text-xl">restaurant_menu</span>
-              <span>View Full Menu</span>
-            </Link>
-          </div>
-        </motion.div>
+        {isHomePage && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.5 }}
+            className="text-center mt-8 sm:mt-12"
+          >
+            <p className="text-cream-muted text-xs sm:text-sm mb-3 sm:mb-4 px-4 sm:px-0">
+              Don&apos;t see your favorite flavor? We can create custom flavors too!
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <motion.a
+                href="#order"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-rose/50 text-cream font-bold text-sm sm:text-base hover:bg-rose/10 hover:border-rose transition-all"
+              >
+                <span className="material-symbols-outlined text-base sm:text-lg">add_circle</span>
+                <span>Request Custom Flavor</span>
+              </motion.a>
+              <Link
+                href="/menu"
+                className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm sm:text-base shadow-lg shadow-rose/20 hover:shadow-rose/40 transition-all"
+              >
+                <span className="material-symbols-outlined text-lg sm:text-xl">restaurant_menu</span>
+                <span>View Full Menu</span>
+              </Link>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Quick View Modal */}
