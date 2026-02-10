@@ -585,7 +585,7 @@ export default function Hero() {
               </motion.div>
 
               {/* Trust indicators */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -618,7 +618,7 @@ export default function Hero() {
                     500+ Happy Customers
                   </p>
                 </div>
-              </motion.div>
+              </motion.div> */}
             </div>
 
             {/* Right: Image */}
@@ -747,7 +747,7 @@ export default function Hero() {
         </div>
 
         {/* Scroll indicator */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
@@ -767,7 +767,7 @@ export default function Hero() {
               transition={{ duration: 1.5, repeat: Infinity }}
             />
           </motion.div>
-        </motion.div>
+        </motion.div> */}
       </section>
 
       {/* Order Form Modal */}
