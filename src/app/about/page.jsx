@@ -208,7 +208,7 @@ export default function AboutPage() {
                           "Baking is not just my profession—it's my passion. I believe that every cake tells a story, 
                           and I'm honored to be part of your special moments."
                         </p>
-                        <p className="text-rose font-bold mt-3">— Jhanvi Thakker, Founder</p>
+                        <p className="text-rose font-bold mt-3">— Jhanvi Thakar, Founder</p>
                       </div>
                     </div>
                   </div>
@@ -453,7 +453,7 @@ export default function AboutPage() {
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-gold/20 group-hover:border-gold/40 transition-all shadow-lg group-hover:shadow-gold/20">
                       <Image
                         src="/certificate.png"
-                        alt="Bakery Masterclass Certificate - Jhanvi Thakker - Ahmedabad Management Association"
+                        alt="Bakery Masterclass Certificate - Jhanvi Thakar - Ahmedabad Management Association"
                         fill
                         className="object-cover"
                         unoptimized
