@@ -56,6 +56,7 @@ const aboutPageSchema = {
 
 export default function AboutPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
 
   // Handle ESC key to close modal
   useEffect(() => {
@@ -71,6 +72,11 @@ export default function AboutPage() {
       document.body.style.overflow = 'unset';
     };
   }, [isModalOpen]);
+
+  const openModal = (imageSrc) => {
+    setModalImage(imageSrc);
+    setIsModalOpen(true);
+  };
 
   return (
     <>
@@ -139,6 +145,106 @@ export default function AboutPage() {
                     hygiene and quality. Every order is prepared with love, attention to detail, 
                     and a commitment to making your special moments even more memorable.
                   </p>
+                </div>
+              </motion.div>
+
+              {/* Founder's Story */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="card-noir rounded-2xl p-5 sm:p-6 md:p-8 lg:p-10 border-l-4 border-rose"
+              >
+                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center">
+                  {/* Founder Info */}
+                  <div className="flex-1">
+                    <h2
+                      className="text-xl sm:text-2xl md:text-3xl font-bold text-rose mb-4 sm:mb-6"
+                      style={{ fontFamily: 'var(--font-cinzel)' }}
+                    >
+                      Meet Jhanvi Thakar
+                    </h2>
+                    <div className="space-y-3 sm:space-y-4 text-cream-muted leading-relaxed text-sm sm:text-base">
+                      <p>
+                        Hello! I'm Jhanvi Thakar, the founder and baker behind Cocoa&Cherry. 
+                        My journey into the world of baking is a blend of passion, education, and dedication.
+                      </p>
+                      
+                      <div className="bg-noir/50 rounded-xl p-4 sm:p-5 border border-rose/20">
+                        <h3 className="text-base sm:text-lg font-bold text-cream mb-3 flex items-center gap-2">
+                          <span className="material-symbols-outlined text-rose">school</span>
+                          Education & Expertise
+                        </h3>
+                        <ul className="space-y-2 text-xs sm:text-sm">
+                          <li className="flex items-start gap-2">
+                            <span className="text-rose mt-1">✓</span>
+                            <span><strong>Bakery Masterclass Certificate</strong> - Ahmedabad Management Association (December 2023 - January 2024)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-rose mt-1">✓</span>
+                            <span><strong>BBA in Marketing</strong> - Indus University, Ahmedabad</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-rose mt-1">✓</span>
+                            <span><strong>MBA in Marketing</strong> - Indus University, Ahmedabad</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <p>
+                        My background in business and marketing, combined with my professional bakery training, 
+                        allows me to create not just delicious cakes, but also memorable experiences for every customer.
+                      </p>
+
+                      <p>
+                        Today, I run Cocoa&Cherry as a passion project, dedicating myself to crafting premium, 
+                        handcrafted cakes that bring joy to celebrations across Ahmedabad. Every cake is a reflection 
+                        of my commitment to quality, creativity, and customer satisfaction.
+                      </p>
+
+                      <div className="bg-gradient-to-r from-rose/10 to-gold/10 rounded-xl p-4 sm:p-5 border border-rose/20 italic">
+                        <p className="text-cream">
+                          "Baking is not just my profession—it's my passion. I believe that every cake tells a story, 
+                          and I'm honored to be part of your special moments."
+                        </p>
+                        <p className="text-rose font-bold mt-3">— Jhanvi Thakker, Founder</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="w-full md:w-auto grid grid-cols-3 md:grid-cols-1 gap-3 sm:gap-4">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      className="card-noir rounded-xl p-4 sm:p-5 text-center"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold gradient-text mb-2">2+</div>
+                      <p className="text-xs sm:text-sm text-cream-muted">Years of Experience</p>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 }}
+                      className="card-noir rounded-xl p-4 sm:p-5 text-center"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold gradient-text mb-2">50+</div>
+                      <p className="text-xs sm:text-sm text-cream-muted">Happy Customers</p>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 }}
+                      className="card-noir rounded-xl p-4 sm:p-5 text-center"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold gradient-text mb-2">∞</div>
+                      <p className="text-xs sm:text-sm text-cream-muted">Passion & Love</p>
+                    </motion.div>
+                  </div>
                 </div>
               </motion.div>
 
@@ -290,13 +396,64 @@ export default function AboutPage() {
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => openModal('/fssai-certificate.jpg')}
                     className="relative w-full max-w-md cursor-pointer group"
                   >
                     <div className="relative aspect-[3/4] rounded-xl overflow-hidden border-2 border-rose/20 group-hover:border-rose/40 transition-all shadow-lg group-hover:shadow-rose/20">
                       <Image
                         src="/fssai-certificate.jpg"
                         alt="FSSAI Registration Certificate - Cocoa&Cherry"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-noir/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
+                        <span className="text-cream text-sm font-medium flex items-center gap-2">
+                          <span className="material-symbols-outlined text-lg">zoom_in</span>
+                          Click to view full certificate
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+              {/* Bakery Masterclass Certificate Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="card-noir rounded-2xl p-5 sm:p-6 md:p-8 lg:p-10"
+              >
+                <div className="text-center mb-6 sm:mb-8">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gold/20 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <span className="material-symbols-outlined text-3xl sm:text-4xl text-gold">
+                      award
+                    </span>
+                  </div>
+                  <h2
+                    className="text-xl sm:text-2xl md:text-3xl font-bold text-gold mb-3 sm:mb-4"
+                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                  >
+                    Bakery Masterclass Certificate
+                  </h2>
+                  <p className="text-cream-muted text-sm sm:text-base max-w-2xl mx-auto">
+                    Professional Bakery Masterclass conducted by Ahmedabad Management Association 
+                    (December 2023 - January 2024). Click to view the full certificate.
+                  </p>
+                </div>
+                
+                <div className="flex justify-center">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => openModal('/certificate.png')}
+                    className="relative w-full max-w-md cursor-pointer group"
+                  >
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-gold/20 group-hover:border-gold/40 transition-all shadow-lg group-hover:shadow-gold/20">
+                      <Image
+                        src="/certificate.png"
+                        alt="Bakery Masterclass Certificate - Jhanvi Thakker - Ahmedabad Management Association"
                         fill
                         className="object-cover"
                         unoptimized
@@ -345,8 +502,8 @@ export default function AboutPage() {
             >
               <div className="relative w-full h-full rounded-xl overflow-hidden border-2 border-rose/20 shadow-2xl">
                 <Image
-                  src="/fssai-certificate.jpg"
-                  alt="FSSAI Registration Certificate - Cocoa&Cherry - Full View"
+                  src={modalImage || '/fssai-certificate.jpg'}
+                  alt="Certificate - Full View"
                   fill
                   className="object-contain"
                   unoptimized
