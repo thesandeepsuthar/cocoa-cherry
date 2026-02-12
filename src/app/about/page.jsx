@@ -86,7 +86,7 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageSchema) }}
       />
       <Navigation />
-      <main className="min-h-screen bg-noir pt-8 sm:pt-20 md:pt-24" itemScope itemType="https://schema.org/AboutPage">
+      <main className="min-h-screen bg-noir " itemScope itemType="https://schema.org/AboutPage">
         {/* Hero Section */}
         <section className="relative pb-6 sm:pb-8 md:pb-12 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-rose/10 via-transparent to-noir" />

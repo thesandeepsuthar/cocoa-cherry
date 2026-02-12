@@ -73,7 +73,7 @@ export default function MenuPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(menuPageSchema) }}
       />
       <Navigation />
-      <main className="min-h-screen bg-noir pt-8 sm:pt-20 md:pt-24" itemScope itemType="https://schema.org/Menu">
+      <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/Menu">
         <Menu isHomePage={false} />
       </main>
       <Footer />

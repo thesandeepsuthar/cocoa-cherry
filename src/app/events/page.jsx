@@ -55,7 +55,7 @@ export default function EventsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsPageSchema) }}
       />
       <Navigation />
-      <main className="min-h-screen bg-noir pt-8 sm:pt-20 md:pt-24" itemScope itemType="https://schema.org/CollectionPage">
+      <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/CollectionPage">
         <Events isHomePage={false} />
       </main>
       <Footer />

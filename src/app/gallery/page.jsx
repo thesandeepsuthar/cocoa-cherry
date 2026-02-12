@@ -50,7 +50,7 @@ export default function GalleryPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(galleryPageSchema) }}
       />
       <Navigation />
-      <main className="min-h-screen bg-noir pt-8 sm:pt-20 md:pt-24" itemScope itemType="https://schema.org/ImageGallery">
+      <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/ImageGallery">
         <Gallery isHomePage={false} />
       </main>
       <Footer />
