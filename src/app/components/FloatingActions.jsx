@@ -14,17 +14,29 @@ export default function FloatingActions() {
   const pathLength = useTransform(progressValue, [0, 100], [0, 1]);
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      
-      setScrollProgress(progress);
-      progressValue.set(progress);
-      setShowBackToTop(scrollTop > 400);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          
+          setScrollProgress(progress);
+          progressValue.set(progress);
+          setShowBackToTop(scrollTop > 400);
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // Initial calculation
+    handleScroll();
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [progressValue]);
 
@@ -60,9 +72,10 @@ export default function FloatingActions() {
     <>
       {/* Scroll Progress Bar - Top */}
       <motion.div 
-        className="fixed top-0 left-0 right-0 h-1 bg-noir/50 z-[100]"
+        className="fixed top-0 left-0 right-0 h-1 bg-noir/50 z-[100] pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        style={{ willChange: 'opacity' }}
       >
         <motion.div 
           className="h-full rounded-r-full"
@@ -70,6 +83,7 @@ export default function FloatingActions() {
             width: `${scrollProgress}%`,
             background: 'linear-gradient(90deg, #e4a0a0, #d4a574, #e4a0a0)',
             backgroundSize: '200% 100%',
+            willChange: 'width',
           }}
           animate={{
             backgroundPosition: ['0% 0%', '100% 0%', '0% 0%'],
@@ -83,7 +97,7 @@ export default function FloatingActions() {
       </motion.div>
 
       {/* Floating Buttons Container */}
-      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-3 md:gap-4">
+      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-3 md:gap-4" style={{ willChange: 'transform' }}>
         
         {/* Back to Top Button with Circular Progress */}
         <AnimatePresence>
@@ -305,6 +319,7 @@ export default function FloatingActions() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 1 }}
         className="fixed bottom-4 left-4 md:bottom-6 md:left-6 z-50"
+        style={{ willChange: 'transform' }}
       >
         <motion.a
           href="tel:+919712752469"
