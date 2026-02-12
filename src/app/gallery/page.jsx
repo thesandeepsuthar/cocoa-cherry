@@ -12,17 +12,52 @@ const galleryPageSchema = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/gallery/#webpage`,
+      "url": `${siteUrl}/gallery`,
+      "name": "Cake Gallery - Custom Cakes Portfolio Ahmedabad | Cocoa&Cherry",
+      "description": "View our portfolio of custom cakes, wedding cakes, birthday cakes, and designer cakes created in Ahmedabad. Premium quality with Belgian chocolate. Real cakes, real celebrations.",
+      "inLanguage": "en-IN",
+      "isPartOf": {
+        "@id": `${siteUrl}/#website`
+      },
+      "about": {
+        "@id": `${siteUrl}/#bakery`
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": `${siteUrl}/logo.svg`,
+        "width": 512,
+        "height": 512
+      },
+      "breadcrumb": {
+        "@id": `${siteUrl}/gallery/#breadcrumb`
+      },
+      "mainEntity": {
+        "@id": `${siteUrl}/gallery/#gallery`
+      }
+    },
+    {
       "@type": "ImageGallery",
+      "@id": `${siteUrl}/gallery/#gallery`,
       "name": "Cocoa&Cherry Cake Gallery - Custom Cakes Portfolio",
       "description": "View our portfolio of custom cakes, wedding cakes, birthday cakes, and designer cakes created in Ahmedabad. Premium quality with Belgian chocolate.",
       "url": `${siteUrl}/gallery`,
       "about": {
         "@type": "Bakery",
-        "name": "Cocoa&Cherry"
+        "@id": `${siteUrl}/#bakery`,
+        "name": "Cocoa&Cherry",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Ahmedabad",
+          "addressRegion": "Gujarat",
+          "addressCountry": "IN"
+        }
       }
     },
     {
       "@type": "BreadcrumbList",
+      "@id": `${siteUrl}/gallery/#breadcrumb`,
       "itemListElement": [
         {
           "@type": "ListItem",

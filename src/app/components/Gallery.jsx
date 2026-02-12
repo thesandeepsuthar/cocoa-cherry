@@ -355,14 +355,26 @@ export default function Gallery({ isHomePage = false }) {
               </span>
             </motion.div>
 
-            <h2 
-              id="gallery-heading"
-              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
-              style={{ fontFamily: 'var(--font-cinzel)' }}
-            >
-              <span className="text-cream">Cake </span>
-              <span className="gradient-text">Gallery</span>
-            </h2>
+            {isHomePage ? (
+              <h2 
+                id="gallery-heading"
+                className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                <span className="text-cream">Cake </span>
+                <span className="gradient-text">Gallery</span>
+              </h2>
+            ) : (
+              <h1 
+                id="gallery-heading"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+                itemProp="name"
+              >
+                <span className="text-cream">Cake </span>
+                <span className="gradient-text">Gallery</span>
+              </h1>
+            )}
             
             <p className="text-cream-muted text-lg italic mb-2">
               Real Cakes. Real Celebrations.

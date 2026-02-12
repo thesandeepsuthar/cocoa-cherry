@@ -420,13 +420,24 @@ export default function Events({ isHomePage = false }) {
             </span>
           </motion.div>
 
-          <h2 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
-          >
-            <span className="text-cream">Our </span>
-            <span className="gradient-text">Events</span>
-          </h2>
+          {isHomePage ? (
+            <h2 
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              <span className="text-cream">Our </span>
+              <span className="gradient-text">Events</span>
+            </h2>
+          ) : (
+            <h1 
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+              itemProp="name"
+            >
+              <span className="text-cream">Our </span>
+              <span className="gradient-text">Events</span>
+            </h1>
+          )}
           
           <p className="text-cream-muted text-sm sm:text-base md:text-lg max-w-xl mx-auto px-4 sm:px-0">
             We bring our sweet treats to schools, colleges, and community events. 

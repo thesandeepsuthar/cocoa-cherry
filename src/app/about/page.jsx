@@ -14,12 +14,40 @@ const aboutPageSchema = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/about/#webpage`,
+      "url": `${siteUrl}/about`,
+      "name": "About Cocoa&Cherry - FSSAI Certified Home Bakery Ahmedabad | Our Story",
+      "description": "Learn about Cocoa&Cherry, a premium FSSAI certified home bakery in Ahmedabad. Founded by Jhanvi Thakar, we craft custom cakes with Belgian chocolate and premium ingredients. 2+ years of experience.",
+      "inLanguage": "en-IN",
+      "isPartOf": {
+        "@id": `${siteUrl}/#website`
+      },
+      "about": {
+        "@id": `${siteUrl}/#bakery`
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": `${siteUrl}/logo.svg`,
+        "width": 512,
+        "height": 512
+      },
+      "breadcrumb": {
+        "@id": `${siteUrl}/about/#breadcrumb`
+      },
+      "mainEntity": {
+        "@id": `${siteUrl}/about/#aboutPage`
+      }
+    },
+    {
       "@type": "AboutPage",
+      "@id": `${siteUrl}/about/#aboutPage`,
       "name": "About Cocoa&Cherry - FSSAI Certified Home Bakery Ahmedabad",
       "description": "Learn about Cocoa&Cherry, a premium FSSAI certified home bakery in Ahmedabad. We craft custom cakes with Belgian chocolate and premium ingredients.",
       "url": `${siteUrl}/about`,
       "mainEntity": {
         "@type": "Organization",
+        "@id": `${siteUrl}/#bakery`,
         "name": "Cocoa&Cherry",
         "description": "Premium custom cakes and home bakery in Ahmedabad, Gujarat. FSSAI certified with 2+ years of experience.",
         "address": {
@@ -31,11 +59,16 @@ const aboutPageSchema = {
           "addressCountry": "IN"
         },
         "telephone": "+91-97127-52469",
-        "email": "cocoacheery307@gmail.com"
+        "email": "cocoacheery307@gmail.com",
+        "founder": {
+          "@type": "Person",
+          "name": "Jhanvi Thakar"
+        }
       }
     },
     {
       "@type": "BreadcrumbList",
+      "@id": `${siteUrl}/about/#breadcrumb`,
       "itemListElement": [
         {
           "@type": "ListItem",
@@ -100,6 +133,7 @@ export default function AboutPage() {
               <h1
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-cream mb-4 sm:mb-6"
                 style={{ fontFamily: 'var(--font-cinzel)' }}
+                itemProp="name"
               >
                 Our Story
               </h1>

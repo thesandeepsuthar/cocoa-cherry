@@ -13,7 +13,34 @@ const contactPageSchema = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/contact/#webpage`,
+      "url": `${siteUrl}/contact`,
+      "name": "Contact Cocoa&Cherry - Custom Cakes Ahmedabad | Order Now",
+      "description": "Get in touch with Cocoa&Cherry for custom cake orders in Ahmedabad. Call +91 97127 52469, WhatsApp us for instant service, or fill out our contact form. Available 9 AM - 9 PM.",
+      "inLanguage": "en-IN",
+      "isPartOf": {
+        "@id": `${siteUrl}/#website`
+      },
+      "about": {
+        "@id": `${siteUrl}/#bakery`
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": `${siteUrl}/logo.svg`,
+        "width": 512,
+        "height": 512
+      },
+      "breadcrumb": {
+        "@id": `${siteUrl}/contact/#breadcrumb`
+      },
+      "mainEntity": {
+        "@id": `${siteUrl}/contact/#contactPage`
+      }
+    },
+    {
       "@type": "ContactPage",
+      "@id": `${siteUrl}/contact/#contactPage`,
       "name": "Contact Cocoa&Cherry - Custom Cakes Ahmedabad",
       "description": "Get in touch with Cocoa&Cherry for custom cake orders in Ahmedabad. Call +91 97127 52469 or WhatsApp us for instant service.",
       "url": `${siteUrl}/contact`,
@@ -23,7 +50,10 @@ const contactPageSchema = {
         "contactType": "Customer Service",
         "email": "cocoacheery307@gmail.com",
         "availableLanguage": ["English", "Hindi", "Gujarati"],
-        "areaServed": "Ahmedabad",
+        "areaServed": {
+          "@type": "City",
+          "name": "Ahmedabad"
+        },
         "hoursAvailable": {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -34,6 +64,7 @@ const contactPageSchema = {
     },
     {
       "@type": "BreadcrumbList",
+      "@id": `${siteUrl}/contact/#breadcrumb`,
       "itemListElement": [
         {
           "@type": "ListItem",
@@ -114,6 +145,7 @@ export default function ContactPage() {
               <h1
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-cream mb-4 sm:mb-6"
                 style={{ fontFamily: 'var(--font-cinzel)' }}
+                itemProp="name"
               >
                 Get in Touch
               </h1>

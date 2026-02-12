@@ -13,15 +13,49 @@ const servicesPageSchema = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/services/#webpage`,
+      "url": `${siteUrl}/services`,
+      "name": "Cake Services in Ahmedabad - Custom Cakes, Wedding Cakes & Same Day Delivery | Cocoa&Cherry",
+      "description": "Premium custom cake services including birthday cakes, wedding cakes, designer cakes, same-day delivery, and eggless options in Ahmedabad. FSSAI certified. Starting from ₹850/kg.",
+      "inLanguage": "en-IN",
+      "isPartOf": {
+        "@id": `${siteUrl}/#website`
+      },
+      "about": {
+        "@id": `${siteUrl}/#bakery`
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": `${siteUrl}/logo.svg`,
+        "width": 512,
+        "height": 512
+      },
+      "breadcrumb": {
+        "@id": `${siteUrl}/services/#breadcrumb`
+      },
+      "mainEntity": {
+        "@id": `${siteUrl}/services/#service`
+      }
+    },
+    {
       "@type": "Service",
+      "@id": `${siteUrl}/services/#service`,
       "serviceType": "Custom Cake Services",
       "name": "Cake Services in Ahmedabad - Cocoa&Cherry",
       "description": "Premium custom cake services including birthday cakes, wedding cakes, designer cakes, same-day delivery, and eggless options in Ahmedabad.",
       "url": `${siteUrl}/services`,
       "provider": {
         "@type": "Bakery",
+        "@id": `${siteUrl}/#bakery`,
         "name": "Cocoa&Cherry",
-        "telephone": "+91-97127-52469"
+        "telephone": "+91-97127-52469",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Ahmedabad",
+          "addressRegion": "Gujarat",
+          "addressCountry": "IN"
+        }
       },
       "areaServed": {
         "@type": "City",
@@ -36,7 +70,7 @@ const servicesPageSchema = {
             "itemOffered": {
               "@type": "Service",
               "name": "Custom Cakes",
-              "description": "Personalized cakes designed to match your vision"
+              "description": "Personalized cakes designed to match your vision. Starting from ₹850/kg."
             }
           },
           {
@@ -44,7 +78,7 @@ const servicesPageSchema = {
             "itemOffered": {
               "@type": "Service",
               "name": "Wedding Cakes",
-              "description": "Elegant multi-tier wedding cakes"
+              "description": "Elegant multi-tier wedding cakes with custom pricing."
             }
           },
           {
@@ -52,7 +86,7 @@ const servicesPageSchema = {
             "itemOffered": {
               "@type": "Service",
               "name": "Same Day Delivery",
-              "description": "Fast and reliable delivery service across Ahmedabad"
+              "description": "Fast and reliable delivery service across Ahmedabad."
             }
           }
         ]
@@ -60,6 +94,7 @@ const servicesPageSchema = {
     },
     {
       "@type": "BreadcrumbList",
+      "@id": `${siteUrl}/services/#breadcrumb`,
       "itemListElement": [
         {
           "@type": "ListItem",
@@ -146,6 +181,7 @@ export default function ServicesPage() {
               <h1
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-cream mb-4 sm:mb-6"
                 style={{ fontFamily: 'var(--font-cinzel)' }}
+                itemProp="name"
               >
                 Our Services
               </h1>

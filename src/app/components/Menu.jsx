@@ -736,13 +736,24 @@ export default function Menu({ isHomePage = false }) {
             </span>
           </motion.div>
 
-          <h2 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
-          >
-            <span className="text-cream">Signature </span>
-            <span className="gradient-text">Flavors</span>
-          </h2>
+          {isHomePage ? (
+            <h2 
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              <span className="text-cream">Signature </span>
+              <span className="gradient-text">Flavors</span>
+            </h2>
+          ) : (
+            <h1 
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+              itemProp="name"
+            >
+              <span className="text-cream">Signature </span>
+              <span className="gradient-text">Flavors</span>
+            </h1>
+          )}
           
           <p className="text-cream-muted text-sm sm:text-base md:text-lg px-4 sm:px-0 mb-4">
             Tap items to add to your order. Select multiple items and proceed when ready!
