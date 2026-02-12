@@ -81,6 +81,17 @@ export default function sitemap() {
       },
     },
     {
+      url: `${baseUrl}/reviews`,
+      lastModified,
+      changeFrequency: 'daily',
+      priority: 0.9,
+      alternates: {
+        languages: {
+          'en-IN': `${baseUrl}/reviews`,
+        },
+      },
+    },
+    {
       url: `${baseUrl}/terms-and-conditions`,
       lastModified,
       changeFrequency: 'yearly',
