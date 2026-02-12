@@ -2720,6 +2720,18 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    review: "",
+    rating: 5,
+    cakeType: "",
+    isApproved: true,
+    isFeatured: false,
+  });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchItems = useCallback(async () => {
     try {
@@ -2736,6 +2748,57 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name?.trim()) newErrors.name = "Name is required";
+    if (!formData.email?.trim()) newErrors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      newErrors.email = "Valid email is required";
+    if (!formData.review?.trim()) newErrors.review = "Review is required";
+    if (!formData.rating) newErrors.rating = "Rating is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/reviews?key=${adminKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchItems();
+        closeForm();
+        showToast("Review added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
+    } catch (error) {
+      showToast("Failed to save", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setFormData({
+      name: "",
+      email: "",
+      review: "",
+      rating: 5,
+      cakeType: "",
+      isApproved: true,
+      isFeatured: false,
+    });
+    setErrors({});
+  };
 
   const handleAction = async (id, action, value) => {
     try {
@@ -2787,19 +2850,32 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
   return (
     <div>
       <div className="flex flex-col gap-3 mb-4 sm:mb-6">
-        <div>
-          <h2
-            className="text-xl sm:text-2xl font-bold text-cream"
-            style={{ fontFamily: "var(--font-cinzel)" }}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <h2
+              className="text-xl sm:text-2xl font-bold text-cream"
+              style={{ fontFamily: "var(--font-cinzel)" }}
+            >
+              Reviews ({items.length})
+            </h2>
+            {pendingCount > 0 && (
+              <p className="text-xs sm:text-sm text-orange-400 flex items-center gap-1 mt-1">
+                <span className="material-symbols-outlined text-sm">warning</span>
+                {pendingCount} pending
+              </p>
+            )}
+          </div>
+          <button
+            onClick={() => {
+              closeForm();
+              setShowForm(true);
+            }}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg hover:opacity-90 
+                           text-sm font-medium shadow-md bg-gradient-to-r from-rose to-rose-dark text-noir"
           >
-            Reviews ({items.length})
-          </h2>
-          {pendingCount > 0 && (
-            <p className="text-xs sm:text-sm text-orange-400 flex items-center gap-1 mt-1">
-              <span className="material-symbols-outlined text-sm">warning</span>
-              {pendingCount} pending
-            </p>
-          )}
+            <span className="material-symbols-outlined text-lg">add</span>
+            Add Review
+          </button>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {["all", "pending", "approved"].map((f) => (
@@ -2817,6 +2893,127 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
           ))}
         </div>
       </div>
+
+      {/* Add Review Form Modal */}
+      <AnimatePresence>
+        {showForm && (
+          <FormModal
+            title="Add Review"
+            onClose={closeForm}
+          >
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <InputField
+                label="Customer Name"
+                value={formData.name}
+                onChange={(e) => {
+                  setFormData({ ...formData, name: e.target.value });
+                  setErrors({ ...errors, name: "" });
+                }}
+                placeholder="John Doe"
+                required
+                error={errors.name}
+              />
+
+              <InputField
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => {
+                  setFormData({ ...formData, email: e.target.value });
+                  setErrors({ ...errors, email: "" });
+                }}
+                placeholder="john@example.com"
+                required
+                error={errors.email}
+              />
+
+              <div>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                  Rating <span className="text-rose">*</span>
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, rating: star })}
+                      className="text-2xl transition-colors"
+                      style={{
+                        color: star <= formData.rating ? "#d4a574" : "#ffffff40",
+                      }}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+                <FormError error={errors.rating} />
+              </div>
+
+              <div>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                  Review <span className="text-rose">*</span>
+                </label>
+                <textarea
+                  value={formData.review}
+                  onChange={(e) => {
+                    setFormData({ ...formData, review: e.target.value });
+                    setErrors({ ...errors, review: "" });
+                  }}
+                  className={`w-full rounded-lg border px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40 
+                              ${errors.review ? "border-red-400" : "border-cream/10 focus:border-rose"}`}
+                  rows={4}
+                  placeholder="Share your experience with our cakes..."
+                />
+                <FormError error={errors.review} />
+              </div>
+
+              <InputField
+                label="Cake Type (Optional)"
+                value={formData.cakeType}
+                onChange={(e) =>
+                  setFormData({ ...formData, cakeType: e.target.value })
+                }
+                placeholder="e.g., Chocolate Truffle, Cheesecake"
+              />
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.isApproved}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isApproved: e.target.checked })
+                    }
+                    className="w-4 h-4 rounded"
+                  />
+                  <span className="text-sm text-cream-muted">
+                    Approve this review immediately
+                  </span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.isFeatured}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isFeatured: e.target.checked })
+                    }
+                    className="w-4 h-4 rounded"
+                  />
+                  <span className="text-sm text-cream-muted">
+                    Feature this review on homepage
+                  </span>
+                </label>
+              </div>
+
+              <FormButtons
+                onCancel={closeForm}
+                submitting={submitting}
+                submitText="Add Review"
+              />
+            </form>
+          </FormModal>
+        )}
+      </AnimatePresence>
 
       <div className="space-y-3 sm:space-y-4">
         {filteredItems.map((item) => (
