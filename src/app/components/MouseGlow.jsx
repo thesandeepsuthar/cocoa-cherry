@@ -30,17 +30,8 @@ export default function MouseGlow() {
     const mediaQuery = window.matchMedia('(hover: hover)');
     if (!mediaQuery.matches) return;
 
-    let ticking = false;
-    
-    const throttledMouseMove = (e) => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          handleMouseMove(e);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
+    window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
 
     // Track when hovering over interactive elements
     const handleInteractiveHover = (e) => {
@@ -49,12 +40,10 @@ export default function MouseGlow() {
       setIsHoveringInteractive(isInteractive);
     };
 
-    window.addEventListener('mousemove', throttledMouseMove, { passive: true });
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseover', handleInteractiveHover, { passive: true });
+    document.addEventListener('mouseover', handleInteractiveHover);
 
     return () => {
-      window.removeEventListener('mousemove', throttledMouseMove);
+      window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseover', handleInteractiveHover);
     };
@@ -75,7 +64,6 @@ export default function MouseGlow() {
           y: glowY,
           translateX: '-50%',
           translateY: '-50%',
-          willChange: 'transform',
         }}
         animate={{
           opacity: isVisible ? (isHoveringInteractive ? 0.4 : 0.15) : 0,
@@ -100,7 +88,6 @@ export default function MouseGlow() {
           y: glowY,
           translateX: '-50%',
           translateY: '-50%',
-          willChange: 'transform',
         }}
         animate={{
           opacity: isVisible ? (isHoveringInteractive ? 0.6 : 0.2) : 0,
@@ -124,7 +111,6 @@ export default function MouseGlow() {
           y: glowY,
           translateX: '-50%',
           translateY: '-50%',
-          willChange: 'transform',
         }}
         animate={{
           opacity: isVisible ? 1 : 0,

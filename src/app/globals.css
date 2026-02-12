@@ -67,10 +67,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  /* Prevent flickering during scroll */
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
 }
 
 /* Headings with display font */
@@ -725,29 +721,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .section-gradient {
   background: linear-gradient(180deg, var(--color-noir) 0%, var(--color-noir-light) 50%, var(--color-noir) 100%);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   SCROLL PERFORMANCE OPTIMIZATIONS
-═══════════════════════════════════════════════════════════ */
-
-/* Optimize fixed/sticky elements to prevent flickering */
-.fixed,
-[class*="fixed"] {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  perspective: 1000;
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Optimize animations during scroll */
-@media (prefers-reduced-motion: no-preference) {
-  * {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
 }
 
 /* ═══════════════════════════════════════════════════════════
