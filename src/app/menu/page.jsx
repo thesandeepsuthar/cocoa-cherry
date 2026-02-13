@@ -102,6 +102,8 @@ export default function MenuPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(menuPageSchema) }}
       />
+      {/* Canonical URL */}
+      <link rel="canonical" href={`${siteUrl}/menu`} />
       <Navigation />
       <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/Menu">
         <Menu isHomePage={false} />

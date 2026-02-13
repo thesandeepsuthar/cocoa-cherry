@@ -85,6 +85,8 @@ export default function EventsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsPageSchema) }}
       />
+      {/* Canonical URL */}
+      <link rel="canonical" href={`${siteUrl}/events`} />
       <Navigation />
       <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/CollectionPage">
         <Events isHomePage={false} />

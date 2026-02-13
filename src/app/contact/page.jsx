@@ -130,6 +130,8 @@ export default function ContactPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
       />
+      {/* Canonical URL */}
+      <link rel="canonical" href={`${siteUrl}/contact`} />
       <Navigation />
       <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/ContactPage">
         {/* Hero Section */}

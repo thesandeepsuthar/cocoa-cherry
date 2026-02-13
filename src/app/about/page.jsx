@@ -118,6 +118,8 @@ export default function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageSchema) }}
       />
+      {/* Canonical URL */}
+      <link rel="canonical" href={`${siteUrl}/about`} />
       <Navigation />
       <main className="min-h-screen bg-noir " itemScope itemType="https://schema.org/AboutPage">
         {/* Hero Section */}

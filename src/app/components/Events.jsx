@@ -139,7 +139,7 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
                   <div key={idx} className="flex-shrink-0 w-full h-full relative">
                     <img
                       src={image}
-                      alt={`Event image ${idx + 1}`}
+                      alt={`Cocoa&Cherry cake stall at Ahmedabad food festival - Event ${idx + 1} - Premium custom cakes display`}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent" />
@@ -272,6 +272,8 @@ function EventCard({ event, onClick, index }) {
             <div
               className="absolute inset-0 bg-cover bg-center transform group-hover:scale-110 transition-transform duration-700"
               style={{ backgroundImage: `url('${event.coverImage}')` }}
+              aria-label={`${event.title || 'Event'} - Cocoa&Cherry cake stall at ${event.location || 'Ahmedabad'} - Premium custom cakes display`}
+              role="img"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-rose/20 to-gold/20 flex items-center justify-center">

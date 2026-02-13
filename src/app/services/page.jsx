@@ -166,6 +166,8 @@ export default function ServicesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesPageSchema) }}
       />
+      {/* Canonical URL */}
+      <link rel="canonical" href={`${siteUrl}/services`} />
       <Navigation />
       <main className="min-h-screen bg-noir " itemScope itemType="https://schema.org/Service">
         {/* Hero Section */}

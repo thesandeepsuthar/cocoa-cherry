@@ -63,6 +63,8 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema) }}
       />
+      {/* Canonical URL */}
+      <link rel="canonical" href={siteUrl} />
       <MouseGlow />
       <main className="relative" itemScope itemType="https://schema.org/WebPage">
         <Navigation />

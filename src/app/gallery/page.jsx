@@ -84,6 +84,8 @@ export default function GalleryPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(galleryPageSchema) }}
       />
+      {/* Canonical URL */}
+      <link rel="canonical" href={`${siteUrl}/gallery`} />
       <Navigation />
       <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/ImageGallery">
         <Gallery isHomePage={false} />

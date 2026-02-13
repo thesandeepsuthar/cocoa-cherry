@@ -151,6 +151,8 @@ export default function TermsAndConditions() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(termsPageSchema) }}
       />
+      {/* Canonical URL */}
+      <link rel="canonical" href={`${siteUrl}/terms-and-conditions`} />
       {/* Background decorations */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-rose/5 rounded-full blur-[120px]" />
