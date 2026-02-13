@@ -43,7 +43,7 @@ export default function Footer() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 md:px-8 py-10 sm:py-14 md:py-16 lg:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           {/* Brand Column */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -139,11 +139,90 @@ export default function Footer() {
             </div>
           </motion.div>
 
-          {/* Contact Info */}
+          {/* Quick Links - Important for SEO Sitelinks */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h3
+              className="text-cream font-bold mb-5"
+              style={{ fontFamily: "var(--font-cinzel)" }}
+            >
+              Quick Links
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  href="/about"
+                  className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
+                >
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/menu"
+                  className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
+                >
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  Cake Menu
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/services"
+                  className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
+                >
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  Our Services
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/gallery"
+                  className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
+                >
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  Cake Gallery
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/events"
+                  className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
+                >
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  Events & Stalls
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/reviews"
+                  className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
+                >
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  Customer Reviews
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
+                >
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  Contact Us
+                </Link>
+              </li>
+            </ul>
+          </motion.div>
+
+          {/* Contact Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h3
               className="text-cream font-bold mb-5"

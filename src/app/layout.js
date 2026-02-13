@@ -381,7 +381,7 @@ const jsonLd = {
       "paymentAccepted": ["Cash", "UPI", "Google Pay", "PhonePe", "Bank Transfer"]
     },
     
-    // 3. WEBSITE SCHEMA
+    // 3. WEBSITE SCHEMA with Navigation for Sitelinks
     {
       "@type": "WebSite",
       "@id": `${siteUrl}/#website`,
@@ -399,7 +399,59 @@ const jsonLd = {
         },
         "query-input": "required name=search_term_string"
       },
-      "inLanguage": "en-IN"
+      "inLanguage": "en-IN",
+      "hasPart": [
+        {
+          "@type": "SiteNavigationElement",
+          "@id": `${siteUrl}/#mainnavigation`,
+          "name": "Main Navigation",
+          "url": siteUrl,
+          "hasPart": [
+            {
+              "@type": "SiteNavigationElement",
+              "name": "About",
+              "url": `${siteUrl}/about`,
+              "description": "Learn about Cocoa&Cherry, our story, founder Jhanvi Thakar, and FSSAI certification"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Menu",
+              "url": `${siteUrl}/menu`,
+              "description": "Browse our complete menu of premium custom cakes, brownies, cheesecakes, and desserts"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Services",
+              "url": `${siteUrl}/services`,
+              "description": "Custom cake services including birthday cakes, wedding cakes, same-day delivery"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Gallery",
+              "url": `${siteUrl}/gallery`,
+              "description": "View our portfolio of custom cakes, wedding cakes, and celebration cakes"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Events",
+              "url": `${siteUrl}/events`,
+              "description": "Book us for your events - birthdays, weddings, anniversaries, and celebrations"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Reviews",
+              "url": `${siteUrl}/reviews`,
+              "description": "Read customer reviews and testimonials for Cocoa&Cherry cakes"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "name": "Contact",
+              "url": `${siteUrl}/contact`,
+              "description": "Get in touch with Cocoa&Cherry. Call +91 97127 52469 or WhatsApp us"
+            }
+          ]
+        }
+      ]
     },
     
     // 4. WEBPAGE SCHEMA
@@ -437,6 +489,72 @@ const jsonLd = {
           "position": 1,
           "name": "Home",
           "item": siteUrl
+        }
+      ]
+    },
+    
+    // 5.5. ITEM LIST SCHEMA (For Sitelinks)
+    {
+      "@type": "ItemList",
+      "@id": `${siteUrl}/#sitelinks`,
+      "name": "Cocoa&Cherry Main Pages",
+      "description": "Main pages of Cocoa&Cherry website",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "url": siteUrl,
+          "description": "Custom Cakes Ahmedabad | Cocoa&Cherry FSSAI Certified Home Bakery"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "About",
+          "url": `${siteUrl}/about`,
+          "description": "Learn about Cocoa&Cherry, our story, founder Jhanvi Thakar, and FSSAI certification"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Menu",
+          "url": `${siteUrl}/menu`,
+          "description": "Browse our complete menu of premium custom cakes, brownies, cheesecakes, and desserts"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Services",
+          "url": `${siteUrl}/services`,
+          "description": "Custom cake services including birthday cakes, wedding cakes, same-day delivery"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Gallery",
+          "url": `${siteUrl}/gallery`,
+          "description": "View our portfolio of custom cakes, wedding cakes, and celebration cakes"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Events",
+          "url": `${siteUrl}/events`,
+          "description": "Book us for your events - birthdays, weddings, anniversaries, and celebrations"
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "name": "Reviews",
+          "url": `${siteUrl}/reviews`,
+          "description": "Read customer reviews and testimonials for Cocoa&Cherry cakes"
+        },
+        {
+          "@type": "ListItem",
+          "position": 8,
+          "name": "Contact",
+          "url": `${siteUrl}/contact`,
+          "description": "Get in touch with Cocoa&Cherry. Call +91 97127 52469 or WhatsApp us"
         }
       ]
     },
