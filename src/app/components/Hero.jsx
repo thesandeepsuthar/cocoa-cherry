@@ -664,17 +664,18 @@ export default function Hero() {
                 </span>
               </motion.div>
 
-              {/* Main Heading */}
+              {/* Main Heading - SEO Optimized with Keywords */}
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
                 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-4 sm:mb-6"
                 style={{ fontFamily: "var(--font-cinzel)" }}
+                itemProp="name"
               >
-                <span className="text-cream">Baked with </span>
+                <span className="text-cream">Premium Custom Cakes </span>
                 <span className="relative inline-block">
-                  <span className="gradient-text text-glow italic">Love</span>
+                  <span className="gradient-text text-glow italic">Ahmedabad</span>
                   <motion.span
                     className="absolute -top-1 -right-3 sm:-top-2 sm:-right-4 text-lg sm:text-2xl"
                     animate={{ rotate: [0, 15, 0], scale: [1, 1.2, 1] }}
@@ -684,8 +685,8 @@ export default function Hero() {
                   </motion.span>
                 </span>
                 <br />
-                <span className="text-cream">Styled for </span>
-                <span className="text-gold text-glow-gold">Memories</span>
+                <span className="text-cream">Baked with </span>
+                <span className="text-gold text-glow-gold">Love & Belgian Chocolate</span>
               </motion.h1>
 
               {/* Subtitle */}

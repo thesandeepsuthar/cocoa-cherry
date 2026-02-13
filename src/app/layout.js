@@ -25,14 +25,14 @@ export const metadata = {
   // Base URL for resolving relative URLs
   metadataBase: new URL(siteUrl),
   
-  // Optimized Title (CTR focused)
+  // Optimized Title (CTR focused) - Shortened to <580 pixels
   title: {
-    default: "Custom Cakes Ahmedabad | Cocoa&Cherry ⭐ FSSAI Certified Home Bakery",
+    default: "Custom Cakes Ahmedabad | Cocoa&Cherry FSSAI Certified",
     template: "%s | Cocoa&Cherry"
   },
   
-  // Optimized Description (High click intent)
-  description: "Order premium custom cakes in Ahmedabad. Birthday cakes, wedding cakes, designer cakes with Belgian chocolate. FSSAI certified home bakery. Same day delivery! ☎️ 97127-52469",
+  // Optimized Description (High click intent) - Shortened to <1000 pixels
+  description: "Order premium custom cakes in Ahmedabad. Birthday, wedding & designer cakes with Belgian chocolate. FSSAI certified. Same day delivery! Call 97127-52469",
   
   // Expanded Keywords
   keywords: [
@@ -156,9 +156,8 @@ export const metadata = {
     url: false,
   },
   
-  // Canonical URL
+  // Canonical URL - Removed from here to avoid duplicates (pages have their own)
   alternates: {
-    canonical: siteUrl,
     languages: {
       'en-IN': siteUrl,
       'x-default': siteUrl,
@@ -239,7 +238,7 @@ const jsonLd = {
         "@type": "ContactPoint",
         "telephone": "+91-97127-52469",
         "contactType": "customer service",
-        "availableLanguage": ["English", "Hindi", "Gujarati"],
+        "availableLanguage": ["en", "hi", "gu"],
         "areaServed": "Ahmedabad"
       },
       "sameAs": [
@@ -801,7 +800,7 @@ export default function RootLayout({ children }) {
         <link rel="alternate" hrefLang="x-default" href={siteUrl} />
         
         {/* Additional SEO Meta Tags */}
-        <meta name="language" content="English" />
+        <meta name="language" content="en-IN" />
         <meta name="revisit-after" content="7 days" />
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />
