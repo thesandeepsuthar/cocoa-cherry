@@ -52,6 +52,9 @@ const getCategoryIcon = (category) => {
 
 // Quick View Modal Component
 function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNavigate, categoryItems }) {
+  const [quantity, setQuantity] = useState(1);
+  const [quantityUnit, setQuantityUnit] = useState('kg');
+  
   const hasDiscount = item.discountPrice !== null && item.discountPrice !== undefined && item.discountPrice < item.price;
   const discountPercentage = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
 
@@ -62,6 +65,22 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
   const currentIndex = itemsToNavigate.findIndex(i => i._id === item._id);
   const canGoPrev = currentIndex > 0;
   const canGoNext = currentIndex < itemsToNavigate.length - 1;
+
+  // Reset quantity and set default quantity unit when item changes
+  useEffect(() => {
+    setQuantity(1);
+    if (item.priceUnit) {
+      if (item.priceUnit.includes('kg')) {
+        setQuantityUnit('kg');
+      } else if (item.priceUnit.includes('piece')) {
+        setQuantityUnit('piece');
+      } else if (item.priceUnit.includes('box')) {
+        setQuantityUnit('box');
+      }
+    } else {
+      setQuantityUnit('kg');
+    }
+  }, [item._id, item.priceUnit]);
 
   const handlePrevious = () => {
     if (canGoPrev) {
@@ -194,11 +213,54 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
             </div>
           )}
 
+          {/* Quantity Selection */}
+          <div className="mb-4 sm:mb-5 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-noir/50 border border-cream/5">
+            <label className="block text-xs sm:text-sm font-medium text-cream mb-2 sm:mb-3">
+              Quantity
+            </label>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                onClick={() => setQuantity(Math.max(0.5, quantity - 0.5))}
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-rose/20 text-rose flex items-center justify-center hover:bg-rose/30 transition-colors font-bold"
+              >
+                <span className="material-symbols-outlined text-base sm:text-lg">remove</span>
+              </button>
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(0.5, parseFloat(e.target.value) || 0.5))}
+                min="0.5"
+                step="0.5"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-noir border border-rose/20 text-cream text-center text-sm sm:text-base font-medium focus:outline-none focus:border-rose"
+              />
+              <select
+                value={quantityUnit}
+                onChange={(e) => setQuantityUnit(e.target.value)}
+                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-noir border border-rose/20 text-cream text-sm sm:text-base font-medium focus:outline-none focus:border-rose"
+              >
+                <option value="kg">kg</option>
+                <option value="piece">piece</option>
+                <option value="box">box</option>
+              </select>
+              <button
+                onClick={() => setQuantity(quantity + 0.5)}
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-rose/20 text-rose flex items-center justify-center hover:bg-rose/30 transition-colors font-bold"
+              >
+                <span className="material-symbols-outlined text-base sm:text-lg">add</span>
+              </button>
+            </div>
+            {item.price > 0 && (
+              <p className="text-xs sm:text-sm text-cream/60 mt-2 text-center">
+                Estimated: ₹{((item.discountPrice || item.price) * quantity).toFixed(0)}
+              </p>
+            )}
+          </div>
+
           {/* Action Buttons */}
           <div className="flex gap-2 sm:gap-3 mb-4">
             <motion.button
               onClick={() => {
-                onAddToOrder(item);
+                onAddToOrder(item, quantity, quantityUnit);
                 onClose();
               }}
               whileHover={{ scale: 1.02 }}
@@ -260,7 +322,7 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
 }
 
 // Floating Cart Component
-function FloatingCart({ items, onRemove, onClearAll, onProceed }) {
+function FloatingCart({ items, onRemove, onClearAll, onProceed, onUpdateQuantity, onUpdateQuantityUnit }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const totalItems = items.length;
 
@@ -301,30 +363,68 @@ function FloatingCart({ items, onRemove, onClearAll, onProceed }) {
               {items.map((item) => (
                 <div
                   key={item._id}
-                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-cream/5 transition-colors"
+                  className="flex flex-col gap-2 p-2 rounded-xl hover:bg-cream/5 transition-colors"
                 >
-                  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                    <Image
-                      src={item.imageData}
-                      alt={item.name}
-                      width={48}
-                      height={48}
-                      className="w-full h-full object-cover"
-                      unoptimized
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                      <Image
+                        src={item.imageData}
+                        alt={item.name}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-cream text-sm font-medium truncate">{item.name}</p>
+                      <p className="text-rose text-xs font-bold">
+                        ₹{item.discountPrice || item.price} / {item.priceUnit || 'per kg'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => onRemove(item)}
+                      className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/30 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
+                  </div>
+                  
+                  {/* Quantity Controls */}
+                  <div className="flex items-center gap-2 pl-14">
+                    <button
+                      onClick={() => onUpdateQuantity(item._id, Math.max(0.5, (item.quantity || 1) - 0.5))}
+                      className="w-6 h-6 rounded bg-rose/20 text-rose text-xs flex items-center justify-center hover:bg-rose/30 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-xs">remove</span>
+                    </button>
+                    <input
+                      type="number"
+                      value={item.quantity || 1}
+                      onChange={(e) => onUpdateQuantity(item._id, Math.max(0.5, parseFloat(e.target.value) || 0.5))}
+                      min="0.5"
+                      step="0.5"
+                      className="w-16 h-6 text-center text-xs bg-noir border border-rose/20 rounded text-cream focus:outline-none focus:border-rose"
                     />
+                    <select
+                      value={item.quantityUnit || 'kg'}
+                      onChange={(e) => onUpdateQuantityUnit(item._id, e.target.value)}
+                      className="text-xs px-2 py-1 rounded bg-noir border border-rose/20 text-cream focus:outline-none focus:border-rose"
+                    >
+                      <option value="kg">kg</option>
+                      <option value="piece">piece</option>
+                      <option value="box">box</option>
+                    </select>
+                    <button
+                      onClick={() => onUpdateQuantity(item._id, (item.quantity || 1) + 0.5)}
+                      className="w-6 h-6 rounded bg-rose/20 text-rose text-xs flex items-center justify-center hover:bg-rose/30 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-xs">add</span>
+                    </button>
+                    <span className="text-cream/60 text-xs ml-auto">
+                      ₹{((item.discountPrice || item.price) * (item.quantity || 1)).toFixed(0)}
+                    </span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-cream text-sm font-medium truncate">{item.name}</p>
-                    <p className="text-rose text-xs font-bold">
-                      ₹{item.discountPrice || item.price}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => onRemove(item)}
-                    className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/30 transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-sm">close</span>
-                  </button>
                 </div>
               ))}
             </div>
@@ -663,15 +763,48 @@ export default function Menu({ isHomePage = false }) {
 
 
   // Toggle item in order
-  const toggleItemInOrder = (item) => {
+  const toggleItemInOrder = (item, quantity = 1, quantityUnit = 'kg') => {
     setOrderItems(prev => {
       const exists = prev.some(o => o._id === item._id);
       if (exists) {
         return prev.filter(o => o._id !== item._id);
       } else {
-        return [...prev, item];
+        // Determine default quantity unit based on priceUnit
+        let defaultUnit = 'kg';
+        if (item.priceUnit) {
+          if (item.priceUnit.includes('kg')) {
+            defaultUnit = 'kg';
+          } else if (item.priceUnit.includes('piece')) {
+            defaultUnit = 'piece';
+          } else if (item.priceUnit.includes('box')) {
+            defaultUnit = 'box';
+          }
+        }
+        return [...prev, {
+          ...item,
+          quantity: quantity,
+          quantityUnit: quantityUnit || defaultUnit
+        }];
       }
     });
+  };
+
+  // Update quantity for an item
+  const updateQuantity = (itemId, newQuantity) => {
+    setOrderItems(prev => prev.map(item => 
+      item._id === itemId 
+        ? { ...item, quantity: Math.max(0.5, newQuantity) }
+        : item
+    ));
+  };
+
+  // Update quantity unit for an item
+  const updateQuantityUnit = (itemId, unit) => {
+    setOrderItems(prev => prev.map(item => 
+      item._id === itemId 
+        ? { ...item, quantityUnit: unit }
+        : item
+    ));
   };
 
   // Remove item from order
@@ -686,13 +819,15 @@ export default function Menu({ isHomePage = false }) {
 
   // Proceed to order
   const proceedToOrder = () => {
-    // Dispatch event with all selected items
+    // Dispatch event with all selected items including quantities
     window.dispatchEvent(new CustomEvent('selectCakeForOrder', { 
       detail: { 
         cakes: orderItems.map(item => ({
           name: item.name,
           price: item.discountPrice || item.price,
-          priceUnit: item.priceUnit
+          priceUnit: item.priceUnit,
+          quantity: item.quantity || 1,
+          quantityUnit: item.quantityUnit || 'kg'
         }))
       } 
     }));
@@ -919,6 +1054,8 @@ export default function Menu({ isHomePage = false }) {
             onRemove={removeFromOrder}
             onClearAll={clearOrder}
             onProceed={proceedToOrder}
+            onUpdateQuantity={updateQuantity}
+            onUpdateQuantityUnit={updateQuantityUnit}
           />
         )}
       </AnimatePresence>

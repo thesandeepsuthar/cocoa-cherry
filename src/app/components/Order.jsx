@@ -38,7 +38,13 @@ export default function Order() {
       
       // Handle multiple cakes (from floating cart)
       if (cakes && Array.isArray(cakes)) {
-        setSelectedCakes(cakes);
+        // Ensure all cakes have quantity and quantityUnit
+        const cakesWithQuantity = cakes.map(cake => ({
+          ...cake,
+          quantity: cake.quantity || 1,
+          quantityUnit: cake.quantityUnit || 'kg'
+        }));
+        setSelectedCakes(cakesWithQuantity);
         setFocusedField('cakes');
         setTimeout(() => setFocusedField(null), 2000);
       }
@@ -48,7 +54,9 @@ export default function Order() {
         const cake = {
           name: cakeName,
           price: menuItem?.discountPrice || menuItem?.price || 0,
-          priceUnit: menuItem?.priceUnit || 'per kg'
+          priceUnit: menuItem?.priceUnit || 'per kg',
+          quantity: 1,
+          quantityUnit: 'kg'
         };
         setSelectedCakes(prev => {
           const exists = prev.some(c => c.name === cakeName);
@@ -77,12 +85,44 @@ export default function Order() {
     const exists = selectedCakes.some(c => c.name === cakeName);
     if (exists) return;
 
+    // Determine default quantity unit based on priceUnit
+    let defaultUnit = 'kg';
+    if (menuItem.priceUnit) {
+      if (menuItem.priceUnit.includes('kg')) {
+        defaultUnit = 'kg';
+      } else if (menuItem.priceUnit.includes('piece')) {
+        defaultUnit = 'piece';
+      } else if (menuItem.priceUnit.includes('box')) {
+        defaultUnit = 'box';
+      }
+    }
+
     setSelectedCakes(prev => [...prev, {
       name: menuItem.name,
       price: menuItem.discountPrice || menuItem.price,
-      priceUnit: menuItem.priceUnit || 'per kg'
+      priceUnit: menuItem.priceUnit || 'per kg',
+      quantity: 1,
+      quantityUnit: defaultUnit
     }]);
     setShowCakeSelector(false);
+  };
+
+  // Update cake quantity
+  const updateCakeQuantity = (cakeName, newQuantity) => {
+    setSelectedCakes(prev => prev.map(cake => 
+      cake.name === cakeName 
+        ? { ...cake, quantity: Math.max(0.5, newQuantity) }
+        : cake
+    ));
+  };
+
+  // Update cake quantity unit
+  const updateCakeQuantityUnit = (cakeName, unit) => {
+    setSelectedCakes(prev => prev.map(cake => 
+      cake.name === cakeName 
+        ? { ...cake, quantityUnit: unit }
+        : cake
+    ));
   };
 
   // Remove a cake from selection
@@ -101,10 +141,15 @@ export default function Order() {
     
     setIsSubmitting(true);
     
-    // Format selected cakes - names only, no prices
+    // Format selected cakes with quantities
     const cakesList = selectedCakes.map((cake, i) => 
-      `  ${i + 1}. ${cake.name}`
+      `  ${i + 1}. ${cake.name} - ${cake.quantity || 1} ${cake.quantityUnit || 'kg'}`
     ).join('\n');
+    
+    // Calculate estimated total
+    const estimatedTotal = selectedCakes.reduce((sum, cake) => {
+      return sum + ((cake.price || 0) * (cake.quantity || 1));
+    }, 0);
     
     const whatsappMessage = `🎂 *New Cake Order Inquiry*
 
@@ -113,8 +158,10 @@ export default function Order() {
 📍 *Address:* ${formData.address}
 📅 *Delivery Date:* ${formData.date}
 
-🍰 *Interested In (${selectedCakes.length} items):*
+🍰 *Order Details (${selectedCakes.length} items):*
 ${cakesList}
+
+💰 *Estimated Total:* ₹${estimatedTotal.toFixed(0)} (Final price will be confirmed)
 
 📝 *Requirements/Theme:*
 ${formData.message || 'Will discuss on WhatsApp'}
@@ -269,7 +316,7 @@ Sent from Cocoa&Cherry Website`;
                         No items selected. Add from menu above or click below.
                       </p>
                     ) : (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-col gap-2">
                         <AnimatePresence>
                           {selectedCakes.map((cake) => (
                             <motion.div
@@ -277,17 +324,57 @@ Sent from Cocoa&Cherry Website`;
                               initial={{ scale: 0, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
                               exit={{ scale: 0, opacity: 0 }}
-                              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-rose/20 to-rose-dark/20 border border-rose/30"
+                              className="flex flex-col gap-2 p-2 rounded-lg bg-gradient-to-r from-rose/10 to-rose-dark/10 border border-rose/20"
                             >
-                              <span className="material-symbols-outlined text-rose text-sm">cake</span>
-                              <span className="text-cream text-sm font-medium">{cake.name}</span>
-                              <button
-                                type="button"
-                                onClick={() => removeCake(cake.name)}
-                                className="w-5 h-5 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/40 transition-colors"
-                              >
-                                <span className="material-symbols-outlined text-xs">close</span>
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-rose text-sm">cake</span>
+                                <span className="text-cream text-sm font-medium flex-1">{cake.name}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeCake(cake.name)}
+                                  className="w-5 h-5 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/40 transition-colors"
+                                >
+                                  <span className="material-symbols-outlined text-xs">close</span>
+                                </button>
+                              </div>
+                              
+                              {/* Quantity Controls */}
+                              <div className="flex items-center gap-2 pl-7">
+                                <button
+                                  type="button"
+                                  onClick={() => updateCakeQuantity(cake.name, Math.max(0.5, (cake.quantity || 1) - 0.5))}
+                                  className="w-6 h-6 rounded bg-rose/20 text-rose text-xs flex items-center justify-center hover:bg-rose/30 transition-colors"
+                                >
+                                  <span className="material-symbols-outlined text-xs">remove</span>
+                                </button>
+                                <input
+                                  type="number"
+                                  value={cake.quantity || 1}
+                                  onChange={(e) => updateCakeQuantity(cake.name, parseFloat(e.target.value) || 0.5)}
+                                  min="0.5"
+                                  step="0.5"
+                                  className="w-16 h-6 text-center text-xs bg-noir border border-rose/20 rounded text-cream focus:outline-none focus:border-rose"
+                                />
+                                <select
+                                  value={cake.quantityUnit || 'kg'}
+                                  onChange={(e) => updateCakeQuantityUnit(cake.name, e.target.value)}
+                                  className="text-xs px-2 py-1 rounded bg-noir border border-rose/20 text-cream focus:outline-none focus:border-rose"
+                                >
+                                  <option value="kg">kg</option>
+                                  <option value="piece">piece</option>
+                                  <option value="box">box</option>
+                                </select>
+                                <button
+                                  type="button"
+                                  onClick={() => updateCakeQuantity(cake.name, (cake.quantity || 1) + 0.5)}
+                                  className="w-6 h-6 rounded bg-rose/20 text-rose text-xs flex items-center justify-center hover:bg-rose/30 transition-colors"
+                                >
+                                  <span className="material-symbols-outlined text-xs">add</span>
+                                </button>
+                                <span className="text-cream/60 text-xs ml-auto">
+                                  ₹{((cake.price || 0) * (cake.quantity || 1)).toFixed(0)}
+                                </span>
+                              </div>
                             </motion.div>
                           ))}
                         </AnimatePresence>
