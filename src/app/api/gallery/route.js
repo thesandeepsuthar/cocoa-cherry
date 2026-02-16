@@ -82,7 +82,6 @@ export async function POST(request) {
       cloudinaryResult = await uploadToCloudinary(imageData, {
         folder: 'cocoa-cherry/gallery',
       });
-      console.log(`✅ Image uploaded to Cloudinary: ${cloudinaryResult.url}`);
     } catch (uploadError) {
       console.error('Cloudinary upload error:', uploadError);
       return NextResponse.json(

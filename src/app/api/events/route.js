@@ -64,7 +64,6 @@ export async function POST(request) {
       coverImageResult = await uploadToCloudinary(coverImage, {
         folder: 'cocoa-cherry/events',
       });
-      console.log(`✅ Cover image uploaded to Cloudinary: ${coverImageResult.url}`);
     } catch (uploadError) {
       console.error('Cloudinary upload error:', uploadError);
       return NextResponse.json(
@@ -82,7 +81,6 @@ export async function POST(request) {
           folder: 'cocoa-cherry/events',
         });
         imagePublicIds = imagesResults.map(result => result.public_id);
-        console.log(`✅ ${imagesResults.length} additional images uploaded to Cloudinary`);
       } catch (uploadError) {
         console.error('Cloudinary multiple upload error:', uploadError);
         return NextResponse.json(
@@ -181,7 +179,6 @@ export async function PUT(request) {
           });
           updateData.coverImage = coverImageResult.secure_url;
           updateData.coverImagePublicId = coverImageResult.public_id;
-          console.log(`✅ Cover image uploaded to Cloudinary: ${coverImageResult.secure_url}`);
         } catch (uploadError) {
           console.error('Cloudinary upload error:', uploadError);
           return NextResponse.json(
@@ -228,7 +225,6 @@ export async function PUT(request) {
 
           updateData.images = allImageUrls;
           updateData.imagePublicIds = allPublicIds;
-          console.log(`✅ ${imagesResults.length} images uploaded to Cloudinary`);
         } catch (uploadError) {
           console.error('Cloudinary upload error:', uploadError);
           return NextResponse.json(
@@ -303,7 +299,6 @@ export async function DELETE(request) {
       try {
         const { deleteFromCloudinary } = await import('@/lib/cloudinary');
         await deleteFromCloudinary(event.coverImagePublicId);
-        console.log(`✅ Cover image deleted from Cloudinary: ${event.coverImagePublicId}`);
       } catch (error) {
         console.warn(`⚠️ Failed to delete cover image: ${error.message}`);
       }
@@ -315,7 +310,6 @@ export async function DELETE(request) {
         for (const publicId of event.imagePublicIds) {
           await deleteFromCloudinary(publicId);
         }
-        console.log(`✅ ${event.imagePublicIds.length} images deleted from Cloudinary`);
       } catch (error) {
         console.warn(`⚠️ Failed to delete images: ${error.message}`);
       }

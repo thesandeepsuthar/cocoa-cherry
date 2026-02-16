@@ -91,7 +91,6 @@ export async function PUT(request, { params }) {
           });
           updateData.coverImage = coverImageResult.secure_url;
           updateData.coverImagePublicId = coverImageResult.public_id;
-          console.log(`✅ Cover image uploaded to Cloudinary: ${coverImageResult.url}`);
         } catch (uploadError) {
           console.error('Cloudinary upload error:', uploadError);
           return NextResponse.json(
@@ -138,7 +137,6 @@ export async function PUT(request, { params }) {
 
           updateData.images = allImageUrls;
           updateData.imagePublicIds = allPublicIds;
-          console.log(`✅ ${imagesResults.length} images uploaded to Cloudinary`);
         } catch (uploadError) {
           console.error('Cloudinary upload error:', uploadError);
           return NextResponse.json(
@@ -200,9 +198,7 @@ export async function PUT(request, { params }) {
             title: itemWithTargetOrder.title,
             oldOrder: targetOrder,
             newOrder: currentOrder,
-          };
-          
-          console.log(`🔄 Order swapped: "${event.title}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.title}" (${targetOrder}→${currentOrder})`);
+          }; 
         }
       }
 
@@ -272,7 +268,6 @@ export async function DELETE(request, { params }) {
     if (event.coverImagePublicId) {
       try {
         await deleteFromCloudinary(event.coverImagePublicId);
-        console.log(`✅ Cover image deleted from Cloudinary: ${event.coverImagePublicId}`);
       } catch (cloudinaryError) {
         console.warn(`⚠️ Failed to delete cover image: ${cloudinaryError.message}`);
       }
@@ -284,7 +279,6 @@ export async function DELETE(request, { params }) {
         for (const publicId of event.imagePublicIds) {
           await deleteFromCloudinary(publicId);
         }
-        console.log(`✅ ${event.imagePublicIds.length} images deleted from Cloudinary`);
       } catch (cloudinaryError) {
         console.warn(`⚠️ Failed to delete images: ${cloudinaryError.message}`);
       }

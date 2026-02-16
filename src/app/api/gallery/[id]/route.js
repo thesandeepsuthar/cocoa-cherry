@@ -87,7 +87,6 @@ export async function PUT(request, { params }) {
       if (currentImage.publicId) {
         try {
           await deleteFromCloudinary(currentImage.publicId);
-          console.log(`🗑️ Deleted old image from Cloudinary: ${currentImage.publicId}`);
         } catch (deleteError) {
           console.error('⚠️ Failed to delete old image from Cloudinary:', deleteError.message);
           // Continue with upload even if deletion fails
@@ -101,7 +100,6 @@ export async function PUT(request, { params }) {
         });
         updateData.imageData = cloudinaryResult.secure_url;
         updateData.publicId = cloudinaryResult.public_id;
-        console.log(`✅ New image uploaded to Cloudinary: ${cloudinaryResult.url}`);
       } catch (uploadError) {
         console.error('Cloudinary upload error:', uploadError);
         return NextResponse.json(
@@ -150,8 +148,6 @@ export async function PUT(request, { params }) {
             oldOrder: targetOrder,
             newOrder: currentOrder,
           };
-          
-          console.log(`🔄 Order swapped: "${currentImage.caption}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.caption}" (${targetOrder}→${currentOrder})`);
         }
       }
 
@@ -227,7 +223,6 @@ export async function DELETE(request, { params }) {
     if (deletedImage.publicId) {
       try {
         await deleteFromCloudinary(deletedImage.publicId);
-        console.log(`🗑️ Deleted image from Cloudinary: ${deletedImage.publicId}`);
       } catch (deleteError) {
         console.error('⚠️ Failed to delete image from Cloudinary:', deleteError.message);
         // Continue even if Cloudinary deletion fails

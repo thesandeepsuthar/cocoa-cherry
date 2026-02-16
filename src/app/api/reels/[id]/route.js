@@ -101,7 +101,6 @@ export async function PUT(request, { params }) {
           });
           updateData.thumbnailData = thumbnailResult.secure_url;
           updateData.thumbnailPublicId = thumbnailResult.public_id;
-          console.log(`✅ Reel thumbnail uploaded to Cloudinary: ${thumbnailResult.url}`);
         } catch (uploadError) {
           console.error('Cloudinary upload error:', uploadError);
           return NextResponse.json(
@@ -147,8 +146,6 @@ export async function PUT(request, { params }) {
             oldOrder: targetOrder,
             newOrder: currentOrder,
           };
-          
-          console.log(`🔄 Order swapped: "${reel.caption}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.caption}" (${targetOrder}→${currentOrder})`);
         }
       }
 
@@ -218,7 +215,6 @@ export async function DELETE(request, { params }) {
     if (reel.thumbnailPublicId) {
       try {
         await deleteFromCloudinary(reel.thumbnailPublicId);
-        console.log(`✅ Reel thumbnail deleted from Cloudinary: ${reel.thumbnailPublicId}`);
       } catch (cloudinaryError) {
         console.warn(`⚠️ Failed to delete thumbnail from Cloudinary: ${cloudinaryError.message}`);
       }

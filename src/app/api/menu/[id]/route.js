@@ -78,9 +78,6 @@ export async function PUT(request, { params }) {
 
     await connectDB();
     const body = await request.json();
-    
-    console.log('Menu PUT received:', { id, body });
-
     // Get current menu item to check for existing Cloudinary public_id
     const currentMenuItem = await Menu.findById(id);
     if (!currentMenuItem) {
@@ -99,7 +96,6 @@ export async function PUT(request, { params }) {
       if (currentMenuItem.publicId) {
         try {
           await deleteFromCloudinary(currentMenuItem.publicId);
-          console.log(`🗑️ Deleted old menu image from Cloudinary: ${currentMenuItem.publicId}`);
         } catch (deleteError) {
           console.error('⚠️ Failed to delete old image from Cloudinary:', deleteError.message);
         }
@@ -112,7 +108,6 @@ export async function PUT(request, { params }) {
         });
         updateData.imageData = cloudinaryResult.secure_url;
         updateData.publicId = cloudinaryResult.public_id;
-        console.log(`✅ New menu image uploaded to Cloudinary: ${cloudinaryResult.url}`);
       } catch (uploadError) {
         console.error('Cloudinary upload error:', uploadError);
         return NextResponse.json(
@@ -152,15 +147,12 @@ export async function PUT(request, { params }) {
 
     // Handle category update: accept categoryId (ObjectId), categoryName (string), or null to unset
     if (body.categoryId !== undefined) {
-      console.log('Updating category with categoryId:', body.categoryId);
       if (body.categoryId === null || body.categoryId === '') {
         updateData.category = null;
       } else if (isValidObjectId(body.categoryId)) {
         updateData.category = body.categoryId;
-        console.log('Category set to:', body.categoryId);
       }
     } else if (body.categoryName !== undefined) {
-      console.log('Updating category with categoryName:', body.categoryName);
       if (body.categoryName === null || body.categoryName === '') {
         updateData.category = null;
       } else {
@@ -168,9 +160,6 @@ export async function PUT(request, { params }) {
         if (cat) updateData.category = cat._id;
       }
     }
-    
-    console.log('UpdateData before save:', updateData);
-
     // Handle order swapping
     let swappedWith = null;
     if (typeof body.order === 'number') {
@@ -194,9 +183,7 @@ export async function PUT(request, { params }) {
             name: itemWithTargetOrder.name,
             oldOrder: targetOrder,
             newOrder: currentOrder,
-          };
-          
-          console.log(`🔄 Order swapped: "${currentMenuItem.name}" (${currentOrder}→${targetOrder}) ↔ "${itemWithTargetOrder.name}" (${targetOrder}→${currentOrder})`);
+          }; 
         }
       }
 
@@ -272,7 +259,6 @@ export async function DELETE(request, { params }) {
     if (deletedMenuItem.publicId) {
       try {
         await deleteFromCloudinary(deletedMenuItem.publicId);
-        console.log(`🗑️ Deleted menu image from Cloudinary: ${deletedMenuItem.publicId}`);
       } catch (deleteError) {
         console.error('⚠️ Failed to delete image from Cloudinary:', deleteError.message);
       }

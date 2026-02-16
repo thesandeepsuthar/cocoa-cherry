@@ -731,13 +731,9 @@ export default function Menu({ isHomePage = false }) {
         // Otherwise sort by item count (descending)
         return b[1].length - a[1].length;
       });
-    
-    console.log(`[${isHomePage ? 'HOME' : 'MENU'}] Total items: ${allFlavors.length}, Items with category: ${Object.values(groups).flat().length}, All categories:`, sortedCategories.map(([cat, items]) => `${cat}: ${items.length} items`));
-
     // Apply filter if a specific category is selected (not 'All')
     if (selectedCategory !== 'All' && selectedCategory !== null) {
       sortedCategories = sortedCategories.filter(([cat]) => cat === selectedCategory);
-      console.log(`[${isHomePage ? 'HOME' : 'MENU'}] Filtered by: ${selectedCategory}`, sortedCategories.map(([cat, items]) => `${cat}: ${items.length} items`));
     }
 
     if (isHomePage) {

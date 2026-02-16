@@ -60,7 +60,6 @@ export async function POST(request) {
       cloudinaryResult = await uploadToCloudinary(imageData, {
         folder: 'cocoa-cherry/hero',
       });
-      console.log(`✅ Hero image uploaded to Cloudinary: ${cloudinaryResult.url}`);
     } catch (uploadError) {
       console.error('Cloudinary upload error:', uploadError);
       return NextResponse.json(
@@ -149,7 +148,6 @@ export async function PUT(request) {
           public_id: cloudinaryResult.public_id,
           size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
         };
-        console.log(`✅ Hero image uploaded to Cloudinary: ${cloudinaryResult.url}`);
       } catch (uploadError) {
         console.error('Cloudinary upload error:', uploadError);
         return NextResponse.json(
@@ -242,7 +240,6 @@ export async function DELETE(request) {
       try {
         const { deleteFromCloudinary } = await import("../../../lib/cloudinary");
         await deleteFromCloudinary(heroImage.publicId);
-        console.log(`✅ Hero image deleted from Cloudinary: ${heroImage.publicId}`);
       } catch (cloudinaryError) {
         console.warn(`⚠️ Failed to delete from Cloudinary: ${cloudinaryError.message}`);
         // Continue with database deletion even if Cloudinary deletion fails

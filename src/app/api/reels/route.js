@@ -62,7 +62,6 @@ export async function POST(request) {
       thumbnailResult = await uploadToCloudinary(thumbnailData, {
         folder: 'cocoa-cherry/reels',
       });
-      console.log(`✅ Reel thumbnail uploaded to Cloudinary: ${thumbnailResult.url}`);
     } catch (uploadError) {
       console.error('Cloudinary upload error:', uploadError);
       return NextResponse.json(

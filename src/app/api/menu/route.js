@@ -10,11 +10,7 @@ import mongoose from 'mongoose';
 export async function GET() {
   try {
     await connectDB();
-    const menuItems = await Menu.find({ isActive: true }).populate({ path: 'category', select: 'name', strictPopulate: false }).sort({ order: 1, createdAt: -1 });
-    
-    console.log('Menu GET - fetched items:', menuItems.length);
-    console.log('First item category:', menuItems[0]?.category);
-    
+    const menuItems = await Menu.find({ isActive: true }).populate({ path: 'category', select: 'name', strictPopulate: false }).sort({ order: 1, createdAt: -1 });    
     return NextResponse.json({
       success: true,
       data: menuItems,
@@ -88,7 +84,6 @@ export async function POST(request) {
       cloudinaryResult = await uploadToCloudinary(imageData, {
         folder: 'cocoa-cherry/menu',
       });
-      console.log(`✅ Menu image uploaded to Cloudinary: ${cloudinaryResult.url}`);
     } catch (uploadError) {
       console.error('Cloudinary upload error:', uploadError);
       return NextResponse.json(
