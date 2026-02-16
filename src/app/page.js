@@ -14,6 +14,7 @@ import {
   Footer,
   FloatingActions,
   MouseGlow,
+  Blog,
 } from './components';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
@@ -74,6 +75,7 @@ export default function Home() {
         {/* <RateList /> */}
         <Gallery isHomePage={true} />
         <Events isHomePage={true} />
+        <Blog isHomePage={true} limit={3} />
         <Reels />
         <Testimonials />
         {/* <SpecialOffer /> */}

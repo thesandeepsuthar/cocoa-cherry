@@ -16,4 +16,5 @@ export { default as PageLoader } from './PageLoader';
 export { default as SpecialOffer } from './SpecialOffer';
 export { default as MouseGlow } from './MouseGlow';
 export { default as Loader, LogoSVG, MiniLoader, CakeLoader } from './Loader';
+export { default as Blog } from './Blog';
 

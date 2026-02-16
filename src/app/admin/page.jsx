@@ -143,6 +143,7 @@ const TABS = [
   { id: "hero", label: "Hero", icon: "image" },
   { id: "gallery", label: "Gallery", icon: "photo_library" },
   { id: "events", label: "Events", icon: "celebration" },
+  { id: "blog", label: "Blog", icon: "article" },
   { id: "reels", label: "Reels", icon: "movie" },
   { id: "categories", label: "Categories", icon: "category" },
   { id: "menu", label: "Menu", icon: "restaurant_menu" },
@@ -286,6 +287,7 @@ function HeroTab({ adminKey, showToast, showConfirm }) {
 
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/hero");
       const data = await res.json();
       if (data.success) setItems(data.data);
@@ -329,7 +331,7 @@ function HeroTab({ adminKey, showToast, showConfirm }) {
       });
       const data = await res.json();
       if (data.success) {
-        fetchItems();
+        await fetchItems();
         closeForm();
         showToast(editingItem ? "Hero image updated successfully!" : "Hero image added successfully!", "success");
       } else {
@@ -351,7 +353,7 @@ function HeroTab({ adminKey, showToast, showConfirm }) {
           const res = await fetch(`/api/hero?id=${id}`, { method: "DELETE" });
           const data = await res.json();
           if (data.success) {
-            fetchItems();
+            await fetchItems();
             showToast("Hero image deleted successfully!", "success");
           } else {
             showToast(data.error || "Failed to delete", "error");
@@ -533,6 +535,7 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
 
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/gallery");
       const data = await res.json();
       if (data.success) setItems(data.data);
@@ -570,7 +573,7 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
       });
       const data = await res.json();
       if (data.success) {
-        fetchItems();
+        await fetchItems();
         closeForm();
         showToast(editingItem ? "Gallery image updated successfully!" : "Gallery image added successfully!", "success");
       } else {
@@ -594,7 +597,7 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
           });
           const data = await res.json();
           if (data.success) {
-            fetchItems();
+            await fetchItems();
             showToast("Gallery image deleted successfully!", "success");
           } else {
             showToast(data.error || "Failed to delete", "error");
@@ -750,6 +753,7 @@ function EventsTab({ adminKey, showToast, showConfirm }) {
 
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/events");
       const data = await res.json();
       if (data.success) setItems(data.data);
@@ -789,7 +793,7 @@ function EventsTab({ adminKey, showToast, showConfirm }) {
       });
       const data = await res.json();
       if (data.success) {
-        fetchItems();
+        await fetchItems();
         closeForm();
         showToast(editingItem ? "Event updated successfully!" : "Event added successfully!", "success");
       } else {
@@ -813,7 +817,7 @@ function EventsTab({ adminKey, showToast, showConfirm }) {
           });
           const data = await res.json();
           if (data.success) {
-            fetchItems();
+            await fetchItems();
             showToast("Event deleted successfully!", "success");
           } else {
             showToast(data.error || "Failed to delete", "error");
@@ -1167,6 +1171,7 @@ function ReelsTab({ adminKey, showToast, showConfirm }) {
 
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/reels");
       const data = await res.json();
       if (data.success) setItems(data.data);
@@ -1209,7 +1214,7 @@ function ReelsTab({ adminKey, showToast, showConfirm }) {
       });
       const data = await res.json();
       if (data.success) {
-        fetchItems();
+        await fetchItems();
         closeForm();
         showToast(editingItem ? "Reel updated successfully!" : "Reel added successfully!", "success");
       } else {
@@ -1233,7 +1238,7 @@ function ReelsTab({ adminKey, showToast, showConfirm }) {
           });
           const data = await res.json();
           if (data.success) {
-            fetchItems();
+            await fetchItems();
             showToast("Reel deleted successfully!", "success");
           } else {
             showToast(data.error || "Failed to delete", "error");
@@ -1417,6 +1422,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
 
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/menu");
       const data = await res.json();
       if (data.success) setItems(data.data);
@@ -1477,7 +1483,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
       });
       const data = await res.json();
       if (data.success) {
-        fetchItems();
+        await fetchItems();
         closeForm();
         showToast(editingItem ? "Menu item updated successfully!" : "Menu item added successfully!", "success");
       } else {
@@ -1501,7 +1507,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
           });
           const data = await res.json();
           if (data.success) {
-            fetchItems();
+            await fetchItems();
             showToast("Menu item deleted successfully!", "success");
           } else {
             showToast(data.error || "Failed to delete", "error");
@@ -1850,6 +1856,7 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
 
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/categories");
       const data = await res.json();
       if (data.success) setItems(data.data);
@@ -1891,7 +1898,7 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
       });
       const data = await res.json();
       if (data.success) {
-        fetchItems();
+        await fetchItems();
         closeForm();
         showToast(editingItem ? "Category updated successfully!" : "Category added successfully!", "success");
       } else {
@@ -1915,7 +1922,7 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
           });
           const data = await res.json();
           if (data.success) {
-            fetchItems();
+            await fetchItems();
             showToast("Category deleted successfully!", "success");
           } else {
             showToast(data.error || "Failed to delete", "error");
@@ -2117,6 +2124,7 @@ function RateListTab({ adminKey, showToast, showConfirm }) {
 
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch(`/api/ratelist?key=${adminKey}`);
       const data = await res.json();
       if (data.success) setItems(data.data);
@@ -2181,7 +2189,7 @@ function RateListTab({ adminKey, showToast, showConfirm }) {
       });
       const data = await res.json();
       if (data.success) {
-        fetchItems();
+        await fetchItems();
         closeForm();
         showToast(editingItem ? "Rate item updated successfully!" : "Rate item added successfully!", "success");
       } else {
@@ -2205,7 +2213,7 @@ function RateListTab({ adminKey, showToast, showConfirm }) {
           });
           const data = await res.json();
           if (data.success) {
-            fetchItems();
+            await fetchItems();
             showToast("Rate item deleted successfully!", "success");
           } else {
             showToast(data.error || "Failed to delete", "error");
@@ -2715,6 +2723,414 @@ function RateListTab({ adminKey, showToast, showConfirm }) {
   );
 }
 
+// Blog Tab
+function BlogTab({ adminKey, showToast, showConfirm }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    excerpt: "",
+    content: "",
+    coverImage: "",
+    author: "Cocoa&Cherry Team",
+    publishedAt: new Date().toISOString().split("T")[0],
+    tags: "",
+    category: "General",
+    seoTitle: "",
+    seoDescription: "",
+    order: 0,
+    isPublished: true,
+  });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const fetchItems = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/blog?includeInactive=true&key=${adminKey}`);
+      const data = await res.json();
+      if (data.success) {
+        setItems(data.data || []);
+      } else {
+        console.error("Failed to fetch blogs:", data.error);
+        showToast(data.error || "Failed to fetch blogs", "error");
+      }
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+      showToast("Failed to fetch blogs", "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [adminKey, showToast]);
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.title?.trim()) newErrors.title = "Title is required";
+    if (!formData.excerpt?.trim()) newErrors.excerpt = "Excerpt is required";
+    if (!formData.content?.trim()) newErrors.content = "Content is required";
+    if (!formData.coverImage) newErrors.coverImage = "Cover image is required";
+    if (formData.excerpt && formData.excerpt.length > 300) {
+      newErrors.excerpt = "Excerpt must be less than 300 characters";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setSubmitting(true);
+    try {
+      const url = editingItem
+        ? `/api/blog/${editingItem.slug}?key=${adminKey}`
+        : `/api/blog?key=${adminKey}`;
+      
+      const dataToSend = {
+        ...formData,
+        tags: formData.tags
+          ? formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+          : [],
+      };
+
+      const res = await fetch(url, {
+        method: editingItem ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchItems();
+        closeForm();
+        showToast(editingItem ? "Blog updated successfully!" : "Blog added successfully!", "success");
+      } else {
+        showToast(data.error || "Failed to save", "error");
+      }
+    } catch (error) {
+      showToast("Failed to save", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (slug) => {
+    showConfirm(
+      "Delete Blog",
+      "Are you sure you want to delete this blog? This action cannot be undone.",
+      async () => {
+        try {
+          const res = await fetch(`/api/blog/${slug}?key=${adminKey}`, {
+            method: "DELETE",
+          });
+          
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({ error: 'Network error' }));
+            showToast(errorData.error || `Failed to delete (${res.status})`, "error");
+            return;
+          }
+          
+          const data = await res.json();
+          if (data.success) {
+            await fetchItems(); // Wait for refresh
+            showToast("Blog deleted successfully!", "success");
+          } else {
+            showToast(data.error || "Failed to delete", "error");
+          }
+        } catch (error) {
+          console.error("Delete error:", error);
+          showToast(error.message || "Failed to delete blog", "error");
+        }
+      }
+    );
+  };
+
+  const handleEdit = async (item) => {
+    try {
+      // Fetch full blog details including content
+      const res = await fetch(`/api/blog/${item.slug}?key=${adminKey}`);
+      const data = await res.json();
+      
+      if (data.success && data.data) {
+        const fullBlog = data.data;
+        setEditingItem(fullBlog);
+        setFormData({
+          title: fullBlog.title || "",
+          excerpt: fullBlog.excerpt || "",
+          content: fullBlog.content || "",
+          coverImage: fullBlog.coverImage || "",
+          author: fullBlog.author || "Cocoa&Cherry Team",
+          publishedAt: fullBlog.publishedAt
+            ? new Date(fullBlog.publishedAt).toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0],
+          tags: fullBlog.tags && Array.isArray(fullBlog.tags) ? fullBlog.tags.join(", ") : "",
+          category: fullBlog.category || "General",
+          seoTitle: fullBlog.seoTitle || "",
+          seoDescription: fullBlog.seoDescription || "",
+          order: fullBlog.order || 0,
+          isPublished: fullBlog.isPublished !== undefined ? fullBlog.isPublished : true,
+        });
+        setErrors({});
+        setShowForm(true);
+      } else {
+        showToast(data.error || "Failed to load blog details", "error");
+      }
+    } catch (error) {
+      console.error("Error fetching blog details:", error);
+      showToast("Failed to load blog details", "error");
+    }
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingItem(null);
+    setFormData({
+      title: "",
+      excerpt: "",
+      content: "",
+      coverImage: "",
+      author: "Cocoa&Cherry Team",
+      publishedAt: new Date().toISOString().split("T")[0],
+      tags: "",
+      category: "General",
+      seoTitle: "",
+      seoDescription: "",
+      order: 0,
+      isPublished: true,
+    });
+    setErrors({});
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  if (loading) return <LoadingSpinner />;
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+        <h2
+          className="text-xl sm:text-2xl font-bold text-cream"
+          style={{ fontFamily: "var(--font-cinzel)" }}
+        >
+          Blog Posts ({items.length})
+        </h2>
+        <button
+          onClick={() => {
+            closeForm();
+            setShowForm(true);
+          }}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg hover:opacity-90 
+                         text-sm font-medium shadow-md bg-gradient-to-r from-rose to-rose-dark text-noir"
+        >
+          <span className="material-symbols-outlined text-lg">add</span>
+          Add Blog Post
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {showForm && (
+          <FormModal
+            title={editingItem ? "Edit Blog Post" : "Add Blog Post"}
+            onClose={closeForm}
+            wide
+          >
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <InputField
+                label="Blog Title"
+                value={formData.title}
+                onChange={(e) => {
+                  setFormData({ ...formData, title: e.target.value });
+                  setErrors({ ...errors, title: "" });
+                }}
+                placeholder="10 Tips for Perfect Custom Cakes"
+                required
+                error={errors.title}
+              />
+
+              <div>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                  Excerpt <span className="text-rose">*</span>
+                </label>
+                <textarea
+                  value={formData.excerpt}
+                  onChange={(e) => {
+                    setFormData({ ...formData, excerpt: e.target.value });
+                    setErrors({ ...errors, excerpt: "" });
+                  }}
+                  className={`w-full rounded-lg border px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40 ${
+                    errors.excerpt ? "border-red-400" : "border-cream/10 focus:border-rose"
+                  }`}
+                  rows={3}
+                  placeholder="Short description (max 300 characters)"
+                  required
+                />
+                <div className="text-xs text-cream-muted mt-1">
+                  {formData.excerpt.length}/300 characters
+                </div>
+                <FormError error={errors.excerpt} />
+              </div>
+
+              <div>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                  Content <span className="text-rose">*</span>
+                </label>
+                <textarea
+                  value={formData.content}
+                  onChange={(e) => {
+                    setFormData({ ...formData, content: e.target.value });
+                    setErrors({ ...errors, content: "" });
+                  }}
+                  className={`w-full rounded-lg border px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40 ${
+                    errors.content ? "border-red-400" : "border-cream/10 focus:border-rose"
+                  }`}
+                  rows={10}
+                  placeholder="Full blog content (HTML supported)"
+                  required
+                />
+                <div className="text-xs text-cream-muted mt-1">
+                  Supports HTML tags
+                </div>
+                <FormError error={errors.content} />
+              </div>
+
+              <ImageUpload
+                value={formData.coverImage}
+                onChange={(v) => {
+                  setFormData({ ...formData, coverImage: v });
+                  setErrors({ ...errors, coverImage: "" });
+                }}
+                label="Cover Image"
+                error={errors.coverImage}
+                required
+              />
+
+              <InputField
+                label="Author"
+                value={formData.author}
+                onChange={(e) => {
+                  setFormData({ ...formData, author: e.target.value });
+                }}
+                placeholder="Cocoa&Cherry Team"
+              />
+
+              <InputField
+                label="Published Date"
+                type="date"
+                value={formData.publishedAt}
+                onChange={(e) => {
+                  setFormData({ ...formData, publishedAt: e.target.value });
+                }}
+              />
+
+              <InputField
+                label="Tags (comma-separated)"
+                value={formData.tags}
+                onChange={(e) => {
+                  setFormData({ ...formData, tags: e.target.value });
+                }}
+                placeholder="cakes, recipes, tips"
+              />
+
+              <InputField
+                label="Category"
+                value={formData.category}
+                onChange={(e) => {
+                  setFormData({ ...formData, category: e.target.value });
+                }}
+                placeholder="General"
+              />
+
+              <InputField
+                label="SEO Title (optional)"
+                value={formData.seoTitle}
+                onChange={(e) => {
+                  setFormData({ ...formData, seoTitle: e.target.value });
+                }}
+                placeholder="Max 60 characters"
+              />
+
+              <div>
+                <label className="block text-xs sm:text-sm font-bold text-cream mb-1">
+                  SEO Description (optional)
+                </label>
+                <textarea
+                  value={formData.seoDescription}
+                  onChange={(e) => {
+                    setFormData({ ...formData, seoDescription: e.target.value });
+                  }}
+                  className="w-full rounded-lg border border-cream/10 px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40 focus:border-rose"
+                  rows={2}
+                  placeholder="Max 160 characters"
+                />
+              </div>
+
+              <InputField
+                label="Display Order"
+                type="number"
+                value={formData.order}
+                onChange={(e) => {
+                  setFormData({ ...formData, order: parseInt(e.target.value) || 0 });
+                }}
+                min="0"
+              />
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.isPublished}
+                  onChange={(e) => {
+                    setFormData({ ...formData, isPublished: e.target.checked });
+                  }}
+                  className="w-4 h-4 rounded"
+                />
+                <span className="text-sm text-cream-muted">
+                  Publish this blog post
+                </span>
+              </div>
+
+              <FormButtons
+                onCancel={closeForm}
+                submitting={submitting}
+                submitText={editingItem ? "Update Blog" : "Add Blog"}
+              />
+            </form>
+          </FormModal>
+        )}
+      </AnimatePresence>
+
+      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        {items.map((item) => (
+          <ItemCard
+            key={item._id}
+            image={item.coverImage}
+            title={item.title}
+            subtitle={`${formatDate(item.publishedAt)} • ${item.readTime} min read`}
+            onEdit={() => handleEdit(item)}
+            onDelete={() => handleDelete(item.slug)}
+            aspectRatio="4/3"
+          />
+        ))}
+      </div>
+
+      {items.length === 0 && (
+        <EmptyState icon="article" text="No blog posts yet" />
+      )}
+    </div>
+  );
+}
+
 // Reviews Tab
 function ReviewsTab({ adminKey, showToast, showConfirm }) {
   const [items, setItems] = useState([]);
@@ -2735,6 +3151,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
 
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await fetch(`/api/reviews?key=${adminKey}`);
       const data = await res.json();
       if (data.success) setItems(data.data);
@@ -2773,7 +3190,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
       });
       const data = await res.json();
       if (data.success) {
-        fetchItems();
+        await fetchItems();
         closeForm();
         showToast("Review added successfully!", "success");
       } else {
@@ -2807,7 +3224,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [action]: value }),
       });
-      if ((await res.json()).success) fetchItems();
+      if ((await res.json()).success) await fetchItems();
     } catch (error) {
       console.error("Error:", error);
     }
@@ -2824,7 +3241,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
           });
           const data = await res.json();
           if (data.success) {
-            fetchItems();
+            await fetchItems();
             showToast("Review deleted successfully!", "success");
           } else {
             showToast(data.error || "Failed to delete", "error");
@@ -3683,6 +4100,7 @@ function AdminContent() {
         {activeTab === "hero" && <HeroTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "gallery" && <GalleryTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "events" && <EventsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "blog" && <BlogTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "reels" && <ReelsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "categories" && <CategoriesTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "menu" && <MenuTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}

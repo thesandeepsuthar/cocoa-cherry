@@ -356,14 +356,14 @@ export default function Gallery({ isHomePage = false }) {
             </motion.div>
 
             {isHomePage ? (
-              <h2 
-                id="gallery-heading"
-                className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
-                style={{ fontFamily: 'var(--font-cinzel)' }}
-              >
-                <span className="text-cream">Cake </span>
-                <span className="gradient-text">Gallery</span>
-              </h2>
+            <h2 
+              id="gallery-heading"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              <span className="text-cream">Cake </span>
+              <span className="gradient-text">Gallery</span>
+            </h2>
             ) : (
               <h1 
                 id="gallery-heading"

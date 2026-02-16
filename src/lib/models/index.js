@@ -6,3 +6,4 @@ export { default as RateList } from "./RateList";
 export { default as Event } from "./Event";
 export { default as Hero } from "./Hero";
 export { default as Category } from "./Category";
+export { default as Blog } from "./Blog";

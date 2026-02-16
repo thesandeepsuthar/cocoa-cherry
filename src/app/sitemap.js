@@ -73,6 +73,17 @@ export default function sitemap() {
       },
     },
     {
+      url: `${baseUrl}/blog`,
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+      alternates: {
+        languages: {
+          'en-IN': `${baseUrl}/blog`,
+        },
+      },
+    },
+    {
       url: `${baseUrl}/reviews`,
       lastModified,
       changeFrequency: 'daily',

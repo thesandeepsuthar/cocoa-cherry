@@ -327,15 +327,15 @@ Sent from Cocoa&Cherry Website`;
                               className="flex flex-col gap-2 p-2 rounded-lg bg-gradient-to-r from-rose/10 to-rose-dark/10 border border-rose/20"
                             >
                               <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-rose text-sm">cake</span>
+                              <span className="material-symbols-outlined text-rose text-sm">cake</span>
                                 <span className="text-cream text-sm font-medium flex-1">{cake.name}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => removeCake(cake.name)}
-                                  className="w-5 h-5 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/40 transition-colors"
-                                >
-                                  <span className="material-symbols-outlined text-xs">close</span>
-                                </button>
+                              <button
+                                type="button"
+                                onClick={() => removeCake(cake.name)}
+                                className="w-5 h-5 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/40 transition-colors"
+                              >
+                                <span className="material-symbols-outlined text-xs">close</span>
+                              </button>
                               </div>
                               
                               {/* Quantity Controls */}

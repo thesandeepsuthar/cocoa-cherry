@@ -280,31 +280,31 @@ Sent from Cocoa&Cherry Website`;
             </div>
 
             {/* Date */}
-            <div>
-              <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
                 Date Required <span className="text-rose">*</span>
-              </label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                onFocus={() => setFocusedField("date")}
-                onBlur={() => setFocusedField(null)}
-                required
-                min={new Date().toISOString().split("T")[0]}
-                className={getInputClass("date")}
-              />
-            </div>
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  onFocus={() => setFocusedField("date")}
+                  onBlur={() => setFocusedField(null)}
+                  required
+                  min={new Date().toISOString().split("T")[0]}
+                  className={getInputClass("date")}
+                />
+              </div>
 
             {/* Selected Cakes Section */}
-            <div>
-              <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-cream mb-1.5 sm:mb-2">
                 Selected Items <span className="text-rose">*</span>
                 {selectedCakes.length > 0 && (
                   <span className="ml-2 text-gold">({selectedCakes.length} selected)</span>
                 )}
-              </label>
+                </label>
               
               {/* Selected Cakes Display */}
               <div className={`min-h-[60px] p-3 rounded-xl border transition-all ${
@@ -356,15 +356,15 @@ Sent from Cocoa&Cherry Website`;
                               step="0.5"
                               className="w-16 h-6 text-center text-xs bg-noir border border-rose/20 rounded text-cream focus:outline-none focus:border-rose"
                             />
-                            <select
+                <select
                               value={cake.quantityUnit || 'kg'}
                               onChange={(e) => updateCakeQuantityUnit(cake.name, e.target.value)}
                               className="text-xs px-2 py-1 rounded bg-noir border border-rose/20 text-cream focus:outline-none focus:border-rose"
-                            >
+                >
                               <option value="kg">kg</option>
                               <option value="piece">piece</option>
                               <option value="box">box</option>
-                            </select>
+                </select>
                             <button
                               type="button"
                               onClick={() => updateCakeQuantity(cake.name, (cake.quantity || 1) + 0.5)}
@@ -375,13 +375,13 @@ Sent from Cocoa&Cherry Website`;
                             <span className="text-cream/60 text-xs ml-auto">
                               ₹{((cake.price || 0) * (cake.quantity || 1)).toFixed(0)}
                             </span>
-                          </div>
+              </div>
                         </motion.div>
                       ))}
                     </AnimatePresence>
                   </div>
                 )}
-              </div>
+            </div>
 
               {/* Add More Button */}
               <div className="mt-2 relative">
@@ -402,12 +402,12 @@ Sent from Cocoa&Cherry Website`;
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       className="absolute top-full left-0 mt-1 w-72 max-h-60 overflow-y-auto bg-noir-light border border-cream/10 rounded-xl shadow-2xl z-20"
-                    >
-                      {menuItems.length === 0 ? (
+              >
+                {menuItems.length === 0 ? (
                         <div className="p-4 text-center text-cream/50 text-sm">
                           Loading menu...
                         </div>
-                      ) : (
+                ) : (
                         <div className="p-2">
                           {menuItems
                             .filter(item => !selectedCakes.some(c => c.name === item.name))
@@ -422,14 +422,14 @@ Sent from Cocoa&Cherry Website`;
                                 <p className="flex-1 text-cream text-sm font-medium truncate">{item.name}</p>
                                 <span className="material-symbols-outlined text-cream/30 text-sm">add_circle</span>
                               </button>
-                            ))}
+                    ))}
                           {menuItems.filter(item => !selectedCakes.some(c => c.name === item.name)).length === 0 && (
                             <div className="p-4 text-center text-cream/50 text-sm">
                               All items already selected!
                             </div>
                           )}
                         </div>
-                      )}
+                )}
                     </motion.div>
                   )}
                 </AnimatePresence>
