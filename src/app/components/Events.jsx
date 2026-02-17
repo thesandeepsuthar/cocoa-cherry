@@ -56,67 +56,77 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] bg-noir/95 backdrop-blur-xl flex items-end sm:items-center justify-center p-0 sm:p-4"
+      className="fixed inset-0 z-[9999] bg-noir/98 backdrop-blur-xl flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
       {/* Navigation arrows - Desktop only */}
       <motion.button
-        initial={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.15, x: -5 }}
         whileTap={{ scale: 0.9 }}
         onClick={(e) => {
           e.stopPropagation();
           onPrev();
         }}
-        className="hidden md:flex absolute left-2 lg:left-6 w-10 h-10 lg:w-12 lg:h-12 rounded-full 
-                 bg-rose/10 hover:bg-rose/20 border border-rose/20 
-                 items-center justify-center transition-colors z-10"
+        className="hidden md:flex absolute left-4 lg:left-8 xl:left-12 w-12 h-12 lg:w-14 lg:h-14 rounded-full 
+                 bg-noir/90 backdrop-blur-md hover:bg-rose/30 border border-rose/30 
+                 items-center justify-center transition-all z-20 shadow-xl shadow-rose/20"
       >
-        <span className="material-symbols-outlined text-cream text-xl lg:text-2xl">chevron_left</span>
+        <span className="material-symbols-outlined text-cream text-2xl lg:text-3xl">chevron_left</span>
       </motion.button>
 
       <motion.button
-        initial={{ opacity: 0, x: 20 }}
+        initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.15, x: 5 }}
         whileTap={{ scale: 0.9 }}
         onClick={(e) => {
           e.stopPropagation();
           onNext();
         }}
-        className="hidden md:flex absolute right-2 lg:right-6 w-10 h-10 lg:w-12 lg:h-12 rounded-full 
-                 bg-rose/10 hover:bg-rose/20 border border-rose/20 
-                 items-center justify-center transition-colors z-10"
+        className="hidden md:flex absolute right-4 lg:right-8 xl:right-12 w-12 h-12 lg:w-14 lg:h-14 rounded-full 
+                 bg-noir/90 backdrop-blur-md hover:bg-rose/30 border border-rose/30 
+                 items-center justify-center transition-all z-20 shadow-xl shadow-rose/20"
       >
-        <span className="material-symbols-outlined text-cream text-xl lg:text-2xl">chevron_right</span>
+        <span className="material-symbols-outlined text-cream text-2xl lg:text-3xl">chevron_right</span>
       </motion.button>
 
       <motion.div
-        initial={{ opacity: 0, y: '100%' }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: '100%' }}
+        initial={{ opacity: 0, y: '100%', scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: '100%', scale: 0.95 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="bg-noir-light w-full sm:max-w-2xl lg:max-w-4xl rounded-t-2xl sm:rounded-2xl border-t sm:border border-rose/20 
-                 shadow-2xl overflow-hidden max-h-[95vh] sm:max-h-[90vh] flex flex-col"
+        className="bg-noir-light w-full sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl 
+                 rounded-t-[2rem] sm:rounded-3xl border border-rose/20 
+                 shadow-2xl shadow-rose/10 overflow-hidden 
+                 max-h-[98vh] sm:max-h-[90vh] flex flex-col
+                 backdrop-blur-sm"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Mobile drag handle */}
-        <div className="sm:hidden w-10 h-1 bg-cream/20 rounded-full mx-auto mt-2" />
+        {/* Mobile drag handle - Enhanced */}
+        <div className="sm:hidden flex flex-col items-center pt-3 pb-2 cursor-grab active:cursor-grabbing">
+          <div className="w-14 h-1.5 bg-cream/40 rounded-full mb-1" />
+          <div className="w-10 h-0.5 bg-cream/20 rounded-full" />
+        </div>
         
-        {/* Close button */}
+        {/* Close button - Enhanced for mobile */}
         <motion.button
           whileHover={{ scale: 1.1, rotate: 90 }}
-          whileTap={{ scale: 0.9 }}
+          whileTap={{ scale: 0.85 }}
           onClick={onClose}
-          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-noir/80 
-                   hover:bg-rose/20 flex items-center justify-center transition-colors"
+          className="absolute top-3 right-3 sm:top-5 sm:right-5 z-30 
+                   w-10 h-10 sm:w-11 sm:h-11 rounded-full 
+                   bg-noir/95 backdrop-blur-md hover:bg-rose/30 active:bg-rose/40
+                   border border-rose/30 shadow-xl shadow-rose/20
+                   flex items-center justify-center transition-all 
+                   touch-manipulation"
         >
-          <span className="material-symbols-outlined text-cream text-lg sm:text-xl">close</span>
+          <span className="material-symbols-outlined text-cream text-xl sm:text-xl">close</span>
         </motion.button>
 
-        {/* Image Section */}
-        <div className="relative aspect-[4/3] sm:aspect-video bg-noir overflow-hidden flex-shrink-0">
+        {/* Image Section - Enhanced for mobile */}
+        <div className="relative aspect-[4/3] sm:aspect-video bg-gradient-to-br from-noir via-noir-light to-noir overflow-hidden flex-shrink-0 touch-pan-y">
           {allImages.length > 0 ? (
             <>
               <motion.div
@@ -142,110 +152,149 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
                       alt={`Cocoa&Cherry cake stall at Ahmedabad food festival - Event ${idx + 1} - Premium custom cakes display`}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-noir/90 via-noir/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-noir/20" />
                   </div>
                 ))}
               </motion.div>
               
-              {/* Image navigation dots */}
+              {/* Image navigation dots - Enhanced for mobile */}
               {allImages.length > 1 && (
-                <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2">
+                <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-2.5 z-20 px-4 py-2 rounded-full bg-noir/60 backdrop-blur-sm">
                   {allImages.map((_, idx) => (
-                    <button
+                    <motion.button
                       key={idx}
                       onClick={() => setCurrentImageIndex(idx)}
-                      className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all ${
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.8 }}
+                      className={`h-2.5 sm:h-2 rounded-full transition-all touch-manipulation ${
                         idx === currentImageIndex 
-                          ? 'bg-rose w-4 sm:w-6' 
-                          : 'bg-cream/30 hover:bg-cream/50'
+                          ? 'bg-rose w-10 sm:w-8 shadow-lg shadow-rose/50' 
+                          : 'bg-cream/50 active:bg-cream/70 w-2.5 sm:w-2'
                       }`}
+                      aria-label={`Go to image ${idx + 1}`}
                     />
                   ))}
                 </div>
               )}
 
-              {/* Image counter */}
+              {/* Image counter - Enhanced for mobile */}
               {allImages.length > 1 && (
-                <div className="absolute top-2 left-2 sm:top-4 sm:left-4 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-noir/80 text-cream text-xs sm:text-sm">
-                  {currentImageIndex + 1} / {allImages.length}
+                <div className="absolute top-3 left-3 sm:top-5 sm:left-5 px-3 py-1.5 sm:py-2 rounded-full 
+                              bg-noir/95 backdrop-blur-md border border-rose/30 text-cream 
+                              text-xs sm:text-sm font-semibold shadow-xl">
+                  <span className="text-rose">{currentImageIndex + 1}</span>
+                  <span className="text-cream-muted mx-1">/</span>
+                  <span className="text-cream-muted">{allImages.length}</span>
                 </div>
               )}
             </>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-noir-light">
-              <span className="material-symbols-outlined text-4xl sm:text-6xl text-rose/30">celebration</span>
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-rose/10 via-gold/10 to-rose/10">
+              <div className="text-center">
+                <span className="material-symbols-outlined text-6xl sm:text-8xl text-rose/30 mb-2 block">celebration</span>
+                <p className="text-cream-muted text-sm">No images available</p>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Content Section */}
-        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto flex-1">
-          {/* Badge & Date */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-rose/10 border border-rose/20 text-rose text-[10px] sm:text-xs font-medium">
-              <span className="material-symbols-outlined text-xs sm:text-sm">celebration</span>
-              Event
+        {/* Content Section - Enhanced for mobile */}
+        <div className="p-4 sm:p-7 lg:p-9 xl:p-10 overflow-y-auto flex-1 custom-scrollbar 
+                       overscroll-contain pb-6 sm:pb-8">
+          {/* Badge & Date - Mobile optimized */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
+            <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2 rounded-full 
+                           bg-gradient-to-r from-rose/25 to-rose/15 border border-rose/40 text-rose 
+                           text-xs sm:text-sm font-bold shadow-md active:scale-95 transition-transform">
+              <span className="material-symbols-outlined text-sm sm:text-base">celebration</span>
+              <span>Event</span>
             </span>
-            <span className="text-cream-muted text-xs sm:text-sm flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm sm:text-base">calendar_today</span>
-              {formatDate(event.date)}
+            <span className="text-cream-muted text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 
+                            px-3 sm:px-4 py-2 sm:py-2 rounded-full bg-noir border border-rose/15
+                            shadow-sm">
+              <span className="material-symbols-outlined text-rose text-sm sm:text-base">calendar_today</span>
+              <span>{formatDate(event.date)}</span>
             </span>
           </div>
 
-          {/* Title */}
+          {/* Title - Mobile optimized */}
           <h3 
-            className="text-lg sm:text-2xl lg:text-3xl font-bold text-cream mb-1.5 sm:mb-2"
+            className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-cream mb-4 sm:mb-4 
+                      leading-tight tracking-tight"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             {event.title}
           </h3>
 
-          {/* Venue */}
-          <p className="text-cream-muted text-sm sm:text-base flex items-center gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-            <span className="material-symbols-outlined text-rose text-base sm:text-lg">location_on</span>
-            {event.venue}
-          </p>
+          {/* Venue - Mobile optimized */}
+          <div className="flex items-start gap-2.5 sm:gap-2.5 mb-4 sm:mb-5 p-3.5 sm:p-4 rounded-xl 
+                         bg-noir border border-rose/15 shadow-sm">
+            <span className="material-symbols-outlined text-rose text-xl sm:text-xl mt-0.5 flex-shrink-0">location_on</span>
+            <p className="text-cream-muted text-sm sm:text-base lg:text-lg leading-relaxed flex-1">{event.venue}</p>
+          </div>
 
-          {/* Highlights */}
+          {/* Highlights - Mobile optimized */}
           {event.highlights && (
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-gold/10 border border-gold/20 mb-3 sm:mb-4">
-              <span className="material-symbols-outlined text-gold text-base sm:text-lg">emoji_events</span>
-              <span className="text-gold font-bold text-sm sm:text-base">{event.highlights}</span>
+            <div className="inline-flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-2.5 
+                          rounded-xl sm:rounded-2xl bg-gradient-to-r from-gold/25 to-gold/15 
+                          border border-gold/40 mb-4 sm:mb-5 shadow-lg shadow-gold/15
+                          active:scale-95 transition-transform">
+              <span className="material-symbols-outlined text-gold text-xl sm:text-xl">emoji_events</span>
+              <span className="text-gold font-bold text-sm sm:text-base lg:text-lg">{event.highlights}</span>
             </div>
           )}
 
-          {/* Description */}
+          {/* Description - Mobile optimized */}
           {event.description && (
-            <p className="text-cream/80 leading-relaxed text-sm sm:text-base">
-              {event.description}
-            </p>
+            <div className="mt-4 sm:mt-5">
+              <p className="text-cream/90 leading-relaxed text-sm sm:text-base lg:text-lg 
+                          leading-relaxed sm:leading-relaxed lg:leading-relaxed">
+                {event.description}
+              </p>
+            </div>
           )}
 
-          {/* Mobile navigation */}
-          <div className="flex justify-between mt-4 sm:mt-6 md:hidden">
+          {/* Mobile navigation - Enhanced */}
+          <div className="flex justify-between items-center gap-3 mt-6 sm:mt-8 md:hidden pt-5 border-t border-rose/15">
             <motion.button
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.92 }}
               onClick={(e) => { e.stopPropagation(); onPrev(); }}
-              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-rose/10 hover:bg-rose/20 text-cream 
-                       flex items-center gap-1 transition-colors text-xs sm:text-sm"
+              className="flex-1 px-5 py-3 rounded-xl bg-gradient-to-r from-rose/15 to-rose/10 
+                       active:from-rose/25 active:to-rose/20 border border-rose/30 
+                       text-cream flex items-center justify-center gap-2 transition-all 
+                       text-sm font-semibold shadow-md touch-manipulation min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-base sm:text-lg">chevron_left</span>
-              Prev
+              <span className="material-symbols-outlined text-xl">chevron_left</span>
+              <span>Previous</span>
             </motion.button>
             <motion.button
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.92 }}
               onClick={(e) => { e.stopPropagation(); onNext(); }}
-              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-rose/10 hover:bg-rose/20 text-cream 
-                       flex items-center gap-1 transition-colors text-xs sm:text-sm"
+              className="flex-1 px-5 py-3 rounded-xl bg-gradient-to-r from-rose/15 to-rose/10 
+                       active:from-rose/25 active:to-rose/20 border border-rose/30 
+                       text-cream flex items-center justify-center gap-2 transition-all 
+                       text-sm font-semibold shadow-md touch-manipulation min-h-[44px]"
             >
-              Next
-              <span className="material-symbols-outlined text-base sm:text-lg">chevron_right</span>
+              <span>Next</span>
+              <span className="material-symbols-outlined text-xl">chevron_right</span>
             </motion.button>
           </div>
 
-          {/* Event counter */}
-          <div className="text-center mt-3 sm:mt-4 text-cream-muted text-[10px] sm:text-xs">
-            {currentIndex + 1} of {totalCount} events
+          {/* Event counter - Enhanced for mobile */}
+          <div className="text-center mt-5 pt-5 border-t border-rose/15">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
+                           bg-noir border border-rose/20 shadow-sm
+                           text-cream-muted text-xs sm:text-sm font-medium">
+              <span className="material-symbols-outlined text-sm text-rose">photo_library</span>
+              <span>
+                <span className="text-cream font-semibold">{currentIndex + 1}</span>
+                <span className="mx-1">of</span>
+                <span className="text-cream-muted">{totalCount}</span>
+              </span>
+            </span>
           </div>
         </div>
       </motion.div>
