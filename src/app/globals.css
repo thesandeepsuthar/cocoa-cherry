@@ -523,12 +523,12 @@ h1, h2, h3, h4, h5, h6 {
    SLICK SLIDER CUSTOM STYLES
 ═══════════════════════════════════════════════════════════ */
 
-.slick-dots {
-  bottom: -30px;
+/* .slick-dots {
+  bottom: -3px;
 }
 
 .slick-dots li {
-  margin: 0 2px;
+  margin: 0 10px;
 }
 
 .slick-dots li button:before {
@@ -540,7 +540,7 @@ h1, h2, h3, h4, h5, h6 {
 .slick-dots li.slick-active button:before {
   color: var(--color-rose) !important;
   opacity: 1;
-}
+} */
 
 .slick-prev:before,
 .slick-next:before {
