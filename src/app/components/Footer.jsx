@@ -8,6 +8,40 @@ import { useRef } from "react";
 const instagramUrl =
   "https://www.instagram.com/cocoa_cherry_?igsh=dzIzaG43YTlqd3h2";
 
+// Premium brands/ingredients we use
+const premiumBrands = [
+  {
+    name: "Callebaut Belgian Chocolate",
+    description: "Premium Belgian chocolate",
+    logo: "🍫", // Replace with actual logo URL
+  },
+  {
+    name: "Amul",
+    description: "Fresh dairy products",
+    logo: "🥛",
+  },
+  {
+    name: "FSSAI Certified",
+    description: "Food safety certified",
+    logo: "✓",
+  },
+  {
+    name: "Fresh Fruits",
+    description: "Daily fresh ingredients",
+    logo: "🍓",
+  },
+  {
+    name: "Premium Fondant",
+    description: "High-quality decorations",
+    logo: "🎨",
+  },
+  {
+    name: "Natural Colors",
+    description: "Food-grade colors",
+    logo: "🌈",
+  },
+];
+
 const contactInfo = [
   {
     icon: "location_on",
@@ -43,6 +77,67 @@ export default function Footer() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 md:px-8 py-10 sm:py-14 md:py-16 lg:py-20">
+        {/* Premium Brands Slider - Above main footer content */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="mb-12 sm:mb-16"
+        >
+          <div className="text-center mb-6 sm:mb-8">
+            <h3 
+              className="text-lg sm:text-xl font-bold text-cream mb-2"
+              style={{ fontFamily: "var(--font-cinzel)" }}
+            >
+              Premium Ingredients We Use
+            </h3>
+            <p className="text-cream-muted text-xs sm:text-sm">
+              Only the finest quality for your celebrations
+            </p>
+          </div>
+
+          {/* Auto-scrolling brand slider */}
+          <div className="relative overflow-hidden">
+            {/* Gradient overlays for smooth edges */}
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-noir-light to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-noir-light to-transparent z-10 pointer-events-none" />
+            
+            {/* Scrolling container */}
+            <motion.div
+              className="flex gap-8 sm:gap-12"
+              animate={{
+                x: [0, -1000],
+              }}
+              transition={{
+                x: {
+                  repeat: Infinity,
+                  repeatType: "loop",
+                  duration: 20,
+                  ease: "linear",
+                },
+              }}
+            >
+              {/* Duplicate brands for seamless loop */}
+              {[...premiumBrands, ...premiumBrands, ...premiumBrands].map((brand, index) => (
+                <div
+                  key={index}
+                  className="flex-shrink-0 flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-xl bg-noir/50 border border-rose/10 min-w-[140px] sm:min-w-[160px]"
+                >
+                  <div className="text-3xl sm:text-4xl">{brand.logo}</div>
+                  <div className="text-center">
+                    <p className="text-cream text-xs sm:text-sm font-medium whitespace-nowrap">
+                      {brand.name}
+                    </p>
+                    <p className="text-cream-muted text-[10px] sm:text-xs whitespace-nowrap">
+                      {brand.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           {/* Brand Column */}
           <motion.div
