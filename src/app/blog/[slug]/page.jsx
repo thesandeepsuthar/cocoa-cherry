@@ -282,7 +282,7 @@ export default async function BlogPostPage({ params }) {
           {/* Hero Section */}
           <section className="relative pb-6 sm:pb-8 md:pb-12 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-rose/10 via-transparent to-noir" />
-            <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 pt-8 sm:pt-12 md:pt-16">
+            <div className="max-w-[1200px] mx-auto px-4 md:px-8 relative z-10 pt-8 sm:pt-12 md:pt-16">
               {/* Breadcrumb */}
               <nav className="mb-4 sm:mb-6 text-xs sm:text-sm overflow-x-auto" itemScope itemType="https://schema.org/BreadcrumbList">
                 <div className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
@@ -302,7 +302,7 @@ export default async function BlogPostPage({ params }) {
               </nav>
 
               {/* Cover Image */}
-              <div className="relative aspect-video rounded-xl sm:rounded-2xl overflow-hidden mb-6 sm:mb-8 border border-rose/20 max-w-4xl mx-auto">
+              <div className="relative aspect-video rounded-xl sm:rounded-2xl overflow-hidden mb-6 sm:mb-8 border border-rose/20">
                 <img
                   src={blog.coverImage}
                   alt={blog.title}
@@ -313,7 +313,7 @@ export default async function BlogPostPage({ params }) {
 
               {/* Title */}
               <h1 
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-cream mb-4 sm:mb-6 max-w-4xl mx-auto" 
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-cream mb-4 sm:mb-6" 
                 style={{ fontFamily: 'var(--font-cinzel)' }}
                 itemProp="headline"
               >
@@ -321,7 +321,7 @@ export default async function BlogPostPage({ params }) {
               </h1>
 
               {/* Meta Info */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 text-cream-muted text-[10px] xs:text-xs sm:text-sm mb-4 sm:mb-6 max-w-4xl mx-auto">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 text-cream-muted text-[10px] xs:text-xs sm:text-sm mb-4 sm:mb-6">
                 <span className="flex items-center gap-1 sm:gap-1.5 md:gap-2" itemProp="author" itemScope itemType="https://schema.org/Person">
                   <span className="material-symbols-outlined text-[14px] sm:text-base">person</span>
                   <span className="truncate max-w-[120px] sm:max-w-none" itemProp="name">{blog.author}</span>
@@ -346,7 +346,7 @@ export default async function BlogPostPage({ params }) {
 
               {/* Tags */}
               {blog.tags && blog.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6 sm:mb-8 max-w-4xl mx-auto">
+                <div className="flex flex-wrap gap-2 mb-6 sm:mb-8">
                   {blog.tags.map((tag, index) => (
                     <span
                       key={index}
@@ -362,29 +362,25 @@ export default async function BlogPostPage({ params }) {
           </section>
 
           {/* Content */}
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-8 sm:pb-12 md:pb-16">
-            <div className="max-w-4xl mx-auto">
-              <article
-                className="blog-content text-cream-muted leading-relaxed text-sm sm:text-base"
-                dangerouslySetInnerHTML={{ __html: content }}
-                itemProp="articleBody"
-              />
-            </div>
+          <section className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 pb-8 sm:pb-12 md:pb-16">
+            <article
+              className="blog-content text-cream-muted leading-relaxed text-sm sm:text-base"
+              dangerouslySetInnerHTML={{ __html: content }}
+              itemProp="articleBody"
+            />
           </section>
 
           {/* Back to Blog */}
-          <section className="max-w-7xl mx-auto px-4 md:px-8 pb-8 sm:pb-12">
-            <div className="max-w-4xl mx-auto">
-              <a
-                href="/blog"
-                className="inline-flex items-center gap-2 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-full 
-                         bg-gradient-to-r from-rose/20 to-rose/10 border border-rose/20 text-cream 
-                         hover:from-rose/30 hover:to-rose/20 transition-all text-sm sm:text-base"
-              >
-                <span className="material-symbols-outlined text-base sm:text-lg md:text-xl">arrow_back</span>
-                <span>Back to Blog</span>
-              </a>
-            </div>
+          <section className="max-w-6xl mx-auto px-4 md:px-8 pb-8 sm:pb-12">
+            <a
+              href="/blog"
+              className="inline-flex items-center gap-2 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-full 
+                       bg-gradient-to-r from-rose/20 to-rose/10 border border-rose/20 text-cream 
+                       hover:from-rose/30 hover:to-rose/20 transition-all text-sm sm:text-base"
+            >
+              <span className="material-symbols-outlined text-base sm:text-lg md:text-xl">arrow_back</span>
+              <span>Back to Blog</span>
+            </a>
           </section>
         </main>
         <Footer />

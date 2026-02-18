@@ -220,12 +220,19 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    // Soft delete: Set isActive to false
-    await Blog.findByIdAndUpdate(
-      blog._id,
-      { isActive: false },
-      { new: true }
-    );
+    // Hard delete: Actually remove from database
+    await Blog.findByIdAndDelete(blog._id);
+
+    // Optional: Delete cover image from Cloudinary
+    if (blog.coverImagePublicId) {
+      try {
+        const { deleteFromCloudinary } = await import('@/lib/cloudinary');
+        await deleteFromCloudinary(blog.coverImagePublicId);
+      } catch (cloudinaryError) {
+        console.warn('⚠️ Failed to delete cover image from Cloudinary:', cloudinaryError.message);
+        // Continue even if Cloudinary deletion fails
+      }
+    }
 
     return NextResponse.json({
       success: true,
