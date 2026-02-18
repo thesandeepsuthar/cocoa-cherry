@@ -87,11 +87,11 @@ export async function POST(request) {
       );
     }
 
-    // Sanitize inputs (but NOT content - we want to preserve HTML)
+    // Sanitize inputs (title and excerpt only - content is stored as raw text)
     const sanitizedTitle = sanitizeString(title);
     const sanitizedExcerpt = sanitizeString(excerpt);
-    // Don't sanitize content - we want to preserve HTML for rich text
-    const sanitizedContent = content; // Keep HTML as-is
+    // Store content as raw text - no sanitization, no HTML encoding
+    const sanitizedContent = content;
     
     if (sanitizedTitle.length > 200) {
       return NextResponse.json(
@@ -142,7 +142,7 @@ export async function POST(request) {
       title: sanitizedTitle,
       slug,
       excerpt: sanitizedExcerpt,
-      content: sanitizedContent, // HTML content preserved
+      content: sanitizedContent, // Raw text stored as-is
       coverImage: cloudinaryResult.secure_url,
       coverImagePublicId: cloudinaryResult.public_id,
       author: author ? sanitizeString(author) : 'Cocoa&Cherry Team',

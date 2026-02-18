@@ -1,10 +1,20 @@
 // Security utilities for input validation and sanitization
 
 /**
- * Sanitize string input to prevent XSS attacks
- * Escapes HTML special characters
+ * Sanitize string input by trimming whitespace
+ * Does NOT HTML encode - encoding should happen at display time, not storage
  */
 export function sanitizeString(str) {
+  if (typeof str !== 'string') return '';
+  
+  return str.trim();
+}
+
+/**
+ * HTML encode string for safe display in HTML context
+ * Use this when rendering user input in HTML, not when storing
+ */
+export function htmlEncode(str) {
   if (typeof str !== 'string') return '';
   
   return str
@@ -13,12 +23,11 @@ export function sanitizeString(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;')
-    .trim();
+    .replace(/\//g, '&#x2F;');
 }
 
 /**
- * Sanitize object - recursively sanitize all string values
+ * Sanitize object - recursively trim all string values
  */
 export function sanitizeObject(obj) {
   if (typeof obj !== 'object' || obj === null) {

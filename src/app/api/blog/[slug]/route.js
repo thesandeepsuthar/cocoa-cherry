@@ -126,8 +126,8 @@ export async function PUT(request, { params }) {
     }
 
     if (content !== undefined) {
-      // Don't sanitize content - we want to preserve HTML for rich text
-      updateData.content = content; // Keep HTML as-is
+      // Store content as raw text - no sanitization, no HTML encoding
+      updateData.content = content;
       updateData.readTime = calculateReadTime(content);
     }
 

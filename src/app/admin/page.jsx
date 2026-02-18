@@ -2857,6 +2857,11 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
       
       if (data.success && data.data) {
         const fullBlog = data.data;
+        
+        // Debug: Log the raw content from API
+        console.log('Raw content from API:', fullBlog.content);
+        console.log('Content length:', fullBlog.content?.length);
+        
         setEditingItem(fullBlog);
         setFormData({
           title: fullBlog.title || "",
@@ -3137,6 +3142,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -3183,8 +3189,11 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
     if (!validateForm()) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/reviews?key=${adminKey}`, {
-        method: "POST",
+      const url = editingItem
+        ? `/api/reviews/${editingItem._id}?key=${adminKey}`
+        : `/api/reviews?key=${adminKey}`;
+      const res = await fetch(url, {
+        method: editingItem ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
@@ -3192,7 +3201,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast("Review added successfully!", "success");
+        showToast(editingItem ? "Review updated successfully!" : "Review added successfully!", "success");
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -3205,6 +3214,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
 
   const closeForm = () => {
     setShowForm(false);
+    setEditingItem(null);
     setFormData({
       name: "",
       email: "",
@@ -3215,6 +3225,21 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
       isFeatured: false,
     });
     setErrors({});
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setFormData({
+      name: item.name,
+      email: item.email,
+      review: item.review,
+      rating: item.rating,
+      cakeType: item.cakeType || "",
+      isApproved: item.isApproved,
+      isFeatured: item.isFeatured,
+    });
+    setErrors({});
+    setShowForm(true);
   };
 
   const handleAction = async (id, action, value) => {
@@ -3311,11 +3336,11 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
         </div>
       </div>
 
-      {/* Add Review Form Modal */}
+      {/* Add/Edit Review Form Modal */}
       <AnimatePresence>
         {showForm && (
           <FormModal
-            title="Add Review"
+            title={editingItem ? "Edit Review" : "Add Review"}
             onClose={closeForm}
           >
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -3425,7 +3450,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
               <FormButtons
                 onCancel={closeForm}
                 submitting={submitting}
-                submitText="Add Review"
+                submitText={editingItem ? "Update Review" : "Add Review"}
               />
             </form>
           </FormModal>
@@ -3517,6 +3542,15 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
                     star
                   </span>
                   Feature
+                </button>
+                <button
+                  onClick={() => handleEdit(item)}
+                  className="flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs sm:text-sm bg-blue-900/30 text-blue-400 border border-blue-500/20 hover:bg-blue-500 hover:text-white transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">
+                    edit
+                  </span>
+                  Edit
                 </button>
                 <button
                   onClick={() => handleDelete(item._id)}

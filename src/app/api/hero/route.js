@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../lib/mongodb";
 import { Hero } from "../../../lib/models";
 import { verifyAdminKey } from "../../../lib/auth";
+import { sanitizeString } from "../../../lib/security";
 import { uploadToCloudinary } from "../../../lib/cloudinary";
 
 // GET /api/hero - Get all hero images
@@ -41,9 +42,9 @@ export async function POST(request) {
 
     const formData = await request.formData();
     const imageData = formData.get("imageData");
-    const title = formData.get("title") || "Artisanal Cakes";
-    const subtitle = formData.get("subtitle") || "Handcrafted with Love";
-    const alt = formData.get("alt") || "Hero image for Cocoa & Cherry bakery";
+    const title = sanitizeString(formData.get("title") || "Artisanal Cakes");
+    const subtitle = sanitizeString(formData.get("subtitle") || "Handcrafted with Love");
+    const alt = sanitizeString(formData.get("alt") || "Hero image for Cocoa & Cherry bakery");
     const isActive = formData.get("isActive") === "true";
     const order = parseInt(formData.get("order")) || 0;
 
@@ -157,10 +158,10 @@ export async function PUT(request) {
       }
     }
 
-    if (formData.get("title")) updateData.title = formData.get("title");
+    if (formData.get("title")) updateData.title = sanitizeString(formData.get("title"));
     if (formData.get("subtitle"))
-      updateData.subtitle = formData.get("subtitle");
-    if (formData.get("alt")) updateData.alt = formData.get("alt");
+      updateData.subtitle = sanitizeString(formData.get("subtitle"));
+    if (formData.get("alt")) updateData.alt = sanitizeString(formData.get("alt"));
     if (formData.get("isActive") !== null)
       updateData.isActive = formData.get("isActive") === "true";
     if (formData.get("order") !== null)
