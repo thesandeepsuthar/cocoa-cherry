@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import connectDB from '@/lib/mongodb';
 import { Blog } from '@/lib/models';
 import { Navigation, Footer } from '../../components';
-import { getRandomFallbackImage } from '@/lib/constants';
+import { FallbackImage } from '../../components/FallbackImage';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
 
@@ -304,13 +304,10 @@ export default async function BlogPostPage({ params }) {
 
               {/* Cover Image */}
               <div className="relative aspect-video rounded-xl sm:rounded-2xl overflow-hidden mb-6 sm:mb-8 border border-rose/20">
-                <img
-                  src={blog.coverImage || getRandomFallbackImage()}
+                <FallbackImage
+                  src={blog.coverImage}
                   alt={blog.title}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = getRandomFallbackImage();
-                  }}
                   itemProp="image"
                 />
               </div>
