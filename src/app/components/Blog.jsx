@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import Link from 'next/link';
+import { getRandomFallbackImage } from '@/lib/constants';
 
 export default function Blog({ isHomePage = false, limit = 3 }) {
   const [blogs, setBlogs] = useState([]);
@@ -182,11 +183,13 @@ function BlogCard({ blog, index }) {
         <div className="card-noir overflow-hidden h-full flex flex-col cursor-pointer">
           {/* Image */}
           <div className="relative aspect-[4/3] overflow-hidden">
-            <div
-              className="absolute inset-0 bg-cover bg-center transform group-hover:scale-110 transition-transform duration-700"
-              style={{ backgroundImage: `url('${blog.coverImage}')` }}
-              aria-label={`${blog.title} - Cocoa&Cherry blog post`}
-              role="img"
+            <img
+              src={blog.coverImage || getRandomFallbackImage()}
+              alt={`${blog.title} - Cocoa&Cherry blog post`}
+              className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+              onError={(e) => {
+                e.target.src = getRandomFallbackImage();
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
             

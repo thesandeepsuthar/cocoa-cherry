@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getRandomFallbackImage } from '@/lib/constants';
 
 // Default fallback menu items
 const defaultFlavors = [
@@ -149,11 +150,14 @@ function QuickViewModal({ item, onClose, onAddToOrder, isInOrder, allItems, onNa
         {/* Image */}
         <div className="relative h-48 sm:h-64 md:h-80 overflow-hidden">
           <Image
-            src={item.imageData}
+            src={item.imageData || getRandomFallbackImage()}
             alt={item.name}
             fill
             className="object-cover"
             unoptimized
+            onError={(e) => {
+              e.target.src = getRandomFallbackImage();
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-noir-light via-transparent to-transparent" />
           
@@ -368,12 +372,15 @@ function FloatingCart({ items, onRemove, onClearAll, onProceed, onUpdateQuantity
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                       <Image
-                        src={item.imageData}
+                        src={item.imageData || getRandomFallbackImage()}
                         alt={item.name}
                         width={48}
                         height={48}
                         className="w-full h-full object-cover"
                         unoptimized
+                        onError={(e) => {
+                          e.target.src = getRandomFallbackImage();
+                        }}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -581,11 +588,14 @@ function CategorySection({ category, items, onItemClick, orderItems }) {
                   {/* Image */}
                   <div className="relative h-28 sm:h-36 md:h-44 overflow-hidden">
                     <Image
-                      src={item.imageData}
+                      src={item.imageData || getRandomFallbackImage()}
                       alt={item.name}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
                       unoptimized
+                      onError={(e) => {
+                        e.target.src = getRandomFallbackImage();
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent" />
 

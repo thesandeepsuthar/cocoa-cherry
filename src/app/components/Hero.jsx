@@ -9,6 +9,7 @@ import {
 } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { getRandomFallbackImage } from '@/lib/constants';
 
 // Floating particle component
 const FloatingParticle = ({ delay, duration, size, startX, startY }) => (
@@ -821,7 +822,7 @@ export default function Hero() {
                       className="absolute inset-0"
                     >
                       <Image
-                        src={heroImage.imageData}
+                        src={heroImage.imageData || getRandomFallbackImage()}
                         alt={heroImage.alt || heroImage.title || "Premium custom cake from Cocoa&Cherry - FSSAI Certified Home Bakery Ahmedabad"}
                         fill
                         priority
@@ -831,6 +832,9 @@ export default function Hero() {
                         quality={85}
                         unoptimized={true}
                         loading="eager"
+                        onError={(e) => {
+                          e.target.src = getRandomFallbackImage();
+                        }}
                       />
                     </motion.div>
                   )}
@@ -844,7 +848,7 @@ export default function Hero() {
                       className="absolute inset-0"
                     >
                       <Image
-                        src="https://res.cloudinary.com/cocoa-cherry/image/upload/f_avif,q_auto,w_1200/cocoa-cherry/default-hero"
+                        src={getRandomFallbackImage()}
                         alt="Premium custom cakes from Cocoa&Cherry - FSSAI Certified Home Bakery in Ahmedabad, Gujarat"
                         fill
                         priority
@@ -854,6 +858,9 @@ export default function Hero() {
                         quality={85}
                         unoptimized
                         loading="eager"
+                        onError={(e) => {
+                          e.target.src = getRandomFallbackImage();
+                        }}
                       />
                     </motion.div>
                   )}

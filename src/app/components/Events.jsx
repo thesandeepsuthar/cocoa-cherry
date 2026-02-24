@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Link from 'next/link';
+import { getRandomFallbackImage } from '@/lib/constants';
 
 // Default fallback events
 const defaultEvents = [
@@ -148,9 +149,12 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
                 {allImages.map((image, idx) => (
                   <div key={idx} className="flex-shrink-0 w-full h-full relative">
                     <img
-                      src={image}
+                      src={image || getRandomFallbackImage()}
                       alt={`Cocoa&Cherry cake stall at Ahmedabad food festival - Event ${idx + 1} - Premium custom cakes display`}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = getRandomFallbackImage();
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-noir/90 via-noir/40 to-transparent" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-noir/20" />
@@ -318,11 +322,13 @@ function EventCard({ event, onClick, index }) {
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden">
           {event.coverImage ? (
-            <div
-              className="absolute inset-0 bg-cover bg-center transform group-hover:scale-110 transition-transform duration-700"
-              style={{ backgroundImage: `url('${event.coverImage}')` }}
-              aria-label={`${event.title || 'Event'} - Cocoa&Cherry cake stall at ${event.location || 'Ahmedabad'} - Premium custom cakes display`}
-              role="img"
+            <img
+              src={event.coverImage || getRandomFallbackImage()}
+              alt={`${event.title || 'Event'} - Cocoa&Cherry cake stall at ${event.venue || 'Ahmedabad'} - Premium custom cakes display`}
+              className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+              onError={(e) => {
+                e.target.src = getRandomFallbackImage();
+              }}
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-rose/20 to-gold/20 flex items-center justify-center">

@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getRandomFallbackImage } from '@/lib/constants';
 
 // Configuration
 const INITIAL_DISPLAY_COUNT = 6; // Show 6 images initially
@@ -152,12 +153,15 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
             className="relative max-w-5xl w-full max-h-[70vh] aspect-square md:aspect-video rounded-2xl overflow-hidden border border-rose/20 shadow-2xl shadow-black/50"
           >
             <Image
-              src={currentImage.imageData}
+              src={currentImage.imageData || getRandomFallbackImage()}
               alt={currentImage.alt || currentImage.caption}
               fill
               className="object-contain bg-noir-light"
               unoptimized
               priority
+              onError={(e) => {
+                e.target.src = getRandomFallbackImage();
+              }}
             />
           </motion.div>
         </AnimatePresence>
@@ -198,11 +202,14 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
               }`}
             >
               <Image
-                src={image.imageData}
+                src={image.imageData || getRandomFallbackImage()}
                 alt={image.alt || image.caption}
                 fill
                 className="object-cover"
                 unoptimized
+                onError={(e) => {
+                  e.target.src = getRandomFallbackImage();
+                }}
               />
             </motion.button>
           ))}
@@ -233,11 +240,14 @@ function GalleryCard({ image, index, onClick, isInView }) {
     >
       {/* Image */}
       <Image
-        src={image.imageData}
+        src={image.imageData || getRandomFallbackImage()}
         alt={image.alt || image.caption}
         fill
         className="object-cover transition-transform duration-700 group-hover:scale-110"
         unoptimized
+        onError={(e) => {
+          e.target.src = getRandomFallbackImage();
+        }}
       />
       
       {/* Overlay */}
