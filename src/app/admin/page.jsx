@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Dashboard from "./components/Dashboard";
+import SearchFilter from "./components/SearchFilter";
+import { filterAndSort } from "./utils/filterSort";
 
 // Toast Notification Component
 function Toast({ message, type = "success", onClose }) {
@@ -140,6 +143,7 @@ function ConfirmationDialog({ isOpen, onClose, onConfirm, title, message }) {
 
 // Tabs
 const TABS = [
+  { id: "dashboard", label: "Dashboard", icon: "dashboard" },
   { id: "hero", label: "Hero", icon: "image" },
   { id: "gallery", label: "Gallery", icon: "photo_library" },
   { id: "events", label: "Events", icon: "celebration" },
@@ -532,6 +536,11 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  
+  // Search and Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
 
   const fetchItems = useCallback(async () => {
     try {
@@ -549,6 +558,15 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
+  
+  // Filter and sort items
+  const filteredItems = filterAndSort(
+    items,
+    searchTerm,
+    filterStatus,
+    sortBy,
+    ['caption', 'alt']
+  );
 
   const validateForm = () => {
     const newErrors = {};
@@ -638,7 +656,7 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
           className="text-xl sm:text-2xl font-bold text-cream"
           style={{ fontFamily: "var(--font-cinzel)" }}
         >
-          Gallery ({items.length})
+          Gallery ({filteredItems.length}{filteredItems.length !== items.length && ` of ${items.length}`})
         </h2>
         <button
           onClick={() => {
@@ -711,8 +729,19 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
         )}
       </AnimatePresence>
 
+      {/* Search and Filter */}
+      <SearchFilter
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        filterStatus={filterStatus}
+        onFilterChange={setFilterStatus}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        placeholder="Search by caption or alt text..."
+      />
+
       <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-        {items.map((item) => (
+        {filteredItems.map((item) => (
           <ItemCard
             key={item._id}
             image={item.imageData}
@@ -725,6 +754,10 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
         ))}
       </div>
 
+      {filteredItems.length === 0 && items.length > 0 && (
+        <EmptyState icon="search_off" text="No items match your search" />
+      )}
+      
       {items.length === 0 && (
         <EmptyState icon="photo_library" text="No gallery images yet" />
       )}
@@ -1419,6 +1452,11 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
+  
+  // Search and Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
 
   const fetchItems = useCallback(async () => {
     try {
@@ -1441,6 +1479,15 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
+  
+  // Filter and sort items
+  const filteredItems = filterAndSort(
+    items,
+    searchTerm,
+    filterStatus,
+    sortBy,
+    ['name', 'description', 'badge']
+  );
 
   const validateForm = () => {
     const newErrors = {};
@@ -1571,7 +1618,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
           className="text-xl sm:text-2xl font-bold text-cream"
           style={{ fontFamily: "var(--font-cinzel)" }}
         >
-          Menu ({items.length})
+          Menu ({filteredItems.length}{filteredItems.length !== items.length && ` of ${items.length}`})
         </h2>
         <button
           onClick={() => {
@@ -1757,8 +1804,19 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
         )}
       </AnimatePresence>
 
+      {/* Search and Filter */}
+      <SearchFilter
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        filterStatus={filterStatus}
+        onFilterChange={setFilterStatus}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        placeholder="Search by name, description, or badge..."
+      />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {items.map((item) => {
+        {filteredItems.map((item) => {
           const hasDiscount =
             item.discountPrice && item.discountPrice < item.price;
           const discountPercent = hasDiscount
@@ -1832,6 +1890,10 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
         })}
       </div>
 
+      {filteredItems.length === 0 && items.length > 0 && (
+        <EmptyState icon="search_off" text="No items match your search" />
+      )}
+      
       {items.length === 0 && (
         <EmptyState icon="restaurant_menu" text="No menu items yet" />
       )}
@@ -1853,6 +1915,11 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  
+  // Search and Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
 
   const fetchItems = useCallback(async () => {
     try {
@@ -1870,6 +1937,15 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
+  
+  // Filter and sort items
+  const filteredItems = filterAndSort(
+    items,
+    searchTerm,
+    filterStatus,
+    sortBy,
+    ['name', 'description']
+  );
 
   const validateForm = () => {
     const newErrors = {};
@@ -1968,7 +2044,7 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
           className="text-xl sm:text-2xl font-bold text-cream"
           style={{ fontFamily: "var(--font-cinzel)" }}
         >
-          Categories ({items.length})
+          Categories ({filteredItems.length}{filteredItems.length !== items.length && ` of ${items.length}`})
         </h2>
         <button
           onClick={() => {
@@ -2060,8 +2136,19 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
         )}
       </AnimatePresence>
 
+      {/* Search and Filter */}
+      <SearchFilter
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        filterStatus={filterStatus}
+        onFilterChange={setFilterStatus}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        placeholder="Search by category name or description..."
+      />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {items.map((item) => (
+        {filteredItems.map((item) => (
           <div key={item._id} className="card-noir rounded-xl overflow-hidden p-4 sm:p-5">
             <div className="flex items-start justify-between mb-3">
               <div>
@@ -2095,6 +2182,10 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
         ))}
       </div>
 
+      {filteredItems.length === 0 && items.length > 0 && (
+        <EmptyState icon="search_off" text="No categories match your search" />
+      )}
+      
       {items.length === 0 && (
         <EmptyState icon="category" text="No categories yet" />
       )}
@@ -3154,6 +3245,10 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  
+  // Search and Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
 
   const fetchItems = useCallback(async () => {
     try {
@@ -3171,6 +3266,15 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
+  
+  // Filter and sort items
+  const filteredItems = filterAndSort(
+    items,
+    searchTerm,
+    filter === "all" ? "all" : filter === "approved" ? "active" : "inactive",
+    sortBy,
+    ['name', 'email', 'review', 'cakeType']
+  );
 
   const validateForm = () => {
     const newErrors = {};
@@ -3279,12 +3383,6 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
     );
   };
 
-  const filteredItems = items.filter((item) => {
-    if (filter === "pending") return !item.isApproved;
-    if (filter === "approved") return item.isApproved;
-    return true;
-  });
-
   const pendingCount = items.filter((item) => !item.isApproved).length;
 
   if (loading) return <LoadingSpinner />;
@@ -3298,7 +3396,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
               className="text-xl sm:text-2xl font-bold text-cream"
               style={{ fontFamily: "var(--font-cinzel)" }}
             >
-              Reviews ({items.length})
+              Reviews ({filteredItems.length}{filteredItems.length !== items.length && ` of ${items.length}`})
             </h2>
             {pendingCount > 0 && (
               <p className="text-xs sm:text-sm text-orange-400 flex items-center gap-1 mt-1">
@@ -3456,6 +3554,18 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
           </FormModal>
         )}
       </AnimatePresence>
+
+      {/* Search and Sort */}
+      <SearchFilter
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        filterStatus="all"
+        onFilterChange={() => {}}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        showStatusFilter={false}
+        placeholder="Search by name, email, review, or cake type..."
+      />
 
       <div className="space-y-3 sm:space-y-4">
         {filteredItems.map((item) => (
@@ -3908,7 +4018,7 @@ function AdminAuthForm({ onSuccess }) {
 
 // Admin Content Component
 function AdminContent() {
-  const [activeTab, setActiveTab] = useState("gallery");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
   const [adminKey, setAdminKey] = useState(null);
@@ -4131,6 +4241,7 @@ function AdminContent() {
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        {activeTab === "dashboard" && <Dashboard adminKey={adminKey || ""} showToast={showToast} />}
         {activeTab === "hero" && <HeroTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "gallery" && <GalleryTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
         {activeTab === "events" && <EventsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
