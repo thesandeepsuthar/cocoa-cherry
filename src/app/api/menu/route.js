@@ -6,11 +6,37 @@ import { sanitizeString, validateRequired } from '@/lib/security';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
+// In-memory cache for menu items
+let menuCache = null;
+let menuCacheTimestamp = 0;
+const MENU_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 // GET - Fetch all menu items (Public)
 export async function GET() {
   try {
+    // Check cache first
+    const now = Date.now();
+    if (menuCache && (now - menuCacheTimestamp) < MENU_CACHE_TTL) {
+      return NextResponse.json({
+        success: true,
+        data: menuCache,
+        cached: true,
+      });
+    }
+
     await connectDB();
-    const menuItems = await Menu.find({ isActive: true }).populate({ path: 'category', select: 'name', strictPopulate: false }).sort({ order: 1, createdAt: -1 });    
+    
+    // Optimized query with projection and lean()
+    const menuItems = await Menu.find({ isActive: true })
+      .select('name description category imageData badge price discountPrice priceUnit order createdAt updatedAt')
+      .populate({ path: 'category', select: 'name', strictPopulate: false })
+      .sort({ order: 1, createdAt: -1 })
+      .lean(); // Convert to plain JS objects for better performance
+    
+    // Update cache
+    menuCache = menuItems;
+    menuCacheTimestamp = now;
+    
     return NextResponse.json({
       success: true,
       data: menuItems,
@@ -116,6 +142,9 @@ export async function POST(request) {
     });
 
     const populated = await Menu.findById(newMenuItem._id).populate({ path: 'category', select: 'name', strictPopulate: false });
+
+    // Invalidate cache
+    menuCache = null;
 
     return NextResponse.json({
       success: true,

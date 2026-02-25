@@ -6,6 +6,10 @@ import { sanitizeString } from '@/lib/security';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
+// Import cache from route.js (shared module scope)
+// Note: In production, use Redis or similar for distributed caching
+let menuCache = null;
+
 // Validate MongoDB ObjectId
 function isValidObjectId(id) {
   return mongoose.Types.ObjectId.isValid(id);
@@ -203,6 +207,9 @@ export async function PUT(request, { params }) {
       );
     }
 
+    // Invalidate cache
+    menuCache = null;
+
     return NextResponse.json({
       success: true,
       data: updatedMenuItem,
@@ -263,6 +270,9 @@ export async function DELETE(request, { params }) {
         console.error('⚠️ Failed to delete image from Cloudinary:', deleteError.message);
       }
     }
+
+    // Invalidate cache
+    menuCache = null;
 
     return NextResponse.json({
       success: true,

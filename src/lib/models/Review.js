@@ -43,5 +43,10 @@ const ReviewSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+// 🚀 PERFORMANCE: Add indexes for faster queries
+ReviewSchema.index({ isApproved: 1, isFeatured: -1, createdAt: -1 });
+ReviewSchema.index({ email: 1 });
+ReviewSchema.index({ createdAt: -1 });
+
 export default mongoose.models.Review || mongoose.model('Review', ReviewSchema);
 

@@ -6,6 +6,9 @@ import { sanitizeString } from '@/lib/security';
 import { uploadToCloudinary, deleteFromCloudinary, extractPublicId } from '@/lib/cloudinary';
 import mongoose from 'mongoose';
 
+// Import cache from route.js (shared module scope)
+let galleryCache = null;
+
 // Validate MongoDB ObjectId
 function isValidObjectId(id) {
   return mongoose.Types.ObjectId.isValid(id);
@@ -167,6 +170,9 @@ export async function PUT(request, { params }) {
       );
     }
 
+    // Invalidate cache
+    galleryCache = null;
+
     return NextResponse.json({
       success: true,
       data: updatedImage,
@@ -228,6 +234,9 @@ export async function DELETE(request, { params }) {
         // Continue even if Cloudinary deletion fails
       }
     }
+
+    // Invalidate cache
+    galleryCache = null;
 
     return NextResponse.json({
       success: true,

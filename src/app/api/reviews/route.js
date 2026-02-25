@@ -9,22 +9,51 @@ import {
   sanitizeString 
 } from '@/lib/security';
 
+// 🚀 PERFORMANCE: Simple in-memory cache for public reviews
+let cachedPublicReviews = null;
+let cacheTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 // GET - Fetch all reviews
-// Public: only approved reviews
-// Admin: all reviews
+// Public: only approved reviews (cached)
+// Admin: all reviews (no cache)
 export async function GET(request) {
   try {
     await connectDB();
     
     const isAdmin = verifyAdminKey(request);
     
+    // 🚀 PERFORMANCE: Use cache for public requests
+    if (!isAdmin) {
+      const now = Date.now();
+      if (cachedPublicReviews && (now - cacheTime) < CACHE_TTL) {
+        return NextResponse.json({
+          success: true,
+          data: cachedPublicReviews,
+          cached: true,
+        });
+      }
+    }
+    
     let query = {};
     if (!isAdmin) {
-      // Public users only see approved reviews
       query = { isApproved: true };
     }
     
-    const reviews = await Review.find(query).sort({ isFeatured: -1, createdAt: -1 });
+    // 🚀 PERFORMANCE: Use projection to only fetch needed fields and lean() for plain objects
+    const reviews = await Review.find(query)
+      .select(isAdmin 
+        ? '-__v' // Admin gets all fields except __v
+        : 'name cakeType rating review isFeatured createdAt avatarData' // Public gets limited fields
+      )
+      .sort({ isFeatured: -1, createdAt: -1 })
+      .lean(); // Convert to plain JS objects (faster)
+    
+    // 🚀 PERFORMANCE: Cache public reviews
+    if (!isAdmin) {
+      cachedPublicReviews = reviews;
+      cacheTime = Date.now();
+    }
     
     return NextResponse.json({
       success: true,
@@ -74,10 +103,13 @@ export async function POST(request) {
       cakeType,
       rating,
       review,
-      avatarData: null, // Don't allow user-uploaded avatars for security
-      isApproved: false, // Requires admin approval
+      avatarData: null,
+      isApproved: false,
       isFeatured: false,
     });
+
+    // 🚀 PERFORMANCE: Invalidate cache when new review is added
+    cachedPublicReviews = null;
 
     return NextResponse.json({
       success: true,

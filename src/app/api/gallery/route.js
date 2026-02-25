@@ -5,31 +5,39 @@ import { verifyAdminKey } from '@/lib/auth';
 import { sanitizeString, validateRequired } from '@/lib/security';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
+// In-memory cache for gallery images
+let galleryCache = null;
+let galleryCacheTimestamp = 0;
+const GALLERY_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 // GET - Fetch all gallery images (Public)
 export async function GET() {
   try {
+    // Check cache first
+    const now = Date.now();
+    if (galleryCache && (now - galleryCacheTimestamp) < GALLERY_CACHE_TTL) {
+      return NextResponse.json({
+        success: true,
+        data: galleryCache,
+        cached: true,
+      });
+    }
+
     await connectDB();
     
-    // First, get sorted IDs without loading imageData into memory
-    const sortedIds = await Gallery.find({ isActive: true })
-      .select('_id order createdAt')
+    // Optimized query with projection and lean()
+    const images = await Gallery.find({ isActive: true })
+      .select('imageData publicId caption alt order createdAt updatedAt')
       .sort({ order: 1, createdAt: -1 })
-      .lean();
+      .lean(); // Convert to plain JS objects for better performance
     
-    // Then fetch full documents in the sorted order
-    const ids = sortedIds.map(doc => doc._id);
-    const imagesMap = new Map();
-    
-    // Fetch all images
-    const images = await Gallery.find({ _id: { $in: ids } }).lean();
-    images.forEach(img => imagesMap.set(img._id.toString(), img));
-    
-    // Return in sorted order
-    const sortedImages = ids.map(id => imagesMap.get(id.toString())).filter(Boolean);
+    // Update cache
+    galleryCache = images;
+    galleryCacheTimestamp = now;
     
     return NextResponse.json({
       success: true,
-      data: sortedImages,
+      data: images,
     });
   } catch (error) {
     console.error('Gallery GET error:', error);
@@ -98,6 +106,9 @@ export async function POST(request) {
       alt: sanitizedAlt,
       order: typeof order === 'number' ? order : 0,
     });
+
+    // Invalidate cache
+    galleryCache = null;
 
     return NextResponse.json({
       success: true,

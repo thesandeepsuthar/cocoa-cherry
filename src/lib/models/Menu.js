@@ -72,4 +72,8 @@ MenuSchema.virtual('discountPercentage').get(function() {
   return 0;
 });
 
+// Indexes for performance optimization
+MenuSchema.index({ isActive: 1, order: 1, createdAt: -1 }); // Compound index for common query
+MenuSchema.index({ category: 1 }); // Index for category filtering
+
 export default mongoose.models.Menu || mongoose.model('Menu', MenuSchema);

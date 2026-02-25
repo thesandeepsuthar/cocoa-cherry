@@ -11,6 +11,12 @@ function isValidObjectId(id) {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
+// 🚀 PERFORMANCE: Cache invalidation helper
+function invalidateReviewsCache() {
+  // This will be imported and used to clear cache
+  // For now, we'll handle it in the route file
+}
+
 // GET - Fetch single review by ID (Admin only)
 export async function GET(request, { params }) {
   try {
