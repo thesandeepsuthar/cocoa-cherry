@@ -292,6 +292,15 @@ export default function Footer() {
                   Events & Stalls
                 </Link>
               </li>
+               <li>
+                <Link
+                  href="/blog"
+                  className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
+                >
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  Blog
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/reviews"
