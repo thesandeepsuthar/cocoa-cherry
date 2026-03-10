@@ -702,7 +702,7 @@ export default function Reviews({ isHomePage = false }) {
 
   // Dynamic slider settings based on breakpoint
   const sliderSettings = {
-    dots: true,
+    dots: false,
     infinite: reviews.length > slidesToShow,
     speed: 500,
     slidesToShow: slidesToShow,
@@ -808,7 +808,7 @@ export default function Reviews({ isHomePage = false }) {
                   ))}
                 </Slider>
               )}
-              
+              hhhhhhhh
               {/* SSR Fallback */}
               {!isMounted && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
