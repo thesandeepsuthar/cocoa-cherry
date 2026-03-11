@@ -1,25 +1,25 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const RateListSchema = new mongoose.Schema(
   {
     category: {
       type: String,
-      required: [true, 'Category is required'],
+      required: [true, "Category is required"],
       trim: true,
     },
     item: {
       type: String,
-      required: [true, 'Item name is required'],
+      required: [true, "Item name is required"],
       trim: true,
     },
     description: {
       type: String,
       trim: true,
-      default: '',
+      default: "",
     },
     price: {
       type: Number,
-      required: [true, 'Price is required'],
+      required: [true, "Price is required"],
       min: 0,
     },
     discountPrice: {
@@ -29,8 +29,15 @@ const RateListSchema = new mongoose.Schema(
     },
     unit: {
       type: String,
-      default: 'per kg',
-      enum: ['per kg', 'per piece', 'per box', 'per dozen', 'per set', 'per serving'],
+      default: "per kg",
+      enum: [
+        "per kg",
+        "per piece",
+        "per box",
+        "per dozen",
+        "per set",
+        "per serving",
+      ],
     },
     isAvailable: {
       type: Boolean,
@@ -43,9 +50,8 @@ const RateListSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export default mongoose.models.RateList || mongoose.model('RateList', RateListSchema);
-
-
+export default mongoose.models.RateList ||
+  mongoose.model("RateList", RateListSchema);

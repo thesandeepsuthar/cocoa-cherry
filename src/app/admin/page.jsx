@@ -106,11 +106,17 @@ function ConfirmationDialog({ isOpen, onClose, onConfirm, title, message }) {
                   warning
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-cream" style={{ fontFamily: "var(--font-cinzel)" }}>
+              <h3
+                className="text-xl font-bold text-cream"
+                style={{ fontFamily: "var(--font-cinzel)" }}
+              >
                 {title || "Confirm Delete"}
               </h3>
             </div>
-            <p className="text-cream-muted text-sm mt-2">{message || "Are you sure you want to delete this item? This action cannot be undone."}</p>
+            <p className="text-cream-muted text-sm mt-2">
+              {message ||
+                "Are you sure you want to delete this item? This action cannot be undone."}
+            </p>
           </div>
 
           {/* Actions */}
@@ -337,7 +343,12 @@ function HeroTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Hero image updated successfully!" : "Hero image added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Hero image updated successfully!"
+            : "Hero image added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -366,7 +377,7 @@ function HeroTab({ adminKey, showToast, showConfirm }) {
           console.error("Error:", error);
           showToast("Failed to delete", "error");
         }
-      }
+      },
     );
   };
 
@@ -536,7 +547,7 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Search and Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -558,15 +569,12 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
-  
+
   // Filter and sort items
-  const filteredItems = filterAndSort(
-    items,
-    searchTerm,
-    filterStatus,
-    sortBy,
-    ['caption', 'alt']
-  );
+  const filteredItems = filterAndSort(items, searchTerm, filterStatus, sortBy, [
+    "caption",
+    "alt",
+  ]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -593,7 +601,12 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Gallery image updated successfully!" : "Gallery image added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Gallery image updated successfully!"
+            : "Gallery image added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -624,7 +637,7 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
           console.error("Error:", error);
           showToast("Failed to delete", "error");
         }
-      }
+      },
     );
   };
 
@@ -656,7 +669,8 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
           className="text-xl sm:text-2xl font-bold text-cream"
           style={{ fontFamily: "var(--font-cinzel)" }}
         >
-          Gallery ({filteredItems.length}{filteredItems.length !== items.length && ` of ${items.length}`})
+          Gallery ({filteredItems.length}
+          {filteredItems.length !== items.length && ` of ${items.length}`})
         </h2>
         <button
           onClick={() => {
@@ -757,7 +771,7 @@ function GalleryTab({ adminKey, showToast, showConfirm }) {
       {filteredItems.length === 0 && items.length > 0 && (
         <EmptyState icon="search_off" text="No items match your search" />
       )}
-      
+
       {items.length === 0 && (
         <EmptyState icon="photo_library" text="No gallery images yet" />
       )}
@@ -828,7 +842,12 @@ function EventsTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Event updated successfully!" : "Event added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Event updated successfully!"
+            : "Event added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -859,7 +878,7 @@ function EventsTab({ adminKey, showToast, showConfirm }) {
           console.error("Error:", error);
           showToast("Failed to delete", "error");
         }
-      }
+      },
     );
   };
 
@@ -1249,7 +1268,12 @@ function ReelsTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Reel updated successfully!" : "Reel added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Reel updated successfully!"
+            : "Reel added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -1280,7 +1304,7 @@ function ReelsTab({ adminKey, showToast, showConfirm }) {
           console.error("Error:", error);
           showToast("Failed to delete", "error");
         }
-      }
+      },
     );
   };
 
@@ -1452,7 +1476,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
-  
+
   // Search and Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -1464,7 +1488,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
       const res = await fetch("/api/menu");
       const data = await res.json();
       if (data.success) setItems(data.data);
-      
+
       // Fetch categories
       const catRes = await fetch("/api/categories");
       const catData = await catRes.json();
@@ -1479,15 +1503,13 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
-  
+
   // Filter and sort items
-  const filteredItems = filterAndSort(
-    items,
-    searchTerm,
-    filterStatus,
-    sortBy,
-    ['name', 'description', 'badge']
-  );
+  const filteredItems = filterAndSort(items, searchTerm, filterStatus, sortBy, [
+    "name",
+    "description",
+    "badge",
+  ]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -1522,7 +1544,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
           : null,
         categoryId: formData.categoryId || null,
       };
-    
+
       const res = await fetch(url, {
         method: editingItem ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -1532,7 +1554,12 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Menu item updated successfully!" : "Menu item added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Menu item updated successfully!"
+            : "Menu item added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -1563,7 +1590,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
           console.error("Error:", error);
           showToast("Failed to delete", "error");
         }
-      }
+      },
     );
   };
 
@@ -1618,7 +1645,8 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
           className="text-xl sm:text-2xl font-bold text-cream"
           style={{ fontFamily: "var(--font-cinzel)" }}
         >
-          Menu ({filteredItems.length}{filteredItems.length !== items.length && ` of ${items.length}`})
+          Menu ({filteredItems.length}
+          {filteredItems.length !== items.length && ` of ${items.length}`})
         </h2>
         <button
           onClick={() => {
@@ -1855,7 +1883,9 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
                 </h3>
                 {item.category && (
                   <p className="text-xs text-rose/80 font-medium mb-1">
-                    {typeof item.category === 'object' ? item.category.name : item.category}
+                    {typeof item.category === "object"
+                      ? item.category.name
+                      : item.category}
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-cream-muted line-clamp-2 mb-2">
@@ -1893,7 +1923,7 @@ function MenuTab({ adminKey, showToast, showConfirm }) {
       {filteredItems.length === 0 && items.length > 0 && (
         <EmptyState icon="search_off" text="No items match your search" />
       )}
-      
+
       {items.length === 0 && (
         <EmptyState icon="restaurant_menu" text="No menu items yet" />
       )}
@@ -1915,7 +1945,7 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Search and Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -1937,15 +1967,12 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
-  
+
   // Filter and sort items
-  const filteredItems = filterAndSort(
-    items,
-    searchTerm,
-    filterStatus,
-    sortBy,
-    ['name', 'description']
-  );
+  const filteredItems = filterAndSort(items, searchTerm, filterStatus, sortBy, [
+    "name",
+    "description",
+  ]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -1976,7 +2003,12 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Category updated successfully!" : "Category added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Category updated successfully!"
+            : "Category added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -2007,7 +2039,7 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
           console.error("Error:", error);
           showToast("Failed to delete", "error");
         }
-      }
+      },
     );
   };
 
@@ -2044,7 +2076,8 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
           className="text-xl sm:text-2xl font-bold text-cream"
           style={{ fontFamily: "var(--font-cinzel)" }}
         >
-          Categories ({filteredItems.length}{filteredItems.length !== items.length && ` of ${items.length}`})
+          Categories ({filteredItems.length}
+          {filteredItems.length !== items.length && ` of ${items.length}`})
         </h2>
         <button
           onClick={() => {
@@ -2149,7 +2182,10 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {filteredItems.map((item) => (
-          <div key={item._id} className="card-noir rounded-xl overflow-hidden p-4 sm:p-5">
+          <div
+            key={item._id}
+            className="card-noir rounded-xl overflow-hidden p-4 sm:p-5"
+          >
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h3 className="font-bold text-cream text-base sm:text-lg mb-1">
@@ -2185,7 +2221,7 @@ function CategoriesTab({ adminKey, showToast, showConfirm }) {
       {filteredItems.length === 0 && items.length > 0 && (
         <EmptyState icon="search_off" text="No categories match your search" />
       )}
-      
+
       {items.length === 0 && (
         <EmptyState icon="category" text="No categories yet" />
       )}
@@ -2282,7 +2318,12 @@ function RateListTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Rate item updated successfully!" : "Rate item added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Rate item updated successfully!"
+            : "Rate item added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -2313,7 +2354,7 @@ function RateListTab({ adminKey, showToast, showConfirm }) {
           console.error("Error:", error);
           showToast("Failed to delete", "error");
         }
-      }
+      },
     );
   };
 
@@ -2881,11 +2922,14 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
       const url = editingItem
         ? `/api/blog/${editingItem.slug}?key=${adminKey}`
         : `/api/blog?key=${adminKey}`;
-      
+
       const dataToSend = {
         ...formData,
         tags: formData.tags
-          ? formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+          ? formData.tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean)
           : [],
       };
 
@@ -2898,7 +2942,12 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Blog updated successfully!" : "Blog added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Blog updated successfully!"
+            : "Blog added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -2918,13 +2967,18 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
           const res = await fetch(`/api/blog/${slug}?key=${adminKey}`, {
             method: "DELETE",
           });
-          
+
           if (!res.ok) {
-            const errorData = await res.json().catch(() => ({ error: 'Network error' }));
-            showToast(errorData.error || `Failed to delete (${res.status})`, "error");
+            const errorData = await res
+              .json()
+              .catch(() => ({ error: "Network error" }));
+            showToast(
+              errorData.error || `Failed to delete (${res.status})`,
+              "error",
+            );
             return;
           }
-          
+
           const data = await res.json();
           if (data.success) {
             await fetchItems(); // Wait for refresh
@@ -2936,7 +2990,7 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
           console.error("Delete error:", error);
           showToast(error.message || "Failed to delete blog", "error");
         }
-      }
+      },
     );
   };
 
@@ -2945,14 +2999,14 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
       // Fetch full blog details including content
       const res = await fetch(`/api/blog/${item.slug}?key=${adminKey}`);
       const data = await res.json();
-      
+
       if (data.success && data.data) {
         const fullBlog = data.data;
-        
+
         // Debug: Log the raw content from API
-        console.log('Raw content from API:', fullBlog.content);
-        console.log('Content length:', fullBlog.content?.length);
-        
+        console.log("Raw content from API:", fullBlog.content);
+        console.log("Content length:", fullBlog.content?.length);
+
         setEditingItem(fullBlog);
         setFormData({
           title: fullBlog.title || "",
@@ -2963,12 +3017,16 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
           publishedAt: fullBlog.publishedAt
             ? new Date(fullBlog.publishedAt).toISOString().split("T")[0]
             : new Date().toISOString().split("T")[0],
-          tags: fullBlog.tags && Array.isArray(fullBlog.tags) ? fullBlog.tags.join(", ") : "",
+          tags:
+            fullBlog.tags && Array.isArray(fullBlog.tags)
+              ? fullBlog.tags.join(", ")
+              : "",
           category: fullBlog.category || "General",
           seoTitle: fullBlog.seoTitle || "",
           seoDescription: fullBlog.seoDescription || "",
           order: fullBlog.order || 0,
-          isPublished: fullBlog.isPublished !== undefined ? fullBlog.isPublished : true,
+          isPublished:
+            fullBlog.isPublished !== undefined ? fullBlog.isPublished : true,
         });
         setErrors({});
         setShowForm(true);
@@ -3066,7 +3124,9 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
                     setErrors({ ...errors, excerpt: "" });
                   }}
                   className={`w-full rounded-lg border px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40 ${
-                    errors.excerpt ? "border-red-400" : "border-cream/10 focus:border-rose"
+                    errors.excerpt
+                      ? "border-red-400"
+                      : "border-cream/10 focus:border-rose"
                   }`}
                   rows={3}
                   placeholder="Short description (max 300 characters)"
@@ -3089,7 +3149,9 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
                     setErrors({ ...errors, content: "" });
                   }}
                   className={`w-full rounded-lg border px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40 ${
-                    errors.content ? "border-red-400" : "border-cream/10 focus:border-rose"
+                    errors.content
+                      ? "border-red-400"
+                      : "border-cream/10 focus:border-rose"
                   }`}
                   rows={10}
                   placeholder="Full blog content (HTML supported)"
@@ -3164,7 +3226,10 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
                 <textarea
                   value={formData.seoDescription}
                   onChange={(e) => {
-                    setFormData({ ...formData, seoDescription: e.target.value });
+                    setFormData({
+                      ...formData,
+                      seoDescription: e.target.value,
+                    });
                   }}
                   className="w-full rounded-lg border border-cream/10 px-3 py-2 resize-none text-sm bg-noir-light text-cream placeholder:text-cream/40 focus:border-rose"
                   rows={2}
@@ -3177,7 +3242,10 @@ function BlogTab({ adminKey, showToast, showConfirm }) {
                 type="number"
                 value={formData.order}
                 onChange={(e) => {
-                  setFormData({ ...formData, order: parseInt(e.target.value) || 0 });
+                  setFormData({
+                    ...formData,
+                    order: parseInt(e.target.value) || 0,
+                  });
                 }}
                 min="0"
               />
@@ -3245,7 +3313,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Search and Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
@@ -3266,14 +3334,14 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
-  
+
   // Filter and sort items
   const filteredItems = filterAndSort(
     items,
     searchTerm,
     filter === "all" ? "all" : filter === "approved" ? "active" : "inactive",
     sortBy,
-    ['name', 'email', 'review', 'cakeType']
+    ["name", "email", "review", "cakeType"],
   );
 
   const validateForm = () => {
@@ -3305,7 +3373,12 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
       if (data.success) {
         await fetchItems();
         closeForm();
-        showToast(editingItem ? "Review updated successfully!" : "Review added successfully!", "success");
+        showToast(
+          editingItem
+            ? "Review updated successfully!"
+            : "Review added successfully!",
+          "success",
+        );
       } else {
         showToast(data.error || "Failed to save", "error");
       }
@@ -3379,7 +3452,7 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
           console.error("Error:", error);
           showToast("Failed to delete", "error");
         }
-      }
+      },
     );
   };
 
@@ -3396,11 +3469,14 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
               className="text-xl sm:text-2xl font-bold text-cream"
               style={{ fontFamily: "var(--font-cinzel)" }}
             >
-              Reviews ({filteredItems.length}{filteredItems.length !== items.length && ` of ${items.length}`})
+              Reviews ({filteredItems.length}
+              {filteredItems.length !== items.length && ` of ${items.length}`})
             </h2>
             {pendingCount > 0 && (
               <p className="text-xs sm:text-sm text-orange-400 flex items-center gap-1 mt-1">
-                <span className="material-symbols-outlined text-sm">warning</span>
+                <span className="material-symbols-outlined text-sm">
+                  warning
+                </span>
                 {pendingCount} pending
               </p>
             )}
@@ -3479,7 +3555,8 @@ function ReviewsTab({ adminKey, showToast, showConfirm }) {
                       onClick={() => setFormData({ ...formData, rating: star })}
                       className="text-2xl transition-colors"
                       style={{
-                        color: star <= formData.rating ? "#d4a574" : "#ffffff40",
+                        color:
+                          star <= formData.rating ? "#d4a574" : "#ffffff40",
                       }}
                     >
                       ★
@@ -3907,7 +3984,7 @@ function AdminAuthForm({ onSuccess }) {
         setAttempts((prev) => prev + 1);
         if (response.status === 429) {
           setError(
-            `Too many attempts. Please try again in ${data.retryAfter || 15} seconds.`
+            `Too many attempts. Please try again in ${data.retryAfter || 15} seconds.`,
           );
         } else {
           setError(data.error || "Invalid admin key. Please try again.");
@@ -4031,10 +4108,10 @@ function AdminContent() {
     ratelist: 0,
     reviews: 0,
   });
-  
+
   // Toast state
   const [toasts, setToasts] = useState([]);
-  
+
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -4241,16 +4318,72 @@ function AdminContent() {
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-        {activeTab === "dashboard" && <Dashboard adminKey={adminKey || ""} showToast={showToast} />}
-        {activeTab === "hero" && <HeroTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
-        {activeTab === "gallery" && <GalleryTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
-        {activeTab === "events" && <EventsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
-        {activeTab === "blog" && <BlogTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
-        {activeTab === "reels" && <ReelsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
-        {activeTab === "categories" && <CategoriesTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
-        {activeTab === "menu" && <MenuTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
-        {activeTab === "ratelist" && <RateListTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
-        {activeTab === "reviews" && <ReviewsTab adminKey={adminKey || ""} showToast={showToast} showConfirm={showConfirm} />}
+        {activeTab === "dashboard" && (
+          <Dashboard adminKey={adminKey || ""} showToast={showToast} />
+        )}
+        {activeTab === "hero" && (
+          <HeroTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
+        {activeTab === "gallery" && (
+          <GalleryTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
+        {activeTab === "events" && (
+          <EventsTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
+        {activeTab === "blog" && (
+          <BlogTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
+        {activeTab === "reels" && (
+          <ReelsTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
+        {activeTab === "categories" && (
+          <CategoriesTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
+        {activeTab === "menu" && (
+          <MenuTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
+        {activeTab === "ratelist" && (
+          <RateListTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
+        {activeTab === "reviews" && (
+          <ReviewsTab
+            adminKey={adminKey || ""}
+            showToast={showToast}
+            showConfirm={showConfirm}
+          />
+        )}
       </main>
 
       {/* Toast Container */}

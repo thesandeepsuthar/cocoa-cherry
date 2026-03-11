@@ -227,8 +227,8 @@ export default function Navigation() {
             >
               {/* Menu Header */}
               <div className="flex items-center justify-between p-4 md:p-6 border-b border-rose/10">
-                <Link 
-                  href="/" 
+                <Link
+                  href="/"
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-2 md:gap-3 group"
                 >

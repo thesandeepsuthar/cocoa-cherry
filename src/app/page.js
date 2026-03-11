@@ -15,9 +15,10 @@ import {
   FloatingActions,
   MouseGlow,
   Blog,
-} from './components';
+} from "./components";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
 // Enhanced Home Page Structured Data
 const homePageSchema = {
@@ -26,34 +27,35 @@ const homePageSchema = {
     {
       "@type": "WebPage",
       "@id": `${siteUrl}/#webpage`,
-      "url": siteUrl,
-      "name": "Custom Cakes Ahmedabad | Cocoa&Cherry ⭐ FSSAI Certified Home Bakery",
-      "description": "Order premium custom cakes in Ahmedabad. Birthday cakes, wedding cakes, designer cakes with Belgian chocolate. FSSAI certified home bakery. Same day delivery!",
-      "inLanguage": "en-IN",
-      "isPartOf": {
-        "@id": `${siteUrl}/#website`
+      url: siteUrl,
+      name: "Custom Cakes Ahmedabad | Cocoa&Cherry ⭐ FSSAI Certified Home Bakery",
+      description:
+        "Order premium custom cakes in Ahmedabad. Birthday cakes, wedding cakes, designer cakes with Belgian chocolate. FSSAI certified home bakery. Same day delivery!",
+      inLanguage: "en-IN",
+      isPartOf: {
+        "@id": `${siteUrl}/#website`,
       },
-      "about": {
-        "@id": `${siteUrl}/#bakery`
+      about: {
+        "@id": `${siteUrl}/#bakery`,
       },
-      "primaryImageOfPage": {
+      primaryImageOfPage: {
         "@type": "ImageObject",
-        "url": `${siteUrl}/logo.svg`
-      }
+        url: `${siteUrl}/logo.svg`,
+      },
     },
     {
       "@type": "BreadcrumbList",
       "@id": `${siteUrl}/#breadcrumb`,
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": siteUrl
-        }
-      ]
-    }
-  ]
+          position: 1,
+          name: "Home",
+          item: siteUrl,
+        },
+      ],
+    },
+  ],
 };
 
 export default function Home() {
@@ -67,7 +69,11 @@ export default function Home() {
       {/* Canonical URL */}
       <link rel="canonical" href={siteUrl} />
       <MouseGlow />
-      <main className="relative" itemScope itemType="https://schema.org/WebPage">
+      <main
+        className="relative"
+        itemScope
+        itemType="https://schema.org/WebPage"
+      >
         <Navigation />
         <Hero />
         <Features />

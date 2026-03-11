@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Configuration
 const ITEMS_PER_PAGE = 8;
@@ -11,7 +11,7 @@ export default function RateList() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(null);
   const [showAll, setShowAll] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchRateList();
@@ -19,7 +19,7 @@ export default function RateList() {
 
   const fetchRateList = async () => {
     try {
-      const res = await fetch('/api/ratelist');
+      const res = await fetch("/api/ratelist");
       const data = await res.json();
       if (data.success) {
         setItems(data.data);
@@ -29,7 +29,7 @@ export default function RateList() {
         }
       }
     } catch (error) {
-      console.error('Error fetching rate list:', error);
+      console.error("Error fetching rate list:", error);
     } finally {
       setLoading(false);
     }
@@ -42,45 +42,54 @@ export default function RateList() {
 
   // Filter items by category and search
   const filteredItems = useMemo(() => {
-    let filtered = activeCategory 
+    let filtered = activeCategory
       ? items.filter((item) => item.category === activeCategory)
       : items;
-    
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(item => 
-        item.item.toLowerCase().includes(query) ||
-        item.description?.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (item) =>
+          item.item.toLowerCase().includes(query) ||
+          item.description?.toLowerCase().includes(query),
       );
     }
-    
+
     return filtered;
   }, [items, activeCategory, searchQuery]);
 
   // Paginated items
-  const displayedItems = showAll ? filteredItems : filteredItems.slice(0, ITEMS_PER_PAGE);
+  const displayedItems = showAll
+    ? filteredItems
+    : filteredItems.slice(0, ITEMS_PER_PAGE);
   const hasMore = filteredItems.length > ITEMS_PER_PAGE;
 
   // Reset when category changes
   useEffect(() => {
     setShowAll(false);
-    setSearchQuery('');
+    setSearchQuery("");
   }, [activeCategory]);
 
   // Category icons
   const getCategoryIcon = (category) => {
     const categoryLower = category.toLowerCase();
-    if (categoryLower.includes('cake') && !categoryLower.includes('cup') && !categoryLower.includes('cheese') && !categoryLower.includes('dry')) return 'cake';
-    if (categoryLower.includes('cupcake')) return 'cupcake';
-    if (categoryLower.includes('brownie')) return 'cookie';
-    if (categoryLower.includes('cheesecake')) return 'icecream';
-    if (categoryLower.includes('cookie')) return 'cookie';
-    if (categoryLower.includes('chocolate')) return 'nutrition';
-    if (categoryLower.includes('bomboloni')) return 'donut_small';
-    if (categoryLower.includes('healthy')) return 'eco';
-    if (categoryLower.includes('dry')) return 'bakery_dining';
-    if (categoryLower.includes('muffin')) return 'breakfast_dining';
-    return 'restaurant';
+    if (
+      categoryLower.includes("cake") &&
+      !categoryLower.includes("cup") &&
+      !categoryLower.includes("cheese") &&
+      !categoryLower.includes("dry")
+    )
+      return "cake";
+    if (categoryLower.includes("cupcake")) return "cupcake";
+    if (categoryLower.includes("brownie")) return "cookie";
+    if (categoryLower.includes("cheesecake")) return "icecream";
+    if (categoryLower.includes("cookie")) return "cookie";
+    if (categoryLower.includes("chocolate")) return "nutrition";
+    if (categoryLower.includes("bomboloni")) return "donut_small";
+    if (categoryLower.includes("healthy")) return "eco";
+    if (categoryLower.includes("dry")) return "bakery_dining";
+    if (categoryLower.includes("muffin")) return "breakfast_dining";
+    return "restaurant";
   };
 
   if (loading) {
@@ -104,8 +113,8 @@ export default function RateList() {
   if (items.length === 0) return null;
 
   return (
-    <section 
-      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir overflow-hidden" 
+    <section
+      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir overflow-hidden"
       id="rate-list"
     >
       {/* Background */}
@@ -118,20 +127,22 @@ export default function RateList() {
         {/* Header */}
         <div className="text-center mb-6 sm:mb-10">
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gold/10 border border-gold/20 mb-4 sm:mb-5">
-            <span className="material-symbols-outlined text-gold text-xs sm:text-sm">payments</span>
+            <span className="material-symbols-outlined text-gold text-xs sm:text-sm">
+              payments
+            </span>
             <span className="text-gold text-[10px] sm:text-xs font-bold uppercase tracking-widest">
               Transparent Pricing
             </span>
           </div>
 
-          <h2 
+          <h2
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            style={{ fontFamily: "var(--font-cinzel)" }}
           >
             <span className="text-cream">Our </span>
             <span className="gradient-text">Rate List</span>
           </h2>
-          
+
           <p className="text-cream-muted text-sm sm:text-base max-w-xl mx-auto">
             Premium quality, honest pricing. Find your perfect treat!
           </p>
@@ -141,26 +152,28 @@ export default function RateList() {
         <div className="mb-5 sm:mb-6">
           <div className="flex overflow-x-auto pb-2 gap-2 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center">
             {categories.map((category) => {
-              const count = items.filter(i => i.category === category).length;
+              const count = items.filter((i) => i.category === category).length;
               const isActive = activeCategory === category;
-              
+
               return (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
                   className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all flex-shrink-0 ${
                     isActive
-                      ? 'bg-gradient-to-r from-rose to-rose-dark text-white shadow-lg shadow-rose/30'
-                      : 'bg-noir-light text-cream border border-cream/10 hover:border-rose/30'
+                      ? "bg-gradient-to-r from-rose to-rose-dark text-white shadow-lg shadow-rose/30"
+                      : "bg-noir-light text-cream border border-cream/10 hover:border-rose/30"
                   }`}
                 >
                   <span className="material-symbols-outlined text-sm sm:text-base">
                     {getCategoryIcon(category)}
                   </span>
                   <span className="whitespace-nowrap">{category}</span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                    isActive ? 'bg-white/20' : 'bg-rose/10'
-                  }`}>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                      isActive ? "bg-white/20" : "bg-rose/10"
+                    }`}
+                  >
                     {count}
                   </span>
                 </button>
@@ -184,10 +197,12 @@ export default function RateList() {
             />
             {searchQuery && (
               <button
-                onClick={() => setSearchQuery('')}
+                onClick={() => setSearchQuery("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-cream/10 hover:bg-cream/20"
               >
-                <span className="material-symbols-outlined text-cream/60 text-xs">close</span>
+                <span className="material-symbols-outlined text-cream/60 text-xs">
+                  close
+                </span>
               </button>
             )}
           </div>
@@ -204,15 +219,22 @@ export default function RateList() {
           >
             {filteredItems.length === 0 ? (
               <div className="text-center py-12">
-                <span className="material-symbols-outlined text-4xl text-cream/20 mb-2 block">search_off</span>
-                <p className="text-cream-muted text-sm">No items found. Try a different search.</p>
+                <span className="material-symbols-outlined text-4xl text-cream/20 mb-2 block">
+                  search_off
+                </span>
+                <p className="text-cream-muted text-sm">
+                  No items found. Try a different search.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {displayedItems.map((item, index) => {
-                  const hasDiscount = item.discountPrice && item.discountPrice < item.price;
-                  const discountPercent = hasDiscount 
-                    ? Math.round(((item.price - item.discountPrice) / item.price) * 100) 
+                  const hasDiscount =
+                    item.discountPrice && item.discountPrice < item.price;
+                  const discountPercent = hasDiscount
+                    ? Math.round(
+                        ((item.price - item.discountPrice) / item.price) * 100,
+                      )
                     : 0;
 
                   return (
@@ -223,7 +245,9 @@ export default function RateList() {
                       transition={{ delay: index * 0.02 }}
                       className="group"
                     >
-                      <div className={`relative p-4 rounded-2xl bg-noir-light border border-cream/5 hover:border-rose/30 transition-all ${!item.isAvailable ? 'opacity-50' : ''}`}>
+                      <div
+                        className={`relative p-4 rounded-2xl bg-noir-light border border-cream/5 hover:border-rose/30 transition-all ${!item.isAvailable ? "opacity-50" : ""}`}
+                      >
                         {/* Discount Badge */}
                         {hasDiscount && (
                           <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-emerald-500 text-white text-[10px] font-bold">
@@ -255,11 +279,17 @@ export default function RateList() {
                           <div>
                             {hasDiscount ? (
                               <div className="flex items-baseline gap-1.5">
-                                <span className="text-lg sm:text-xl font-bold text-rose">₹{item.discountPrice}</span>
-                                <span className="text-xs text-cream/30 line-through">₹{item.price}</span>
+                                <span className="text-lg sm:text-xl font-bold text-rose">
+                                  ₹{item.discountPrice}
+                                </span>
+                                <span className="text-xs text-cream/30 line-through">
+                                  ₹{item.price}
+                                </span>
                               </div>
                             ) : (
-                              <span className="text-lg sm:text-xl font-bold text-cream">₹{item.price}</span>
+                              <span className="text-lg sm:text-xl font-bold text-cream">
+                                ₹{item.price}
+                              </span>
                             )}
                           </div>
                           <span className="text-[10px] px-2 py-0.5 rounded-full bg-cream/5 text-cream/50 border border-cream/10">
@@ -270,7 +300,9 @@ export default function RateList() {
                         {/* Unavailable Overlay */}
                         {!item.isAvailable && (
                           <div className="absolute inset-0 flex items-center justify-center bg-noir/50 rounded-2xl">
-                            <span className="text-xs text-cream/50 bg-cream/10 px-2 py-1 rounded">Unavailable</span>
+                            <span className="text-xs text-cream/50 bg-cream/10 px-2 py-1 rounded">
+                              Unavailable
+                            </span>
                           </div>
                         )}
                       </div>
@@ -288,9 +320,13 @@ export default function RateList() {
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-noir-light border border-rose/20 text-cream font-medium text-sm hover:border-rose/40 hover:bg-rose/5 transition-all"
                 >
                   <span className="material-symbols-outlined text-rose text-base">
-                    {showAll ? 'expand_less' : 'expand_more'}
+                    {showAll ? "expand_less" : "expand_more"}
                   </span>
-                  <span>{showAll ? 'Show Less' : `View All ${filteredItems.length} Items`}</span>
+                  <span>
+                    {showAll
+                      ? "Show Less"
+                      : `View All ${filteredItems.length} Items`}
+                  </span>
                 </button>
               </div>
             )}
@@ -300,18 +336,34 @@ export default function RateList() {
         {/* Quick Stats */}
         <div className="mt-8 sm:mt-10 grid grid-cols-4 gap-2 sm:gap-3">
           {[
-            { icon: 'category', label: 'Categories', value: categories.length },
-            { icon: 'menu_book', label: 'Items', value: items.length },
-            { icon: 'local_offer', label: 'On Sale', value: items.filter(i => i.discountPrice && i.discountPrice < i.price).length },
-            { icon: 'verified', label: 'Available', value: items.filter(i => i.isAvailable !== false).length },
+            { icon: "category", label: "Categories", value: categories.length },
+            { icon: "menu_book", label: "Items", value: items.length },
+            {
+              icon: "local_offer",
+              label: "On Sale",
+              value: items.filter(
+                (i) => i.discountPrice && i.discountPrice < i.price,
+              ).length,
+            },
+            {
+              icon: "verified",
+              label: "Available",
+              value: items.filter((i) => i.isAvailable !== false).length,
+            },
           ].map((stat) => (
             <div
               key={stat.label}
               className="text-center p-2 sm:p-3 rounded-xl bg-noir-light/50 border border-cream/5"
             >
-              <span className="material-symbols-outlined text-rose text-lg sm:text-xl">{stat.icon}</span>
-              <p className="text-lg sm:text-2xl font-bold text-cream">{stat.value}</p>
-              <p className="text-[9px] sm:text-[10px] text-cream/40">{stat.label}</p>
+              <span className="material-symbols-outlined text-rose text-lg sm:text-xl">
+                {stat.icon}
+              </span>
+              <p className="text-lg sm:text-2xl font-bold text-cream">
+                {stat.value}
+              </p>
+              <p className="text-[9px] sm:text-[10px] text-cream/40">
+                {stat.label}
+              </p>
             </div>
           ))}
         </div>
@@ -319,7 +371,9 @@ export default function RateList() {
         {/* Footer Note */}
         <div className="mt-6 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-noir-light border border-cream/10">
-            <span className="material-symbols-outlined text-gold text-base">lightbulb</span>
+            <span className="material-symbols-outlined text-gold text-base">
+              lightbulb
+            </span>
             <p className="text-[11px] sm:text-xs text-cream/60">
               Custom orders welcome! Prices may vary based on design.
             </p>

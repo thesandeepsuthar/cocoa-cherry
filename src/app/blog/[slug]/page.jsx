@@ -1,46 +1,51 @@
-import { notFound } from 'next/navigation';
-import connectDB from '@/lib/mongodb';
-import { Blog } from '@/lib/models';
-import { Navigation, Footer } from '../../components';
-import { FallbackImage } from '../../components/FallbackImage';
+import { notFound } from "next/navigation";
+import connectDB from "@/lib/mongodb";
+import { Blog } from "@/lib/models";
+import { Navigation, Footer } from "../../components";
+import { FallbackImage } from "../../components/FallbackImage";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
 // Generate dynamic metadata for each blog post
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  
+
   try {
     await connectDB();
-    const blog = await Blog.findOne({ 
-      slug, 
-      isActive: true, 
-      isPublished: true 
+    const blog = await Blog.findOne({
+      slug,
+      isActive: true,
+      isPublished: true,
     }).lean();
 
     if (!blog) {
       return {
-        title: 'Blog Post Not Found | Cocoa&Cherry',
-        description: 'The blog post you are looking for does not exist.',
+        title: "Blog Post Not Found | Cocoa&Cherry",
+        description: "The blog post you are looking for does not exist.",
       };
     }
 
     const title = blog.seoTitle || blog.title;
     const description = blog.seoDescription || blog.excerpt;
     const image = blog.coverImage;
-    const publishedTime = blog.publishedAt ? new Date(blog.publishedAt).toISOString() : new Date().toISOString();
-    const modifiedTime = blog.updatedAt ? new Date(blog.updatedAt).toISOString() : publishedTime;
-    const author = blog.author || 'Cocoa&Cherry Team';
+    const publishedTime = blog.publishedAt
+      ? new Date(blog.publishedAt).toISOString()
+      : new Date().toISOString();
+    const modifiedTime = blog.updatedAt
+      ? new Date(blog.updatedAt).toISOString()
+      : publishedTime;
+    const author = blog.author || "Cocoa&Cherry Team";
     const url = `${siteUrl}/blog/${blog.slug}`;
 
     // Generate keywords from title, tags, and category
     const keywords = [
       ...(blog.tags || []),
-      blog.category || 'General',
-      'cake blog',
-      'bakery blog ahmedabad',
-      'custom cakes',
-      'cocoa cherry blog'
+      blog.category || "General",
+      "cake blog",
+      "bakery blog ahmedabad",
+      "custom cakes",
+      "cocoa cherry blog",
     ];
 
     return {
@@ -48,13 +53,13 @@ export async function generateMetadata({ params }) {
       description: description,
       keywords: keywords,
       authors: [{ name: author }],
-      creator: 'Cocoa&Cherry',
-      publisher: 'Cocoa&Cherry',
+      creator: "Cocoa&Cherry",
+      publisher: "Cocoa&Cherry",
       openGraph: {
-        type: 'article',
-        locale: 'en_IN',
+        type: "article",
+        locale: "en_IN",
         url: url,
-        siteName: 'Cocoa&Cherry',
+        siteName: "Cocoa&Cherry",
         title: title,
         description: description,
         publishedTime: publishedTime,
@@ -66,21 +71,21 @@ export async function generateMetadata({ params }) {
             width: 1200,
             height: 630,
             alt: title,
-            type: 'image/jpeg',
+            type: "image/jpeg",
           },
           {
             url: `${siteUrl}/logo.svg`,
             width: 512,
             height: 512,
-            alt: 'Cocoa&Cherry Logo',
-            type: 'image/svg+xml',
+            alt: "Cocoa&Cherry Logo",
+            type: "image/svg+xml",
           },
         ],
       },
       twitter: {
-        card: 'summary_large_image',
-        site: '@cocoa_cherry_',
-        creator: '@cocoa_cherry_',
+        card: "summary_large_image",
+        site: "@cocoa_cherry_",
+        creator: "@cocoa_cherry_",
         title: title,
         description: description,
         images: [image],
@@ -88,7 +93,7 @@ export async function generateMetadata({ params }) {
       alternates: {
         canonical: url,
         languages: {
-          'en-IN': url,
+          "en-IN": url,
         },
       },
       robots: {
@@ -97,33 +102,38 @@ export async function generateMetadata({ params }) {
         googleBot: {
           index: true,
           follow: true,
-          'max-image-preview': 'large',
-          'max-snippet': -1,
-          'max-video-preview': -1,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+          "max-video-preview": -1,
         },
       },
       other: {
-        'article:author': author,
-        'article:published_time': publishedTime,
-        'article:modified_time': modifiedTime,
-        'article:section': blog.category || 'General',
-        'article:tag': (blog.tags || []).join(', '),
+        "article:author": author,
+        "article:published_time": publishedTime,
+        "article:modified_time": modifiedTime,
+        "article:section": blog.category || "General",
+        "article:tag": (blog.tags || []).join(", "),
       },
     };
   } catch (error) {
-    console.error('Error generating metadata:', error);
+    console.error("Error generating metadata:", error);
     return {
-      title: 'Blog Post | Cocoa&Cherry',
-      description: 'Read our latest blog post about custom cakes and bakery tips.',
+      title: "Blog Post | Cocoa&Cherry",
+      description:
+        "Read our latest blog post about custom cakes and bakery tips.",
     };
   }
 }
 
 // Generate structured data for blog post
 function generateBlogSchema(blog) {
-  const publishedTime = blog.publishedAt ? new Date(blog.publishedAt).toISOString() : new Date().toISOString();
-  const modifiedTime = blog.updatedAt ? new Date(blog.updatedAt).toISOString() : publishedTime;
-  const author = blog.author || 'Cocoa&Cherry Team';
+  const publishedTime = blog.publishedAt
+    ? new Date(blog.publishedAt).toISOString()
+    : new Date().toISOString();
+  const modifiedTime = blog.updatedAt
+    ? new Date(blog.updatedAt).toISOString()
+    : publishedTime;
+  const author = blog.author || "Cocoa&Cherry Team";
   const url = `${siteUrl}/blog/${blog.slug}`;
 
   return {
@@ -132,89 +142,89 @@ function generateBlogSchema(blog) {
       {
         "@type": "BlogPosting",
         "@id": `${url}#blogpost`,
-        "headline": blog.seoTitle || blog.title,
-        "description": blog.seoDescription || blog.excerpt,
-        "image": {
+        headline: blog.seoTitle || blog.title,
+        description: blog.seoDescription || blog.excerpt,
+        image: {
           "@type": "ImageObject",
-          "url": blog.coverImage,
-          "width": 1200,
-          "height": 630
+          url: blog.coverImage,
+          width: 1200,
+          height: 630,
         },
-        "datePublished": publishedTime,
-        "dateModified": modifiedTime,
-        "author": {
+        datePublished: publishedTime,
+        dateModified: modifiedTime,
+        author: {
           "@type": "Person",
-          "name": author,
-          "url": siteUrl
+          name: author,
+          url: siteUrl,
         },
-        "publisher": {
+        publisher: {
           "@type": "Organization",
           "@id": `${siteUrl}/#organization`,
-          "name": "Cocoa&Cherry",
-          "logo": {
+          name: "Cocoa&Cherry",
+          logo: {
             "@type": "ImageObject",
-            "url": `${siteUrl}/logo.svg`,
-            "width": 512,
-            "height": 512
-          }
+            url: `${siteUrl}/logo.svg`,
+            width: 512,
+            height: 512,
+          },
         },
-        "mainEntityOfPage": {
+        mainEntityOfPage: {
           "@type": "WebPage",
-          "@id": url
+          "@id": url,
         },
-        "articleSection": blog.category || "General",
-        "keywords": (blog.tags || []).join(", "),
-        "wordCount": blog.content ? blog.content.split(/\s+/).length : 0,
-        "timeRequired": `PT${blog.readTime || 5}M`,
-        "inLanguage": "en-IN",
-        "url": url
+        articleSection: blog.category || "General",
+        keywords: (blog.tags || []).join(", "),
+        wordCount: blog.content ? blog.content.split(/\s+/).length : 0,
+        timeRequired: `PT${blog.readTime || 5}M`,
+        inLanguage: "en-IN",
+        url: url,
       },
       {
         "@type": "BreadcrumbList",
         "@id": `${url}#breadcrumb`,
-        "itemListElement": [
+        itemListElement: [
           {
             "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": siteUrl
+            position: 1,
+            name: "Home",
+            item: siteUrl,
           },
           {
             "@type": "ListItem",
-            "position": 2,
-            "name": "Blog",
-            "item": `${siteUrl}/blog`
+            position: 2,
+            name: "Blog",
+            item: `${siteUrl}/blog`,
           },
           {
             "@type": "ListItem",
-            "position": 3,
-            "name": blog.title,
-            "item": url
-          }
-        ]
+            position: 3,
+            name: blog.title,
+            item: url,
+          },
+        ],
       },
       {
         "@type": "WebPage",
         "@id": `${url}#webpage`,
-        "url": url,
-        "name": blog.seoTitle || blog.title,
-        "description": blog.seoDescription || blog.excerpt,
-        "isPartOf": {
-          "@id": `${siteUrl}/#website`
+        url: url,
+        name: blog.seoTitle || blog.title,
+        description: blog.seoDescription || blog.excerpt,
+        isPartOf: {
+          "@id": `${siteUrl}/#website`,
         },
-        "about": {
-          "@id": `${url}#blogpost`
+        about: {
+          "@id": `${url}#blogpost`,
         },
-        "breadcrumb": {
-          "@id": `${url}#breadcrumb`
+        breadcrumb: {
+          "@id": `${url}#breadcrumb`,
         },
-        "primaryImageOfPage": {
+        primaryImageOfPage: {
           "@type": "ImageObject",
-          "url": blog.coverImage
+          url: blog.coverImage,
         },
-        "inLanguage": "en-IN"
-      }
-    ]
+        inLanguage: "en-IN",
+      },
+    ],
   };
 }
 
@@ -222,22 +232,22 @@ function generateBlogSchema(blog) {
 function decodeHTML(html) {
   if (!html) return html;
   return html
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'");
 }
 
 export default async function BlogPostPage({ params }) {
   const { slug } = await params;
-  
+
   try {
     await connectDB();
-    const blog = await Blog.findOne({ 
-      slug, 
-      isActive: true, 
-      isPublished: true 
+    const blog = await Blog.findOne({
+      slug,
+      isActive: true,
+      isPublished: true,
     }).lean();
 
     if (!blog) {
@@ -245,29 +255,33 @@ export default async function BlogPostPage({ params }) {
     }
 
     // Increment view count (async, don't wait for it)
-    Blog.findByIdAndUpdate(blog._id, { $inc: { views: 1 } }).catch(err => {
-      console.error('Error incrementing views:', err);
+    Blog.findByIdAndUpdate(blog._id, { $inc: { views: 1 } }).catch((err) => {
+      console.error("Error incrementing views:", err);
     });
 
     // Decode HTML content if needed
-    let content = blog.content || '';
-    if (content.includes('&lt;') || content.includes('&gt;') || content.includes('&amp;')) {
+    let content = blog.content || "";
+    if (
+      content.includes("&lt;") ||
+      content.includes("&gt;") ||
+      content.includes("&amp;")
+    ) {
       content = decodeHTML(content);
     }
 
     const blogData = {
       ...blog,
-      content
+      content,
     };
 
     const blogSchema = generateBlogSchema(blog);
 
     const formatDate = (dateString) => {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+      return date.toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
     };
 
@@ -279,25 +293,46 @@ export default async function BlogPostPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
         />
         <Navigation />
-        <main className="min-h-screen bg-noir" itemScope itemType="https://schema.org/BlogPosting">
+        <main
+          className="min-h-screen bg-noir"
+          itemScope
+          itemType="https://schema.org/BlogPosting"
+        >
           {/* Hero Section */}
           <section className="relative pb-6 sm:pb-8 md:pb-12 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-rose/10 via-transparent to-noir" />
             <div className="max-w-[1200px] mx-auto px-4 md:px-8 relative z-10 pt-8 sm:pt-12 md:pt-16">
               {/* Breadcrumb */}
-              <nav className="mb-4 sm:mb-6 text-xs sm:text-sm overflow-x-auto" itemScope itemType="https://schema.org/BreadcrumbList">
+              <nav
+                className="mb-4 sm:mb-6 text-xs sm:text-sm overflow-x-auto"
+                itemScope
+                itemType="https://schema.org/BreadcrumbList"
+              >
                 <div className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
-                  <a href="/" className="text-cream-muted hover:text-cream transition-colors" itemProp="item">
+                  <a
+                    href="/"
+                    className="text-cream-muted hover:text-cream transition-colors"
+                    itemProp="item"
+                  >
                     <span itemProp="name">Home</span>
                   </a>
                   <meta itemProp="position" content="1" />
                   <span className="text-cream-muted">/</span>
-                  <a href="/blog" className="text-cream-muted hover:text-cream transition-colors" itemProp="item">
+                  <a
+                    href="/blog"
+                    className="text-cream-muted hover:text-cream transition-colors"
+                    itemProp="item"
+                  >
                     <span itemProp="name">Blog</span>
                   </a>
                   <meta itemProp="position" content="2" />
                   <span className="text-cream-muted">/</span>
-                  <span className="text-cream truncate max-w-[200px] sm:max-w-none" itemProp="name">{blog.title}</span>
+                  <span
+                    className="text-cream truncate max-w-[200px] sm:max-w-none"
+                    itemProp="name"
+                  >
+                    {blog.title}
+                  </span>
                   <meta itemProp="position" content="3" />
                 </div>
               </nav>
@@ -313,9 +348,9 @@ export default async function BlogPostPage({ params }) {
               </div>
 
               {/* Title */}
-              <h1 
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-cream mb-4 sm:mb-6" 
-                style={{ fontFamily: 'var(--font-cinzel)' }}
+              <h1
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-cream mb-4 sm:mb-6"
+                style={{ fontFamily: "var(--font-cinzel)" }}
                 itemProp="headline"
               >
                 {blog.title}
@@ -323,24 +358,51 @@ export default async function BlogPostPage({ params }) {
 
               {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 text-cream-muted text-[10px] xs:text-xs sm:text-sm mb-4 sm:mb-6">
-                <span className="flex items-center gap-1 sm:gap-1.5 md:gap-2" itemProp="author" itemScope itemType="https://schema.org/Person">
-                  <span className="material-symbols-outlined text-[14px] sm:text-base">person</span>
-                  <span className="truncate max-w-[120px] sm:max-w-none" itemProp="name">{blog.author}</span>
+                <span
+                  className="flex items-center gap-1 sm:gap-1.5 md:gap-2"
+                  itemProp="author"
+                  itemScope
+                  itemType="https://schema.org/Person"
+                >
+                  <span className="material-symbols-outlined text-[14px] sm:text-base">
+                    person
+                  </span>
+                  <span
+                    className="truncate max-w-[120px] sm:max-w-none"
+                    itemProp="name"
+                  >
+                    {blog.author}
+                  </span>
                 </span>
-                <time dateTime={new Date(blog.publishedAt).toISOString()} itemProp="datePublished">
+                <time
+                  dateTime={new Date(blog.publishedAt).toISOString()}
+                  itemProp="datePublished"
+                >
                   <span className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
-                    <span className="material-symbols-outlined text-[14px] sm:text-base">calendar_today</span>
-                    <span className="whitespace-nowrap">{formatDate(blog.publishedAt)}</span>
+                    <span className="material-symbols-outlined text-[14px] sm:text-base">
+                      calendar_today
+                    </span>
+                    <span className="whitespace-nowrap">
+                      {formatDate(blog.publishedAt)}
+                    </span>
                   </span>
                 </time>
                 <span className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
-                  <span className="material-symbols-outlined text-[14px] sm:text-base">schedule</span>
-                  <span className="whitespace-nowrap" itemProp="timeRequired">{blog.readTime} min read</span>
+                  <span className="material-symbols-outlined text-[14px] sm:text-base">
+                    schedule
+                  </span>
+                  <span className="whitespace-nowrap" itemProp="timeRequired">
+                    {blog.readTime} min read
+                  </span>
                 </span>
                 {blog.views > 0 && (
                   <span className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
-                    <span className="material-symbols-outlined text-[14px] sm:text-base">visibility</span>
-                    <span className="whitespace-nowrap">{blog.views} views</span>
+                    <span className="material-symbols-outlined text-[14px] sm:text-base">
+                      visibility
+                    </span>
+                    <span className="whitespace-nowrap">
+                      {blog.views} views
+                    </span>
                   </span>
                 )}
               </div>
@@ -379,7 +441,9 @@ export default async function BlogPostPage({ params }) {
                        bg-gradient-to-r from-rose/20 to-rose/10 border border-rose/20 text-cream 
                        hover:from-rose/30 hover:to-rose/20 transition-all text-sm sm:text-base"
             >
-              <span className="material-symbols-outlined text-base sm:text-lg md:text-xl">arrow_back</span>
+              <span className="material-symbols-outlined text-base sm:text-lg md:text-xl">
+                arrow_back
+              </span>
               <span>Back to Blog</span>
             </a>
           </section>
@@ -388,7 +452,7 @@ export default async function BlogPostPage({ params }) {
       </>
     );
   } catch (error) {
-    console.error('Error fetching blog:', error);
+    console.error("Error fetching blog:", error);
     notFound();
   }
 }

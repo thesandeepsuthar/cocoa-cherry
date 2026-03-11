@@ -5,7 +5,12 @@
 /**
  * Filter items based on search term and status
  */
-export function filterItems(items, searchTerm, filterStatus, searchFields = ['name', 'title']) {
+export function filterItems(
+  items,
+  searchTerm,
+  filterStatus,
+  searchFields = ["name", "title"],
+) {
   let filtered = [...items];
 
   // Apply search filter
@@ -20,13 +25,13 @@ export function filterItems(items, searchTerm, filterStatus, searchFields = ['na
   }
 
   // Apply status filter
-  if (filterStatus !== 'all') {
-    const isActive = filterStatus === 'active';
+  if (filterStatus !== "all") {
+    const isActive = filterStatus === "active";
     filtered = filtered.filter((item) => {
       // Handle different status field names
-      if ('isActive' in item) return item.isActive === isActive;
-      if ('isApproved' in item) return item.isApproved === isActive;
-      if ('isPublished' in item) return item.isPublished === isActive;
+      if ("isActive" in item) return item.isActive === isActive;
+      if ("isApproved" in item) return item.isApproved === isActive;
+      if ("isPublished" in item) return item.isPublished === isActive;
       return true;
     });
   }
@@ -41,38 +46,42 @@ export function sortItems(items, sortBy) {
   const sorted = [...items];
 
   switch (sortBy) {
-    case 'newest':
-      return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-    case 'oldest':
-      return sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    
-    case 'name-asc':
+    case "newest":
+      return sorted.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+      );
+
+    case "oldest":
+      return sorted.sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+      );
+
+    case "name-asc":
       return sorted.sort((a, b) => {
-        const nameA = (a.name || a.title || '').toLowerCase();
-        const nameB = (b.name || b.title || '').toLowerCase();
+        const nameA = (a.name || a.title || "").toLowerCase();
+        const nameB = (b.name || b.title || "").toLowerCase();
         return nameA.localeCompare(nameB);
       });
-    
-    case 'name-desc':
+
+    case "name-desc":
       return sorted.sort((a, b) => {
-        const nameA = (a.name || a.title || '').toLowerCase();
-        const nameB = (b.name || b.title || '').toLowerCase();
+        const nameA = (a.name || a.title || "").toLowerCase();
+        const nameB = (b.name || b.title || "").toLowerCase();
         return nameB.localeCompare(nameA);
       });
-    
-    case 'rating-high':
+
+    case "rating-high":
       return sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    
-    case 'rating-low':
+
+    case "rating-low":
       return sorted.sort((a, b) => (a.rating || 0) - (b.rating || 0));
-    
-    case 'price-high':
+
+    case "price-high":
       return sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
-    
-    case 'price-low':
+
+    case "price-low":
       return sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
-    
+
     default:
       return sorted;
   }
@@ -81,7 +90,13 @@ export function sortItems(items, sortBy) {
 /**
  * Combined filter and sort
  */
-export function filterAndSort(items, searchTerm, filterStatus, sortBy, searchFields) {
+export function filterAndSort(
+  items,
+  searchTerm,
+  filterStatus,
+  sortBy,
+  searchFields,
+) {
   const filtered = filterItems(items, searchTerm, filterStatus, searchFields);
   return sortItems(filtered, sortBy);
 }

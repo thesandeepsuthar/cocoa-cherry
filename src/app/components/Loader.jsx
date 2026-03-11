@@ -70,7 +70,7 @@ export function LogoSVG({ size = 80, className = "" }) {
         fontSize="22"
         fontWeight="500"
         fill="#c9a86c"
-        style={{ fill: '#c9a86c' }}
+        style={{ fill: "#c9a86c" }}
       >
         Cocoa&amp;Cherry
       </text>
@@ -143,7 +143,9 @@ export default function Loader({
   }
 
   return (
-    <div className="flex items-center justify-center py-8 sm:py-12">{content}</div>
+    <div className="flex items-center justify-center py-8 sm:py-12">
+      {content}
+    </div>
   );
 }
 
@@ -185,8 +187,8 @@ export function MiniLoader({ className = "" }) {
 
 // Cake bounce loader - matches brand colors
 export function CakeLoader({ size = 60 }) {
-  const responsiveSize = typeof size === 'number' ? size : 60;
-  
+  const responsiveSize = typeof size === "number" ? size : 60;
+
   return (
     <div className="flex flex-col items-center gap-2 sm:gap-3">
       <motion.svg

@@ -4,8 +4,10 @@
 const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY;
 
 // Warn if no admin key is set in production
-if (!ADMIN_SECRET_KEY && process.env.NODE_ENV === 'production') {
-  console.error('⚠️ WARNING: ADMIN_SECRET_KEY is not set in environment variables!');
+if (!ADMIN_SECRET_KEY && process.env.NODE_ENV === "production") {
+  console.error(
+    "⚠️ WARNING: ADMIN_SECRET_KEY is not set in environment variables!",
+  );
 }
 
 /**
@@ -16,14 +18,14 @@ if (!ADMIN_SECRET_KEY && process.env.NODE_ENV === 'production') {
 function parseCookies(cookieHeader) {
   const cookies = {};
   if (!cookieHeader) return cookies;
-  
-  cookieHeader.split(';').forEach(cookie => {
-    const [name, ...rest] = cookie.trim().split('=');
+
+  cookieHeader.split(";").forEach((cookie) => {
+    const [name, ...rest] = cookie.trim().split("=");
     if (name) {
-      cookies[name] = rest.join('=');
+      cookies[name] = rest.join("=");
     }
   });
-  
+
   return cookies;
 }
 
@@ -36,47 +38,48 @@ function parseCookies(cookieHeader) {
 export function verifyAdminKey(keyOrRequest) {
   // If no admin key is configured, deny all access
   if (!ADMIN_SECRET_KEY) {
-    console.error('Admin access denied: ADMIN_SECRET_KEY not configured');
+    console.error("Admin access denied: ADMIN_SECRET_KEY not configured");
     return false;
   }
 
   // If it's a string, verify it directly
-  if (typeof keyOrRequest === 'string') {
+  if (typeof keyOrRequest === "string") {
     return verifyKeyString(keyOrRequest);
   }
 
   // If it's a Request object, check session cookie first, then query param
-  if (keyOrRequest && typeof keyOrRequest === 'object') {
+  if (keyOrRequest && typeof keyOrRequest === "object") {
     // Check for session cookie (new secure method)
     // Extract from Cookie header
-    const cookieHeader = keyOrRequest.headers?.get?.('cookie') || keyOrRequest.headers?.cookie;
+    const cookieHeader =
+      keyOrRequest.headers?.get?.("cookie") || keyOrRequest.headers?.cookie;
     if (cookieHeader) {
       const cookies = parseCookies(cookieHeader);
-      if (cookies.admin_session === 'authenticated') {
+      if (cookies.admin_session === "authenticated") {
         return true;
       }
     }
 
     // Also check if cookies are available via Next.js cookies() API
     if (keyOrRequest.cookies) {
-      const session = keyOrRequest.cookies.get?.('admin_session');
-      if (session?.value === 'authenticated') {
+      const session = keyOrRequest.cookies.get?.("admin_session");
+      if (session?.value === "authenticated") {
         return true;
       }
     }
 
     // Fall back to query parameter (legacy support)
     if (keyOrRequest.url) {
-    try {
-      const { searchParams } = new URL(keyOrRequest.url);
-        const providedKey = searchParams.get('key');
+      try {
+        const { searchParams } = new URL(keyOrRequest.url);
+        const providedKey = searchParams.get("key");
         if (providedKey) {
           return verifyKeyString(providedKey);
         }
-    } catch {
-      return false;
+      } catch {
+        return false;
+      }
     }
-  }
   }
 
   return false;
@@ -88,7 +91,7 @@ export function verifyAdminKey(keyOrRequest) {
  * @returns {boolean} - Whether the key is valid
  */
 function verifyKeyString(providedKey) {
-  if (!providedKey || typeof providedKey !== 'string') {
+  if (!providedKey || typeof providedKey !== "string") {
     return false;
   }
 
@@ -112,7 +115,7 @@ export function rateLimitResponse(resetTime) {
   const retryAfter = Math.ceil((resetTime - Date.now()) / 1000);
   return {
     success: false,
-    error: 'Too many requests. Please try again later.',
+    error: "Too many requests. Please try again later.",
     retryAfter,
   };
 }

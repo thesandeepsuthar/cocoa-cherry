@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import Navigation from '@/app/components/Navigation';
-import Footer from '@/app/components/Footer';
-import FloatingActions from '@/app/components/FloatingActions';
+import { motion } from "framer-motion";
+import Link from "next/link";
+import Navigation from "@/app/components/Navigation";
+import Footer from "@/app/components/Footer";
+import FloatingActions from "@/app/components/FloatingActions";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cocoa-cherry.vercel.app';
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
 // SEO Structured Data for Services Page
 const servicesPageSchema = {
@@ -15,147 +16,188 @@ const servicesPageSchema = {
     {
       "@type": "WebPage",
       "@id": `${siteUrl}/services/#webpage`,
-      "url": `${siteUrl}/services`,
-      "name": "Cake Services in Ahmedabad - Custom Cakes, Wedding Cakes & Same Day Delivery | Cocoa&Cherry",
-      "description": "Premium custom cake services including birthday cakes, wedding cakes, designer cakes, same-day delivery, and eggless options in Ahmedabad. FSSAI certified. Starting from ₹850/kg.",
-      "inLanguage": "en-IN",
-      "isPartOf": {
-        "@id": `${siteUrl}/#website`
+      url: `${siteUrl}/services`,
+      name: "Cake Services in Ahmedabad - Custom Cakes, Wedding Cakes & Same Day Delivery | Cocoa&Cherry",
+      description:
+        "Premium custom cake services including birthday cakes, wedding cakes, designer cakes, same-day delivery, and eggless options in Ahmedabad. FSSAI certified. Starting from ₹850/kg.",
+      inLanguage: "en-IN",
+      isPartOf: {
+        "@id": `${siteUrl}/#website`,
       },
-      "about": {
-        "@id": `${siteUrl}/#bakery`
+      about: {
+        "@id": `${siteUrl}/#bakery`,
       },
-      "primaryImageOfPage": {
+      primaryImageOfPage: {
         "@type": "ImageObject",
-        "url": `${siteUrl}/logo.svg`,
-        "width": 512,
-        "height": 512
+        url: `${siteUrl}/logo.svg`,
+        width: 512,
+        height: 512,
       },
-      "breadcrumb": {
-        "@id": `${siteUrl}/services/#breadcrumb`
+      breadcrumb: {
+        "@id": `${siteUrl}/services/#breadcrumb`,
       },
-      "mainEntity": {
-        "@id": `${siteUrl}/services/#service`
-      }
+      mainEntity: {
+        "@id": `${siteUrl}/services/#service`,
+      },
     },
     {
       "@type": "Service",
       "@id": `${siteUrl}/services/#service`,
-      "serviceType": "Custom Cake Services",
-      "name": "Cake Services in Ahmedabad - Cocoa&Cherry",
-      "description": "Premium custom cake services including birthday cakes, wedding cakes, designer cakes, same-day delivery, and eggless options in Ahmedabad.",
-      "url": `${siteUrl}/services`,
-      "provider": {
+      serviceType: "Custom Cake Services",
+      name: "Cake Services in Ahmedabad - Cocoa&Cherry",
+      description:
+        "Premium custom cake services including birthday cakes, wedding cakes, designer cakes, same-day delivery, and eggless options in Ahmedabad.",
+      url: `${siteUrl}/services`,
+      provider: {
         "@type": "Bakery",
         "@id": `${siteUrl}/#bakery`,
-        "name": "Cocoa&Cherry",
-        "telephone": "+91-97127-52469",
-        "address": {
+        name: "Cocoa&Cherry",
+        telephone: "+91-97127-52469",
+        address: {
           "@type": "PostalAddress",
-          "addressLocality": "Ahmedabad",
-          "addressRegion": "Gujarat",
-          "addressCountry": "IN"
-        }
+          addressLocality: "Ahmedabad",
+          addressRegion: "Gujarat",
+          addressCountry: "IN",
+        },
       },
-      "areaServed": {
+      areaServed: {
         "@type": "City",
-        "name": "Ahmedabad"
+        name: "Ahmedabad",
       },
-      "hasOfferCatalog": {
+      hasOfferCatalog: {
         "@type": "OfferCatalog",
-        "name": "Cake Services",
-        "itemListElement": [
+        name: "Cake Services",
+        itemListElement: [
           {
             "@type": "Offer",
-            "itemOffered": {
+            itemOffered: {
               "@type": "Service",
-              "name": "Custom Cakes",
-              "description": "Personalized cakes designed to match your vision. Starting from ₹850/kg."
-            }
+              name: "Custom Cakes",
+              description:
+                "Personalized cakes designed to match your vision. Starting from ₹850/kg.",
+            },
           },
           {
             "@type": "Offer",
-            "itemOffered": {
+            itemOffered: {
               "@type": "Service",
-              "name": "Wedding Cakes",
-              "description": "Elegant multi-tier wedding cakes with custom pricing."
-            }
+              name: "Wedding Cakes",
+              description:
+                "Elegant multi-tier wedding cakes with custom pricing.",
+            },
           },
           {
             "@type": "Offer",
-            "itemOffered": {
+            itemOffered: {
               "@type": "Service",
-              "name": "Same Day Delivery",
-              "description": "Fast and reliable delivery service across Ahmedabad."
-            }
-          }
-        ]
-      }
+              name: "Same Day Delivery",
+              description:
+                "Fast and reliable delivery service across Ahmedabad.",
+            },
+          },
+        ],
+      },
     },
     {
       "@type": "BreadcrumbList",
       "@id": `${siteUrl}/services/#breadcrumb`,
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": siteUrl
+          position: 1,
+          name: "Home",
+          item: siteUrl,
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Services",
-          "item": `${siteUrl}/services`
-        }
-      ]
-    }
-  ]
+          position: 2,
+          name: "Services",
+          item: `${siteUrl}/services`,
+        },
+      ],
+    },
+  ],
 };
 
 export default function ServicesPage() {
   const services = [
     {
-      icon: 'cake',
-      title: 'Custom Cakes',
-      description: 'Personalized cakes designed to match your vision. Perfect for birthdays, anniversaries, and special occasions.',
-      features: ['Custom designs', 'Photo cakes', 'Fondant decorations', 'Themed cakes'],
-      price: 'Starting from ₹850/kg',
+      icon: "cake",
+      title: "Custom Cakes",
+      description:
+        "Personalized cakes designed to match your vision. Perfect for birthdays, anniversaries, and special occasions.",
+      features: [
+        "Custom designs",
+        "Photo cakes",
+        "Fondant decorations",
+        "Themed cakes",
+      ],
+      price: "Starting from ₹850/kg",
     },
     {
-      icon: 'favorite',
-      title: 'Wedding Cakes',
-      description: 'Elegant multi-tier wedding cakes that make your special day unforgettable.',
-      features: ['Multi-tier designs', 'Elegant decorations', 'Fresh flowers', 'Custom flavors'],
-      price: 'Custom pricing',
+      icon: "favorite",
+      title: "Wedding Cakes",
+      description:
+        "Elegant multi-tier wedding cakes that make your special day unforgettable.",
+      features: [
+        "Multi-tier designs",
+        "Elegant decorations",
+        "Fresh flowers",
+        "Custom flavors",
+      ],
+      price: "Custom pricing",
     },
     {
-      icon: 'celebration',
-      title: 'Birthday Cakes',
-      description: 'Fun and creative birthday cakes that bring joy to every celebration.',
-      features: ['Age-specific designs', 'Character cakes', 'Number cakes', 'Colorful themes'],
-      price: 'Starting from ₹850/kg',
+      icon: "celebration",
+      title: "Birthday Cakes",
+      description:
+        "Fun and creative birthday cakes that bring joy to every celebration.",
+      features: [
+        "Age-specific designs",
+        "Character cakes",
+        "Number cakes",
+        "Colorful themes",
+      ],
+      price: "Starting from ₹850/kg",
     },
     {
-      icon: 'corporate_fare',
-      title: 'Corporate Orders',
-      description: 'Professional cakes for corporate events, office parties, and business celebrations.',
-      features: ['Bulk orders', 'Logo cakes', 'Corporate themes', 'Delivery service'],
-      price: 'Bulk pricing available',
+      icon: "corporate_fare",
+      title: "Corporate Orders",
+      description:
+        "Professional cakes for corporate events, office parties, and business celebrations.",
+      features: [
+        "Bulk orders",
+        "Logo cakes",
+        "Corporate themes",
+        "Delivery service",
+      ],
+      price: "Bulk pricing available",
     },
     {
-      icon: 'local_shipping',
-      title: 'Same Day Delivery',
-      description: 'Fast and reliable delivery service across Ahmedabad. Order today, receive today!',
-      features: ['Same day delivery', 'Midnight delivery', 'Scheduled delivery', 'Gift wrapping'],
-      price: 'Delivery charges apply',
+      icon: "local_shipping",
+      title: "Same Day Delivery",
+      description:
+        "Fast and reliable delivery service across Ahmedabad. Order today, receive today!",
+      features: [
+        "Same day delivery",
+        "Midnight delivery",
+        "Scheduled delivery",
+        "Gift wrapping",
+      ],
+      price: "Delivery charges apply",
     },
     {
-      icon: 'eco',
-      title: 'Eggless Options',
-      description: 'Wide range of delicious eggless cakes for all dietary preferences.',
-      features: ['100% eggless', 'Vegan options', 'Gluten-free available', 'All flavors'],
-      price: 'Same pricing',
+      icon: "eco",
+      title: "Eggless Options",
+      description:
+        "Wide range of delicious eggless cakes for all dietary preferences.",
+      features: [
+        "100% eggless",
+        "Vegan options",
+        "Gluten-free available",
+        "All flavors",
+      ],
+      price: "Same pricing",
     },
   ];
 
@@ -169,7 +211,11 @@ export default function ServicesPage() {
       {/* Canonical URL */}
       <link rel="canonical" href={`${siteUrl}/services`} />
       <Navigation />
-      <main className="min-h-screen bg-noir " itemScope itemType="https://schema.org/Service">
+      <main
+        className="min-h-screen bg-noir "
+        itemScope
+        itemType="https://schema.org/Service"
+      >
         {/* Hero Section */}
         <section className="relative pb-6 sm:pb-8 md:pb-12 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-rose/10 via-transparent to-noir" />
@@ -182,7 +228,7 @@ export default function ServicesPage() {
             >
               <h1
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-cream mb-4 sm:mb-6"
-                style={{ fontFamily: 'var(--font-cinzel)' }}
+                style={{ fontFamily: "var(--font-cinzel)" }}
                 itemProp="name"
               >
                 Our Services
@@ -214,7 +260,7 @@ export default function ServicesPage() {
                   </div>
                   <h3
                     className="text-lg sm:text-xl md:text-2xl font-bold text-cream mb-2 sm:mb-3"
-                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                    style={{ fontFamily: "var(--font-cinzel)" }}
                   >
                     {service.title}
                   </h3>
@@ -223,14 +269,21 @@ export default function ServicesPage() {
                   </p>
                   <ul className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
                     {service.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-xs sm:text-sm text-cream-muted">
-                        <span className="material-symbols-outlined text-rose text-base sm:text-lg flex-shrink-0">check_circle</span>
+                      <li
+                        key={idx}
+                        className="flex items-center gap-2 text-xs sm:text-sm text-cream-muted"
+                      >
+                        <span className="material-symbols-outlined text-rose text-base sm:text-lg flex-shrink-0">
+                          check_circle
+                        </span>
                         <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
                   <div className="pt-3 sm:pt-4 border-t border-cream/10">
-                    <p className="text-rose font-bold text-sm sm:text-base">{service.price}</p>
+                    <p className="text-rose font-bold text-sm sm:text-base">
+                      {service.price}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -250,19 +303,22 @@ export default function ServicesPage() {
             >
               <h2
                 className="text-2xl sm:text-3xl md:text-4xl font-bold text-cream mb-3 sm:mb-4"
-                style={{ fontFamily: 'var(--font-cinzel)' }}
+                style={{ fontFamily: "var(--font-cinzel)" }}
               >
                 Ready to Order?
               </h2>
               <p className="text-base sm:text-lg text-cream-muted mb-6 sm:mb-8 px-2">
-                Let's create something sweet together! Contact us to discuss your requirements.
+                Let's create something sweet together! Contact us to discuss
+                your requirements.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <Link
                   href="/contact"
                   className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-rose to-rose-dark text-noir font-bold hover:from-rose-dark hover:to-rose transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
-                  <span className="material-symbols-outlined text-lg sm:text-xl">mail</span>
+                  <span className="material-symbols-outlined text-lg sm:text-xl">
+                    mail
+                  </span>
                   Contact Us
                 </Link>
                 <Link
@@ -271,7 +327,9 @@ export default function ServicesPage() {
                   rel="noopener noreferrer"
                   className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl bg-[#25D366] text-white font-bold hover:bg-[#20ba5a] transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
-                  <span className="material-symbols-outlined text-lg sm:text-xl">chat</span>
+                  <span className="material-symbols-outlined text-lg sm:text-xl">
+                    chat
+                  </span>
                   WhatsApp Us
                 </Link>
               </div>

@@ -1,19 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import Link from 'next/link';
-import { getRandomFallbackImage } from '@/lib/constants';
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import Link from "next/link";
+import { getRandomFallbackImage } from "@/lib/constants";
 
 // Default fallback events
 const defaultEvents = [
   {
-    _id: '1',
-    title: 'School Food Festival',
+    _id: "1",
+    title: "School Food Festival",
     venue: "St. Xavier's High School, Ahmedabad",
-    date: '2024-12-15',
-    description: 'We had an amazing time serving our signature brownies and cupcakes to over 500 enthusiastic students!',
-    highlights: '500+ Students Served',
+    date: "2024-12-15",
+    description:
+      "We had an amazing time serving our signature brownies and cupcakes to over 500 enthusiastic students!",
+    highlights: "500+ Students Served",
     coverImage: null,
   },
 ];
@@ -21,31 +22,38 @@ const defaultEvents = [
 // Format date helper
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 };
 
 // Event Detail Modal
-function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalCount }) {
+function EventDetailModal({
+  event,
+  onClose,
+  onNext,
+  onPrev,
+  currentIndex,
+  totalCount,
+}) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') onNext();
-      if (e.key === 'ArrowLeft') onPrev();
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onNext();
+      if (e.key === "ArrowLeft") onPrev();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, onNext, onPrev]);
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, []);
 
@@ -74,7 +82,9 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
                  bg-noir/90 backdrop-blur-md hover:bg-rose/30 border border-rose/30 
                  items-center justify-center transition-all z-20 shadow-xl shadow-rose/20"
       >
-        <span className="material-symbols-outlined text-cream text-2xl lg:text-3xl">chevron_left</span>
+        <span className="material-symbols-outlined text-cream text-2xl lg:text-3xl">
+          chevron_left
+        </span>
       </motion.button>
 
       <motion.button
@@ -90,14 +100,16 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
                  bg-noir/90 backdrop-blur-md hover:bg-rose/30 border border-rose/30 
                  items-center justify-center transition-all z-20 shadow-xl shadow-rose/20"
       >
-        <span className="material-symbols-outlined text-cream text-2xl lg:text-3xl">chevron_right</span>
+        <span className="material-symbols-outlined text-cream text-2xl lg:text-3xl">
+          chevron_right
+        </span>
       </motion.button>
 
       <motion.div
-        initial={{ opacity: 0, y: '100%', scale: 0.95 }}
+        initial={{ opacity: 0, y: "100%", scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: '100%', scale: 0.95 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        exit={{ opacity: 0, y: "100%", scale: 0.95 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="bg-noir-light w-full sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl 
                  rounded-t-[2rem] sm:rounded-3xl border border-rose/20 
                  shadow-2xl shadow-rose/10 overflow-hidden 
@@ -110,7 +122,7 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
           <div className="w-14 h-1.5 bg-cream/40 rounded-full mb-1" />
           <div className="w-10 h-0.5 bg-cream/20 rounded-full" />
         </div>
-        
+
         {/* Close button - Enhanced for mobile */}
         <motion.button
           whileHover={{ scale: 1.1, rotate: 90 }}
@@ -123,7 +135,9 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
                    flex items-center justify-center transition-all 
                    touch-manipulation"
         >
-          <span className="material-symbols-outlined text-cream text-xl sm:text-xl">close</span>
+          <span className="material-symbols-outlined text-cream text-xl sm:text-xl">
+            close
+          </span>
         </motion.button>
 
         {/* Image Section - Enhanced for mobile */}
@@ -133,21 +147,29 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
               <motion.div
                 className="flex w-full h-full"
                 drag="x"
-                dragConstraints={{ left: -(allImages.length - 1) * 100, right: 0 }}
+                dragConstraints={{
+                  left: -(allImages.length - 1) * 100,
+                  right: 0,
+                }}
                 dragElastic={0.1}
                 onDragEnd={(event, info) => {
                   const swipeThreshold = 50;
                   if (info.offset.x > swipeThreshold) {
                     setCurrentImageIndex(Math.max(0, currentImageIndex - 1));
                   } else if (info.offset.x < -swipeThreshold) {
-                    setCurrentImageIndex(Math.min(allImages.length - 1, currentImageIndex + 1));
+                    setCurrentImageIndex(
+                      Math.min(allImages.length - 1, currentImageIndex + 1),
+                    );
                   }
                 }}
-                animate={{ x: -currentImageIndex * 100 + '%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                animate={{ x: -currentImageIndex * 100 + "%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
               >
                 {allImages.map((image, idx) => (
-                  <div key={idx} className="flex-shrink-0 w-full h-full relative">
+                  <div
+                    key={idx}
+                    className="flex-shrink-0 w-full h-full relative"
+                  >
                     <img
                       src={image || getRandomFallbackImage()}
                       alt={`Cocoa&Cherry cake stall at Ahmedabad food festival - Event ${idx + 1} - Premium custom cakes display`}
@@ -161,7 +183,7 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
                   </div>
                 ))}
               </motion.div>
-              
+
               {/* Image navigation dots - Enhanced for mobile */}
               {allImages.length > 1 && (
                 <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-2.5 z-20 px-4 py-2 rounded-full bg-noir/60 backdrop-blur-sm">
@@ -172,9 +194,9 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
                       whileHover={{ scale: 1.2 }}
                       whileTap={{ scale: 0.8 }}
                       className={`h-2.5 sm:h-2 rounded-full transition-all touch-manipulation ${
-                        idx === currentImageIndex 
-                          ? 'bg-rose w-10 sm:w-8 shadow-lg shadow-rose/50' 
-                          : 'bg-cream/50 active:bg-cream/70 w-2.5 sm:w-2'
+                        idx === currentImageIndex
+                          ? "bg-rose w-10 sm:w-8 shadow-lg shadow-rose/50"
+                          : "bg-cream/50 active:bg-cream/70 w-2.5 sm:w-2"
                       }`}
                       aria-label={`Go to image ${idx + 1}`}
                     />
@@ -184,9 +206,11 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
 
               {/* Image counter - Enhanced for mobile */}
               {allImages.length > 1 && (
-                <div className="absolute top-3 left-3 sm:top-5 sm:left-5 px-3 py-1.5 sm:py-2 rounded-full 
+                <div
+                  className="absolute top-3 left-3 sm:top-5 sm:left-5 px-3 py-1.5 sm:py-2 rounded-full 
                               bg-noir/95 backdrop-blur-md border border-rose/30 text-cream 
-                              text-xs sm:text-sm font-semibold shadow-xl">
+                              text-xs sm:text-sm font-semibold shadow-xl"
+                >
                   <span className="text-rose">{currentImageIndex + 1}</span>
                   <span className="text-cream-muted mx-1">/</span>
                   <span className="text-cream-muted">{allImages.length}</span>
@@ -196,7 +220,9 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-rose/10 via-gold/10 to-rose/10">
               <div className="text-center">
-                <span className="material-symbols-outlined text-6xl sm:text-8xl text-rose/30 mb-2 block">celebration</span>
+                <span className="material-symbols-outlined text-6xl sm:text-8xl text-rose/30 mb-2 block">
+                  celebration
+                </span>
                 <p className="text-cream-muted text-sm">No images available</p>
               </div>
             </div>
@@ -204,56 +230,80 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
         </div>
 
         {/* Content Section - Enhanced for mobile */}
-        <div className="p-4 sm:p-7 lg:p-9 xl:p-10 overflow-y-auto flex-1 custom-scrollbar 
-                       overscroll-contain pb-6 sm:pb-8">
+        <div
+          className="p-4 sm:p-7 lg:p-9 xl:p-10 overflow-y-auto flex-1 custom-scrollbar 
+                       overscroll-contain pb-6 sm:pb-8"
+        >
           {/* Badge & Date - Mobile optimized */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-            <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2 rounded-full 
+            <span
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2 rounded-full 
                            bg-gradient-to-r from-rose/25 to-rose/15 border border-rose/40 text-rose 
-                           text-xs sm:text-sm font-bold shadow-md active:scale-95 transition-transform">
-              <span className="material-symbols-outlined text-sm sm:text-base">celebration</span>
+                           text-xs sm:text-sm font-bold shadow-md active:scale-95 transition-transform"
+            >
+              <span className="material-symbols-outlined text-sm sm:text-base">
+                celebration
+              </span>
               <span>Event</span>
             </span>
-            <span className="text-cream-muted text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 
+            <span
+              className="text-cream-muted text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 
                             px-3 sm:px-4 py-2 sm:py-2 rounded-full bg-noir border border-rose/15
-                            shadow-sm">
-              <span className="material-symbols-outlined text-rose text-sm sm:text-base">calendar_today</span>
+                            shadow-sm"
+            >
+              <span className="material-symbols-outlined text-rose text-sm sm:text-base">
+                calendar_today
+              </span>
               <span>{formatDate(event.date)}</span>
             </span>
           </div>
 
           {/* Title - Mobile optimized */}
-          <h3 
+          <h3
             className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-cream mb-4 sm:mb-4 
                       leading-tight tracking-tight"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            style={{ fontFamily: "var(--font-cinzel)" }}
           >
             {event.title}
           </h3>
 
           {/* Venue - Mobile optimized */}
-          <div className="flex items-start gap-2.5 sm:gap-2.5 mb-4 sm:mb-5 p-3.5 sm:p-4 rounded-xl 
-                         bg-noir border border-rose/15 shadow-sm">
-            <span className="material-symbols-outlined text-rose text-xl sm:text-xl mt-0.5 flex-shrink-0">location_on</span>
-            <p className="text-cream-muted text-sm sm:text-base lg:text-lg leading-relaxed flex-1">{event.venue}</p>
+          <div
+            className="flex items-start gap-2.5 sm:gap-2.5 mb-4 sm:mb-5 p-3.5 sm:p-4 rounded-xl 
+                         bg-noir border border-rose/15 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-rose text-xl sm:text-xl mt-0.5 flex-shrink-0">
+              location_on
+            </span>
+            <p className="text-cream-muted text-sm sm:text-base lg:text-lg leading-relaxed flex-1">
+              {event.venue}
+            </p>
           </div>
 
           {/* Highlights - Mobile optimized */}
           {event.highlights && (
-            <div className="inline-flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-2.5 
+            <div
+              className="inline-flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-2.5 
                           rounded-xl sm:rounded-2xl bg-gradient-to-r from-gold/25 to-gold/15 
                           border border-gold/40 mb-4 sm:mb-5 shadow-lg shadow-gold/15
-                          active:scale-95 transition-transform">
-              <span className="material-symbols-outlined text-gold text-xl sm:text-xl">emoji_events</span>
-              <span className="text-gold font-bold text-sm sm:text-base lg:text-lg">{event.highlights}</span>
+                          active:scale-95 transition-transform"
+            >
+              <span className="material-symbols-outlined text-gold text-xl sm:text-xl">
+                emoji_events
+              </span>
+              <span className="text-gold font-bold text-sm sm:text-base lg:text-lg">
+                {event.highlights}
+              </span>
             </div>
           )}
 
           {/* Description - Mobile optimized */}
           {event.description && (
             <div className="mt-4 sm:mt-5">
-              <p className="text-cream/90 leading-relaxed text-sm sm:text-base lg:text-lg 
-                          leading-relaxed sm:leading-relaxed lg:leading-relaxed">
+              <p
+                className="text-cream/90 leading-relaxed text-sm sm:text-base lg:text-lg 
+                          leading-relaxed sm:leading-relaxed lg:leading-relaxed"
+              >
                 {event.description}
               </p>
             </div>
@@ -264,37 +314,53 @@ function EventDetailModal({ event, onClose, onNext, onPrev, currentIndex, totalC
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.92 }}
-              onClick={(e) => { e.stopPropagation(); onPrev(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onPrev();
+              }}
               className="flex-1 px-5 py-3 rounded-xl bg-gradient-to-r from-rose/15 to-rose/10 
                        active:from-rose/25 active:to-rose/20 border border-rose/30 
                        text-cream flex items-center justify-center gap-2 transition-all 
                        text-sm font-semibold shadow-md touch-manipulation min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-xl">chevron_left</span>
+              <span className="material-symbols-outlined text-xl">
+                chevron_left
+              </span>
               <span>Previous</span>
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.92 }}
-              onClick={(e) => { e.stopPropagation(); onNext(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onNext();
+              }}
               className="flex-1 px-5 py-3 rounded-xl bg-gradient-to-r from-rose/15 to-rose/10 
                        active:from-rose/25 active:to-rose/20 border border-rose/30 
                        text-cream flex items-center justify-center gap-2 transition-all 
                        text-sm font-semibold shadow-md touch-manipulation min-h-[44px]"
             >
               <span>Next</span>
-              <span className="material-symbols-outlined text-xl">chevron_right</span>
+              <span className="material-symbols-outlined text-xl">
+                chevron_right
+              </span>
             </motion.button>
           </div>
 
           {/* Event counter - Enhanced for mobile */}
           <div className="text-center mt-5 pt-5 border-t border-rose/15">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
+            <span
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
                            bg-noir border border-rose/20 shadow-sm
-                           text-cream-muted text-xs sm:text-sm font-medium">
-              <span className="material-symbols-outlined text-sm text-rose">photo_library</span>
+                           text-cream-muted text-xs sm:text-sm font-medium"
+            >
+              <span className="material-symbols-outlined text-sm text-rose">
+                photo_library
+              </span>
               <span>
-                <span className="text-cream font-semibold">{currentIndex + 1}</span>
+                <span className="text-cream font-semibold">
+                  {currentIndex + 1}
+                </span>
                 <span className="mx-1">of</span>
                 <span className="text-cream-muted">{totalCount}</span>
               </span>
@@ -324,7 +390,7 @@ function EventCard({ event, onClick, index }) {
           {event.coverImage ? (
             <img
               src={event.coverImage || getRandomFallbackImage()}
-              alt={`${event.title || 'Event'} - Cocoa&Cherry cake stall at ${event.venue || 'Ahmedabad'} - Premium custom cakes display`}
+              alt={`${event.title || "Event"} - Cocoa&Cherry cake stall at ${event.venue || "Ahmedabad"} - Premium custom cakes display`}
               className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
               onError={(e) => {
                 e.target.src = getRandomFallbackImage();
@@ -332,17 +398,21 @@ function EventCard({ event, onClick, index }) {
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-rose/20 to-gold/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-4xl sm:text-5xl text-rose/40">celebration</span>
+              <span className="material-symbols-outlined text-4xl sm:text-5xl text-rose/40">
+                celebration
+              </span>
             </div>
           )}
-          
+
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-          
+
           {/* Date Badge */}
           <div className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-noir/80 backdrop-blur-sm border border-rose/20">
             <span className="text-cream text-[10px] sm:text-xs font-medium flex items-center gap-0.5 sm:gap-1">
-              <span className="material-symbols-outlined text-rose text-xs sm:text-sm">calendar_today</span>
+              <span className="material-symbols-outlined text-rose text-xs sm:text-sm">
+                calendar_today
+              </span>
               {formatDate(event.date)}
             </span>
           </div>
@@ -351,7 +421,9 @@ function EventCard({ event, onClick, index }) {
           {event.highlights && (
             <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
               <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-gold/90 text-noir text-[10px] sm:text-xs font-bold">
-                <span className="material-symbols-outlined text-xs sm:text-sm">emoji_events</span>
+                <span className="material-symbols-outlined text-xs sm:text-sm">
+                  emoji_events
+                </span>
                 {event.highlights}
               </div>
             </div>
@@ -360,22 +432,26 @@ function EventCard({ event, onClick, index }) {
           {/* View Icon - Desktop only */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:flex">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-rose/90 flex items-center justify-center">
-              <span className="material-symbols-outlined text-noir text-xl sm:text-2xl">visibility</span>
+              <span className="material-symbols-outlined text-noir text-xl sm:text-2xl">
+                visibility
+              </span>
             </div>
           </div>
         </div>
 
         {/* Content */}
         <div className="p-3 sm:p-4 md:p-5 flex-1 flex flex-col">
-          <h3 
+          <h3
             className="text-base sm:text-lg md:text-xl font-bold text-cream mb-1.5 sm:mb-2 group-hover:text-rose transition-colors line-clamp-2"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            style={{ fontFamily: "var(--font-cinzel)" }}
           >
             {event.title}
           </h3>
-          
+
           <p className="text-cream-muted text-xs sm:text-sm flex items-center gap-1 sm:gap-1.5 mb-2 sm:mb-3">
-            <span className="material-symbols-outlined text-rose text-sm sm:text-base">location_on</span>
+            <span className="material-symbols-outlined text-rose text-sm sm:text-base">
+              location_on
+            </span>
             <span className="line-clamp-1">{event.venue}</span>
           </p>
 
@@ -389,7 +465,9 @@ function EventCard({ event, onClick, index }) {
           <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-rose/10">
             <span className="text-rose text-xs sm:text-sm font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
               View Details
-              <span className="material-symbols-outlined text-xs sm:text-sm">arrow_forward</span>
+              <span className="material-symbols-outlined text-xs sm:text-sm">
+                arrow_forward
+              </span>
             </span>
           </div>
         </div>
@@ -408,7 +486,7 @@ export default function Events({ isHomePage = false }) {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch('/api/events');
+        const res = await fetch("/api/events");
         const data = await res.json();
         if (data.success && data.data.length > 0) {
           setEvents(data.data);
@@ -416,7 +494,7 @@ export default function Events({ isHomePage = false }) {
           setEvents(defaultEvents);
         }
       } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error("Error fetching events:", error);
         setEvents(defaultEvents);
       } finally {
         setLoading(false);
@@ -428,9 +506,9 @@ export default function Events({ isHomePage = false }) {
   // Navigate events in modal
   const navigateEvent = (direction) => {
     if (!selectedEvent) return;
-    const currentIndex = events.findIndex(e => e._id === selectedEvent._id);
+    const currentIndex = events.findIndex((e) => e._id === selectedEvent._id);
     let newIndex;
-    if (direction === 'prev') {
+    if (direction === "prev") {
       newIndex = currentIndex > 0 ? currentIndex - 1 : events.length - 1;
     } else {
       newIndex = currentIndex < events.length - 1 ? currentIndex + 1 : 0;
@@ -444,17 +522,21 @@ export default function Events({ isHomePage = false }) {
   }
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      className={`relative ${isHomePage ? 'py-12 sm:py-16 md:py-24 lg:py-32' : 'pb-12 sm:pb-16 md:pb-24 lg:pb-32 pt-0'} bg-noir overflow-hidden`}
+      className={`relative ${isHomePage ? "py-12 sm:py-16 md:py-24 lg:py-32" : "pb-12 sm:pb-16 md:pb-24 lg:pb-32 pt-0"} bg-noir overflow-hidden`}
       id="events"
     >
       {/* Background decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 right-1/4 w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] 
-                      bg-gold/5 rounded-full blur-[60px] sm:blur-[80px] md:blur-[100px]" />
-        <div className="absolute bottom-1/4 left-1/4 w-[150px] sm:w-[200px] md:w-[300px] h-[150px] sm:h-[200px] md:h-[300px] 
-                      bg-rose/5 rounded-full blur-[50px] sm:blur-[60px] md:blur-[80px]" />
+        <div
+          className="absolute top-1/4 right-1/4 w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] 
+                      bg-gold/5 rounded-full blur-[60px] sm:blur-[80px] md:blur-[100px]"
+        />
+        <div
+          className="absolute bottom-1/4 left-1/4 w-[150px] sm:w-[200px] md:w-[300px] h-[150px] sm:h-[200px] md:h-[300px] 
+                      bg-rose/5 rounded-full blur-[50px] sm:blur-[60px] md:blur-[80px]"
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 pt-3 sm:px-6 md:px-8">
@@ -465,40 +547,42 @@ export default function Events({ isHomePage = false }) {
           transition={{ duration: 0.6 }}
           className="text-center mb-8 sm:mb-10 md:mb-12"
         >
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full 
                      bg-gold/10 border border-gold/20 mb-4 sm:mb-6"
           >
-            <span className="material-symbols-outlined text-gold text-xs sm:text-sm">celebration</span>
+            <span className="material-symbols-outlined text-gold text-xs sm:text-sm">
+              celebration
+            </span>
             <span className="text-gold text-[10px] sm:text-xs font-bold uppercase tracking-widest">
               Events & Stalls
             </span>
           </motion.div>
 
           {isHomePage ? (
-          <h2 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
-          >
-            <span className="text-cream">Our </span>
-            <span className="gradient-text">Events</span>
-          </h2>
+            <h2
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4"
+              style={{ fontFamily: "var(--font-cinzel)" }}
+            >
+              <span className="text-cream">Our </span>
+              <span className="gradient-text">Events</span>
+            </h2>
           ) : (
-            <h1 
+            <h1
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4"
-              style={{ fontFamily: 'var(--font-cinzel)' }}
+              style={{ fontFamily: "var(--font-cinzel)" }}
               itemProp="name"
             >
               <span className="text-cream">Our </span>
               <span className="gradient-text">Events</span>
             </h1>
           )}
-          
+
           <p className="text-cream-muted text-sm sm:text-base md:text-lg max-w-xl mx-auto px-4 sm:px-0">
-            We bring our sweet treats to schools, colleges, and community events. 
-            Check out our recent stalls and celebrations!
+            We bring our sweet treats to schools, colleges, and community
+            events. Check out our recent stalls and celebrations!
           </p>
         </motion.div>
 
@@ -553,14 +637,18 @@ export default function Events({ isHomePage = false }) {
                          bg-gradient-to-r from-gold to-gold/80 text-noir text-sm sm:text-base font-bold 
                          shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all"
               >
-                <span className="material-symbols-outlined text-lg sm:text-xl">mail</span>
+                <span className="material-symbols-outlined text-lg sm:text-xl">
+                  mail
+                </span>
                 Contact for Event Booking
               </motion.a>
               <Link
                 href="/events"
                 className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm sm:text-base shadow-lg shadow-rose/20 hover:shadow-rose/40 transition-all"
               >
-                <span className="material-symbols-outlined text-lg sm:text-xl">celebration</span>
+                <span className="material-symbols-outlined text-lg sm:text-xl">
+                  celebration
+                </span>
                 <span>View All Events</span>
               </Link>
             </div>
@@ -574,9 +662,9 @@ export default function Events({ isHomePage = false }) {
           <EventDetailModal
             event={selectedEvent}
             onClose={() => setSelectedEvent(null)}
-            onNext={() => navigateEvent('next')}
-            onPrev={() => navigateEvent('prev')}
-            currentIndex={events.findIndex(e => e._id === selectedEvent._id)}
+            onNext={() => navigateEvent("next")}
+            onPrev={() => navigateEvent("prev")}
+            currentIndex={events.findIndex((e) => e._id === selectedEvent._id)}
             totalCount={events.length}
           />
         )}

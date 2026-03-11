@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { getRandomFallbackImage } from '@/lib/constants';
-import { useState } from 'react';
+import Image from "next/image";
+import { getRandomFallbackImage } from "@/lib/constants";
+import { useState } from "react";
 
 // Client Component for handling image fallback
-export function FallbackImage({ 
-  src, 
-  alt, 
-  className = '', 
-  fill = false, 
-  width, 
+export function FallbackImage({
+  src,
+  alt,
+  className = "",
+  fill = false,
+  width,
   height,
   priority = false,
   unoptimized = false,
   itemProp,
   useNextImage = false,
-  ...props 
+  ...props
 }) {
   const [imageSrc, setImageSrc] = useState(src || getRandomFallbackImage());
 

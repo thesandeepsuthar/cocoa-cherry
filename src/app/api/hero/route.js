@@ -43,8 +43,12 @@ export async function POST(request) {
     const formData = await request.formData();
     const imageData = formData.get("imageData");
     const title = sanitizeString(formData.get("title") || "Artisanal Cakes");
-    const subtitle = sanitizeString(formData.get("subtitle") || "Handcrafted with Love");
-    const alt = sanitizeString(formData.get("alt") || "Hero image for Cocoa & Cherry bakery");
+    const subtitle = sanitizeString(
+      formData.get("subtitle") || "Handcrafted with Love",
+    );
+    const alt = sanitizeString(
+      formData.get("alt") || "Hero image for Cocoa & Cherry bakery",
+    );
     const isActive = formData.get("isActive") === "true";
     const order = parseInt(formData.get("order")) || 0;
 
@@ -59,12 +63,12 @@ export async function POST(request) {
     let cloudinaryResult = null;
     try {
       cloudinaryResult = await uploadToCloudinary(imageData, {
-        folder: 'cocoa-cherry/hero',
+        folder: "cocoa-cherry/hero",
       });
     } catch (uploadError) {
-      console.error('Cloudinary upload error:', uploadError);
+      console.error("Cloudinary upload error:", uploadError);
       return NextResponse.json(
-        { success: false, error: 'Failed to upload image to Cloudinary' },
+        { success: false, error: "Failed to upload image to Cloudinary" },
         { status: 500 },
       );
     }
@@ -135,13 +139,13 @@ export async function PUT(request) {
     // Upload new image to Cloudinary if provided
     if (formData.get("imageData")) {
       const imageData = formData.get("imageData");
-      
+
       // Upload image to Cloudinary
       try {
         const cloudinaryResult = await uploadToCloudinary(imageData, {
-          folder: 'cocoa-cherry/hero',
+          folder: "cocoa-cherry/hero",
         });
-        
+
         updateData.imageData = cloudinaryResult.secure_url;
         updateData.publicId = cloudinaryResult.public_id;
         cloudinaryInfo = {
@@ -150,18 +154,20 @@ export async function PUT(request) {
           size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
         };
       } catch (uploadError) {
-        console.error('Cloudinary upload error:', uploadError);
+        console.error("Cloudinary upload error:", uploadError);
         return NextResponse.json(
-          { success: false, error: 'Failed to upload image to Cloudinary' },
+          { success: false, error: "Failed to upload image to Cloudinary" },
           { status: 500 },
         );
       }
     }
 
-    if (formData.get("title")) updateData.title = sanitizeString(formData.get("title"));
+    if (formData.get("title"))
+      updateData.title = sanitizeString(formData.get("title"));
     if (formData.get("subtitle"))
       updateData.subtitle = sanitizeString(formData.get("subtitle"));
-    if (formData.get("alt")) updateData.alt = sanitizeString(formData.get("alt"));
+    if (formData.get("alt"))
+      updateData.alt = sanitizeString(formData.get("alt"));
     if (formData.get("isActive") !== null)
       updateData.isActive = formData.get("isActive") === "true";
     if (formData.get("order") !== null)
@@ -239,10 +245,13 @@ export async function DELETE(request) {
     // Delete from Cloudinary if public_id exists
     if (heroImage.publicId) {
       try {
-        const { deleteFromCloudinary } = await import("../../../lib/cloudinary");
+        const { deleteFromCloudinary } =
+          await import("../../../lib/cloudinary");
         await deleteFromCloudinary(heroImage.publicId);
       } catch (cloudinaryError) {
-        console.warn(`⚠️ Failed to delete from Cloudinary: ${cloudinaryError.message}`);
+        console.warn(
+          `⚠️ Failed to delete from Cloudinary: ${cloudinaryError.message}`,
+        );
         // Continue with database deletion even if Cloudinary deletion fails
       }
     }

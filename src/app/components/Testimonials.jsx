@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import Slider from 'react-slick';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import Slider from "react-slick";
 
 // ============================================
 // Custom useBreakpoint Hook
@@ -12,16 +12,16 @@ import Slider from 'react-slick';
 // ============================================
 function useBreakpoint() {
   // Default to 'desktop' for SSR to prevent hydration mismatch
-  const [breakpoint, setBreakpoint] = useState('desktop');
+  const [breakpoint, setBreakpoint] = useState("desktop");
   const [slidesToShow, setSlidesToShow] = useState(3);
 
   const getBreakpoint = useCallback(() => {
-    if (typeof window === 'undefined') return { bp: 'desktop', slides: 3 };
-    
+    if (typeof window === "undefined") return { bp: "desktop", slides: 3 };
+
     const width = window.innerWidth;
-    if (width < 500) return { bp: 'mobile', slides: 1 };
-    if (width < 768) return { bp: 'tablet', slides: 2 };
-    return { bp: 'desktop', slides: 3 };
+    if (width < 500) return { bp: "mobile", slides: 1 };
+    if (width < 768) return { bp: "tablet", slides: 2 };
+    return { bp: "desktop", slides: 3 };
   }, []);
 
   useEffect(() => {
@@ -56,11 +56,11 @@ function useBreakpoint() {
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [getBreakpoint]);
@@ -71,40 +71,51 @@ function useBreakpoint() {
 // Default fallback testimonials
 const defaultTestimonials = [
   {
-    _id: '1',
-    review: "The most beautiful and delicious cake I've ever had! The detail on the sugar flowers was incredible, and the lemon flavor was so fresh.",
-    name: 'Sarah Jenkins',
-    cakeType: 'Wedding Cake',
+    _id: "1",
+    review:
+      "The most beautiful and delicious cake I've ever had! The detail on the sugar flowers was incredible, and the lemon flavor was so fresh.",
+    name: "Sarah Jenkins",
+    cakeType: "Wedding Cake",
     rating: 5,
-    avatarData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBu-Pew_i4O1hE18noT-NNsvJcOrf18UNuGS8ivHFPl0IKdjOEQXlh2cFeg8Ro5n1TriT8iIksHBjqBhuNLgFktw03oJ5vYVaQrBjrf7EyYcbfbjU1e7KB6E-9mjK6fzLtiYiJUixD6KBwmxAmoSbBkZIBclao2CKf0eoaAP0PFaJVGuOe4Ca9OMGJxthSBbgm94SmlhBmDRBycBOzMtCzh6PmAujtwPC5aYHmiWucEZp5NpyJI8BV768Zp66fVJeB4nN879CmYCLvW',
+    avatarData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBu-Pew_i4O1hE18noT-NNsvJcOrf18UNuGS8ivHFPl0IKdjOEQXlh2cFeg8Ro5n1TriT8iIksHBjqBhuNLgFktw03oJ5vYVaQrBjrf7EyYcbfbjU1e7KB6E-9mjK6fzLtiYiJUixD6KBwmxAmoSbBkZIBclao2CKf0eoaAP0PFaJVGuOe4Ca9OMGJxthSBbgm94SmlhBmDRBycBOzMtCzh6PmAujtwPC5aYHmiWucEZp5NpyJI8BV768Zp66fVJeB4nN879CmYCLvW",
   },
   {
-    _id: '2',
-    review: 'Ordered a last-minute birthday cake and Cocoa Cherry delivered perfection. The Belgian Truffle is to die for!',
-    name: 'Michael Chen',
-    cakeType: 'Birthday Cake',
+    _id: "2",
+    review:
+      "Ordered a last-minute birthday cake and Cocoa Cherry delivered perfection. The Belgian Truffle is to die for!",
+    name: "Michael Chen",
+    cakeType: "Birthday Cake",
     rating: 5,
-    avatarData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCVq40FmpxeTFm98HEVZXFyfu8_wUd2pm1aKCZ5CUPyKeTY_QJcto3Fay5VNNc-wwMl0qfCNPaQimWQHcN5_syzKgipvTaCrzXKEjk59XsEtST7Hz9JNXYQv9bEG2yjb5j-Mg889FreheB_Sg93hJZg_p90iZFpU3QRdw_IDrbw_aCrCWVhTaKHCNvNgIsl1n8uggxVkvihIslgBJiFoKyCIcjs2p7UkfoRBu-5rx6WmGH6zzhtQYR1EWinY9CK4Ob3OViuTxWL4E4c',
+    avatarData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCVq40FmpxeTFm98HEVZXFyfu8_wUd2pm1aKCZ5CUPyKeTY_QJcto3Fay5VNNc-wwMl0qfCNPaQimWQHcN5_syzKgipvTaCrzXKEjk59XsEtST7Hz9JNXYQv9bEG2yjb5j-Mg889FreheB_Sg93hJZg_p90iZFpU3QRdw_IDrbw_aCrCWVhTaKHCNvNgIsl1n8uggxVkvihIslgBJiFoKyCIcjs2p7UkfoRBu-5rx6WmGH6zzhtQYR1EWinY9CK4Ob3OViuTxWL4E4c",
     isFeatured: true,
   },
   {
-    _id: '3',
-    review: "Not only do the cakes look like art, but they taste like home. You can really taste the quality ingredients.",
-    name: 'Emily Rose',
-    cakeType: 'Anniversary Cake',
+    _id: "3",
+    review:
+      "Not only do the cakes look like art, but they taste like home. You can really taste the quality ingredients.",
+    name: "Emily Rose",
+    cakeType: "Anniversary Cake",
     rating: 5,
-    avatarData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAQnuQSuc1oM1yABToKIIK_Is9u-UgiYqVN7MtzNlaBUg8Nm0iLRyW2VWu1Q2kVqUj34AP41Plt7ttrC74w8rKT1OPk2GLntusYlfkjinatTaq4sPggL74XuO5osxFIJ0gzJadEO9yOycUELHszFsZmWhDXpmRMxwR5tBP6C1Y8QWKH9G8Nlwv8D4T9yW2Zz3MSNDjaKzHNz6A_pHPI67lNW6um6-AjnberyQeHcxc1ojLyQT9RZ-L73poIPNrxkmCMuLs8NrJPVktE',
+    avatarData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAQnuQSuc1oM1yABToKIIK_Is9u-UgiYqVN7MtzNlaBUg8Nm0iLRyW2VWu1Q2kVqUj34AP41Plt7ttrC74w8rKT1OPk2GLntusYlfkjinatTaq4sPggL74XuO5osxFIJ0gzJadEO9yOycUELHszFsZmWhDXpmRMxwR5tBP6C1Y8QWKH9G8Nlwv8D4T9yW2Zz3MSNDjaKzHNz6A_pHPI67lNW6um6-AjnberyQeHcxc1ojLyQT9RZ-L73poIPNrxkmCMuLs8NrJPVktE",
   },
 ];
 
 // Star Rating Component
-function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }) {
+function StarRating({
+  rating,
+  onRatingChange,
+  interactive = false,
+  size = "md",
+}) {
   const [hoverRating, setHoverRating] = useState(0);
-  
+
   const sizeClasses = {
-    sm: 'text-base',
-    md: 'text-xl',
-    lg: 'text-2xl md:text-3xl',
+    sm: "text-base",
+    md: "text-xl",
+    lg: "text-2xl md:text-3xl",
   };
 
   return (
@@ -118,15 +129,18 @@ function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }
           onClick={() => interactive && onRatingChange?.(star)}
           onMouseEnter={() => interactive && setHoverRating(star)}
           onMouseLeave={() => interactive && setHoverRating(0)}
-          className={`${interactive ? 'cursor-pointer' : 'cursor-default'} transition-colors`}
+          className={`${interactive ? "cursor-pointer" : "cursor-default"} transition-colors`}
           disabled={!interactive}
         >
           <span
             className={`material-symbols-outlined ${sizeClasses[size]} ${
-              star <= (hoverRating || rating) ? 'text-gold' : 'text-cream-muted/30'
+              star <= (hoverRating || rating)
+                ? "text-gold"
+                : "text-cream-muted/30"
             }`}
             style={{
-              fontVariationSettings: star <= (hoverRating || rating) ? "'FILL' 1" : "'FILL' 0",
+              fontVariationSettings:
+                star <= (hoverRating || rating) ? "'FILL' 1" : "'FILL' 0",
             }}
           >
             star
@@ -140,15 +154,15 @@ function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }
 // Review Form Component
 function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    cakeType: '',
+    name: "",
+    email: "",
+    cakeType: "",
     rating: 0,
-    review: '',
+    review: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -161,31 +175,31 @@ function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.rating === 0) {
-      setError('Please select a rating');
+      setError("Please select a rating");
       return;
     }
-    
+
     setIsSubmitting(true);
-    setError('');
-    
+    setError("");
+
     try {
-      const res = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      
+
       const data = await res.json();
-      
+
       if (data.success) {
         setSubmitted(true);
         onSubmit?.(data.data);
         setTimeout(() => onClose?.(), 2000);
       } else {
-        setError(data.error || 'Failed to submit review');
+        setError(data.error || "Failed to submit review");
       }
     } catch (err) {
-      setError('Failed to submit review. Please try again.');
+      setError("Failed to submit review. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -201,15 +215,22 @@ function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+          transition={{ type: "spring", stiffness: 200, damping: 10 }}
           className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4"
         >
-          <span className="material-symbols-outlined text-4xl text-emerald-400">check_circle</span>
+          <span className="material-symbols-outlined text-4xl text-emerald-400">
+            check_circle
+          </span>
         </motion.div>
-        <h3 className="text-2xl font-bold text-cream mb-2" style={{ fontFamily: 'var(--font-cinzel)' }}>
+        <h3
+          className="text-2xl font-bold text-cream mb-2"
+          style={{ fontFamily: "var(--font-cinzel)" }}
+        >
           Thank You!
         </h3>
-        <p className="text-cream-muted">Your review has been submitted and will be visible after approval.</p>
+        <p className="text-cream-muted">
+          Your review has been submitted and will be visible after approval.
+        </p>
       </motion.div>
     );
   }
@@ -243,11 +264,11 @@ function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
               exit={{ opacity: 0 }}
               className="text-rose font-medium mt-3"
             >
-              {formData.rating === 5 && '🎉 Excellent!'}
-              {formData.rating === 4 && '😊 Great!'}
-              {formData.rating === 3 && '👍 Good'}
-              {formData.rating === 2 && '😐 Fair'}
-              {formData.rating === 1 && '😔 Poor'}
+              {formData.rating === 5 && "🎉 Excellent!"}
+              {formData.rating === 4 && "😊 Great!"}
+              {formData.rating === 3 && "👍 Good"}
+              {formData.rating === 2 && "😐 Fair"}
+              {formData.rating === 1 && "😔 Poor"}
             </motion.p>
           )}
         </AnimatePresence>
@@ -302,11 +323,11 @@ function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
           className="w-full bg-noir border border-rose/20 rounded-xl px-4 py-3 
                    text-cream focus:border-rose focus:ring-1 focus:ring-rose/30 
                    transition-all appearance-none cursor-pointer"
-          style={{ 
+          style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 12px center',
-            backgroundSize: '20px'
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 12px center",
+            backgroundSize: "20px",
           }}
         >
           {menuItems.length === 0 ? (
@@ -352,15 +373,15 @@ function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
         whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
         className={`w-full py-3 md:py-4 rounded-xl font-bold text-sm md:text-base flex items-center justify-center gap-2 transition-all ${
           isSubmitting
-            ? 'bg-cream-muted/30 cursor-not-allowed'
-            : 'bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30'
+            ? "bg-cream-muted/30 cursor-not-allowed"
+            : "bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30"
         }`}
       >
         {isSubmitting ? (
           <>
             <motion.span
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               className="material-symbols-outlined text-lg md:text-xl"
             >
               progress_activity
@@ -369,7 +390,9 @@ function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
           </>
         ) : (
           <>
-            <span className="material-symbols-outlined text-lg md:text-xl">send</span>
+            <span className="material-symbols-outlined text-lg md:text-xl">
+              send
+            </span>
             <span>Submit Review</span>
           </>
         )}
@@ -380,17 +403,18 @@ function ReviewForm({ onClose, onSubmit, menuItems = [] }) {
 
 // Helper to truncate text
 const truncateText = (text, maxLength = 120) => {
-  if (!text || text.length <= maxLength) return { text: text || '', isTruncated: false };
-  return { text: text.slice(0, maxLength).trim() + '...', isTruncated: true };
+  if (!text || text.length <= maxLength)
+    return { text: text || "", isTruncated: false };
+  return { text: text.slice(0, maxLength).trim() + "...", isTruncated: true };
 };
 
 // Testimonial Card Component (extracted for cleaner code)
 function TestimonialCard({ item, onReadMore }) {
   const getAvatar = (item) => {
     if (item.avatarData) {
-      return { type: 'image', value: item.avatarData };
+      return { type: "image", value: item.avatarData };
     }
-    return { type: 'initials', value: item.name.charAt(0).toUpperCase() };
+    return { type: "initials", value: item.name.charAt(0).toUpperCase() };
   };
 
   const avatar = getAvatar(item);
@@ -402,12 +426,26 @@ function TestimonialCard({ item, onReadMore }) {
         {/* Google Review Badge */}
         <div className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/10 border border-white/20">
           <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            <path
+              fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+            />
           </svg>
-          <span className="text-[10px] sm:text-xs text-white/70 font-medium">Google</span>
+          <span className="text-[10px] sm:text-xs text-white/70 font-medium">
+            Google
+          </span>
         </div>
 
         {/* Rating */}
@@ -430,28 +468,36 @@ function TestimonialCard({ item, onReadMore }) {
                        transition-colors mt-1.5 sm:mt-2 inline-flex items-center gap-1"
             >
               Read more
-              <span className="material-symbols-outlined text-xs">arrow_forward</span>
+              <span className="material-symbols-outlined text-xs">
+                arrow_forward
+              </span>
             </button>
           )}
         </div>
 
         {/* Author */}
         <div className="flex items-center gap-2 sm:gap-3 mt-auto pt-2 sm:pt-3 border-t border-rose/10">
-          {avatar.type === 'image' ? (
+          {avatar.type === "image" ? (
             <div
               className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-cover bg-center 
                        border-2 border-rose/30 flex-shrink-0"
               style={{ backgroundImage: `url('${avatar.value}')` }}
             />
           ) : (
-            <div className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
-                          flex items-center justify-center text-noir font-bold text-xs sm:text-sm md:text-lg flex-shrink-0">
+            <div
+              className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                          flex items-center justify-center text-noir font-bold text-xs sm:text-sm md:text-lg flex-shrink-0"
+            >
               {avatar.value}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-cream font-bold text-xs sm:text-sm md:text-base truncate">{item.name}</p>
-            <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm truncate">{item.cakeType || 'Cake Order'}</p>
+            <p className="text-cream font-bold text-xs sm:text-sm md:text-base truncate">
+              {item.name}
+            </p>
+            <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm truncate">
+              {item.cakeType || "Cake Order"}
+            </p>
           </div>
         </div>
       </div>
@@ -482,13 +528,13 @@ export default function Testimonials() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch('/api/reviews');
+        const res = await fetch("/api/reviews");
         const data = await res.json();
         if (data.success && data.data.length > 0) {
           setTestimonials(data.data);
         }
       } catch (error) {
-        console.error('Error fetching reviews:', error);
+        console.error("Error fetching reviews:", error);
       } finally {
         setLoading(false);
       }
@@ -500,13 +546,13 @@ export default function Testimonials() {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const res = await fetch('/api/menu');
+        const res = await fetch("/api/menu");
         const data = await res.json();
         if (data.success && data.data) {
           setMenuItems(data.data);
         }
       } catch (error) {
-        console.error('Error fetching menu:', error);
+        console.error("Error fetching menu:", error);
       }
     };
     fetchMenu();
@@ -514,21 +560,23 @@ export default function Testimonials() {
 
   useEffect(() => {
     if (showReviewForm || selectedReview) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [showReviewForm, selectedReview]);
 
   // Navigate to previous/next review
   const navigateReview = (direction) => {
     if (!selectedReview) return;
-    const currentIndex = testimonials.findIndex(t => t._id === selectedReview._id);
+    const currentIndex = testimonials.findIndex(
+      (t) => t._id === selectedReview._id,
+    );
     let newIndex;
-    if (direction === 'prev') {
+    if (direction === "prev") {
       newIndex = currentIndex > 0 ? currentIndex - 1 : testimonials.length - 1;
     } else {
       newIndex = currentIndex < testimonials.length - 1 ? currentIndex + 1 : 0;
@@ -557,23 +605,27 @@ export default function Testimonials() {
 
   const getAvatar = (item) => {
     if (item.avatarData) {
-      return { type: 'image', value: item.avatarData };
+      return { type: "image", value: item.avatarData };
     }
-    return { type: 'initials', value: item.name.charAt(0).toUpperCase() };
+    return { type: "initials", value: item.name.charAt(0).toUpperCase() };
   };
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light overflow-hidden" 
+      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light overflow-hidden"
       id="reviews"
     >
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] 
-                      bg-rose/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] 
-                      bg-gold/5 rounded-full blur-[80px]" />
+        <div
+          className="absolute top-1/4 left-1/4 w-[400px] h-[400px] 
+                      bg-rose/5 rounded-full blur-[100px]"
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] 
+                      bg-gold/5 rounded-full blur-[80px]"
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 md:px-8">
@@ -584,28 +636,31 @@ export default function Testimonials() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
                      bg-gold/10 border border-gold/20 mb-6"
           >
-            <span className="material-symbols-outlined text-gold text-sm filled">star</span>
+            <span className="material-symbols-outlined text-gold text-sm filled">
+              star
+            </span>
             <span className="text-gold text-xs font-bold uppercase tracking-widest">
               Customer Reviews
             </span>
           </motion.div>
 
-          <h2 
+          <h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            style={{ fontFamily: "var(--font-cinzel)" }}
           >
             <span className="text-cream">Love </span>
             <span className="gradient-text">Notes</span>
           </h2>
-          
+
           <p className="text-cream-muted text-lg max-w-md mx-auto">
-            See what our happy customers have to say about their sweet experiences.
+            See what our happy customers have to say about their sweet
+            experiences.
           </p>
         </motion.div>
 
@@ -641,9 +696,9 @@ export default function Testimonials() {
               Only render slider after mount to prevent hydration mismatch.
             */}
             {isMounted && (
-              <Slider 
+              <Slider
                 ref={sliderRef}
-                key={`slider-${breakpoint}-${slidesToShow}`} 
+                key={`slider-${breakpoint}-${slidesToShow}`}
                 {...sliderSettings}
               >
                 {testimonials.map((item) => (
@@ -655,7 +710,7 @@ export default function Testimonials() {
                 ))}
               </Slider>
             )}
-            
+
             {/* SSR Fallback - show static grid before hydration */}
             {!isMounted && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -684,7 +739,9 @@ export default function Testimonials() {
             onClick={() => setShowReviewForm(true)}
             className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
           >
-            <span className="material-symbols-outlined text-lg md:text-xl">rate_review</span>
+            <span className="material-symbols-outlined text-lg md:text-xl">
+              rate_review
+            </span>
             <span>Write a Review</span>
           </motion.button>
         </motion.div>
@@ -705,23 +762,32 @@ export default function Testimonials() {
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 100 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="bg-noir-light w-full sm:max-w-lg sm:mx-4 sm:rounded-3xl rounded-t-3xl 
                        border border-rose/20 shadow-2xl max-h-[95vh] sm:max-h-[90vh] 
                        overflow-hidden flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="sticky top-0 bg-noir-light border-b border-rose/10 
-                           px-6 py-4 flex items-center justify-between z-10">
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 
-                             bg-rose/30 rounded-full sm:hidden" />
-                
+              <div
+                className="sticky top-0 bg-noir-light border-b border-rose/10 
+                           px-6 py-4 flex items-center justify-between z-10"
+              >
+                <div
+                  className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 
+                             bg-rose/30 rounded-full sm:hidden"
+                />
+
                 <div className="pt-3 sm:pt-0">
-                  <h3 className="text-xl font-bold text-cream" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                  <h3
+                    className="text-xl font-bold text-cream"
+                    style={{ fontFamily: "var(--font-cinzel)" }}
+                  >
                     Share Your Experience
                   </h3>
-                  <p className="text-cream-muted text-sm">We&apos;d love to hear from you!</p>
+                  <p className="text-cream-muted text-sm">
+                    We&apos;d love to hear from you!
+                  </p>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.1, rotate: 90 }}
@@ -730,7 +796,9 @@ export default function Testimonials() {
                   className="w-10 h-10 rounded-full bg-rose/10 hover:bg-rose/20 
                            flex items-center justify-center transition-colors"
                 >
-                  <span className="material-symbols-outlined text-cream">close</span>
+                  <span className="material-symbols-outlined text-cream">
+                    close
+                  </span>
                 </motion.button>
               </div>
 
@@ -738,7 +806,7 @@ export default function Testimonials() {
               <div className="flex-1 overflow-y-auto p-6 pb-safe">
                 <ReviewForm
                   onClose={() => setShowReviewForm(false)}
-                  onSubmit={(data) => console.log('Review submitted:', data)}
+                  onSubmit={(data) => console.log("Review submitted:", data)}
                   menuItems={menuItems}
                 />
               </div>
@@ -767,13 +835,15 @@ export default function Testimonials() {
               whileTap={{ scale: 0.9 }}
               onClick={(e) => {
                 e.stopPropagation();
-                navigateReview('prev');
+                navigateReview("prev");
               }}
               className="hidden md:flex absolute left-4 lg:left-8 w-12 h-12 rounded-full 
                        bg-rose/10 hover:bg-rose/20 border border-rose/20 
                        items-center justify-center transition-colors z-10"
             >
-              <span className="material-symbols-outlined text-cream text-2xl">chevron_left</span>
+              <span className="material-symbols-outlined text-cream text-2xl">
+                chevron_left
+              </span>
             </motion.button>
 
             <motion.button
@@ -784,20 +854,22 @@ export default function Testimonials() {
               whileTap={{ scale: 0.9 }}
               onClick={(e) => {
                 e.stopPropagation();
-                navigateReview('next');
+                navigateReview("next");
               }}
               className="hidden md:flex absolute right-4 lg:right-8 w-12 h-12 rounded-full 
                        bg-rose/10 hover:bg-rose/20 border border-rose/20 
                        items-center justify-center transition-colors z-10"
             >
-              <span className="material-symbols-outlined text-cream text-2xl">chevron_right</span>
+              <span className="material-symbols-outlined text-cream text-2xl">
+                chevron_right
+              </span>
             </motion.button>
 
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="bg-noir-light max-w-lg w-full rounded-3xl border border-rose/20 
                        shadow-2xl p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
@@ -810,7 +882,9 @@ export default function Testimonials() {
                 className="absolute top-4 right-4 w-10 h-10 rounded-full bg-rose/10 
                          hover:bg-rose/20 flex items-center justify-center transition-colors"
               >
-                <span className="material-symbols-outlined text-cream">close</span>
+                <span className="material-symbols-outlined text-cream">
+                  close
+                </span>
               </motion.button>
 
               {/* Quote icon */}
@@ -832,21 +906,27 @@ export default function Testimonials() {
               <div className="flex items-center gap-4 pt-4 border-t border-rose/10">
                 {(() => {
                   const avatar = getAvatar(selectedReview);
-                  return avatar.type === 'image' ? (
+                  return avatar.type === "image" ? (
                     <div
                       className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-cover bg-center border-2 border-rose/30"
                       style={{ backgroundImage: `url('${avatar.value}')` }}
                     />
                   ) : (
-                    <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-gradient-to-br from-rose to-rose-dark 
-                                  flex items-center justify-center text-noir font-bold text-lg sm:text-xl">
+                    <div
+                      className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                                  flex items-center justify-center text-noir font-bold text-lg sm:text-xl"
+                    >
                       {avatar.value}
                     </div>
                   );
                 })()}
                 <div>
-                  <p className="text-cream font-bold text-base sm:text-lg">{selectedReview.name}</p>
-                  <p className="text-cream-muted text-sm">{selectedReview.cakeType || 'Cake Order'}</p>
+                  <p className="text-cream font-bold text-base sm:text-lg">
+                    {selectedReview.name}
+                  </p>
+                  <p className="text-cream-muted text-sm">
+                    {selectedReview.cakeType || "Cake Order"}
+                  </p>
                 </div>
               </div>
 
@@ -854,27 +934,33 @@ export default function Testimonials() {
               <div className="flex justify-between mt-6 md:hidden">
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigateReview('prev')}
+                  onClick={() => navigateReview("prev")}
                   className="px-4 py-2 rounded-full bg-rose/10 hover:bg-rose/20 text-cream 
                            flex items-center gap-1 transition-colors text-sm"
                 >
-                  <span className="material-symbols-outlined text-lg">chevron_left</span>
+                  <span className="material-symbols-outlined text-lg">
+                    chevron_left
+                  </span>
                   Prev
                 </motion.button>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigateReview('next')}
+                  onClick={() => navigateReview("next")}
                   className="px-4 py-2 rounded-full bg-rose/10 hover:bg-rose/20 text-cream 
                            flex items-center gap-1 transition-colors text-sm"
                 >
                   Next
-                  <span className="material-symbols-outlined text-lg">chevron_right</span>
+                  <span className="material-symbols-outlined text-lg">
+                    chevron_right
+                  </span>
                 </motion.button>
               </div>
 
               {/* Review counter */}
               <div className="text-center mt-4 text-cream-muted text-xs">
-                {testimonials.findIndex(t => t._id === selectedReview._id) + 1} of {testimonials.length} reviews
+                {testimonials.findIndex((t) => t._id === selectedReview._id) +
+                  1}{" "}
+                of {testimonials.length} reviews
               </div>
             </motion.div>
           </motion.div>

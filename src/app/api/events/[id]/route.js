@@ -1,10 +1,14 @@
-import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import { Event } from '@/lib/models';
-import { verifyAdminKey } from '@/lib/auth';
-import { sanitizeString } from '@/lib/security';
-import { uploadToCloudinary, uploadMultipleToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
-import mongoose from 'mongoose';
+import { NextResponse } from "next/server";
+import connectDB from "@/lib/mongodb";
+import { Event } from "@/lib/models";
+import { verifyAdminKey } from "@/lib/auth";
+import { sanitizeString } from "@/lib/security";
+import {
+  uploadToCloudinary,
+  uploadMultipleToCloudinary,
+  deleteFromCloudinary,
+} from "@/lib/cloudinary";
+import mongoose from "mongoose";
 
 // Validate MongoDB ObjectId
 function isValidObjectId(id) {
@@ -15,21 +19,21 @@ function isValidObjectId(id) {
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid event ID' },
-        { status: 400 }
+        { success: false, error: "Invalid event ID" },
+        { status: 400 },
       );
     }
 
     await connectDB();
     const event = await Event.findById(id);
-    
+
     if (!event) {
       return NextResponse.json(
-        { success: false, error: 'Event not found' },
-        { status: 404 }
+        { success: false, error: "Event not found" },
+        { status: 404 },
       );
     }
 
@@ -38,10 +42,10 @@ export async function GET(request, { params }) {
       data: event,
     });
   } catch (error) {
-    console.error('Event GET by ID error:', error);
+    console.error("Event GET by ID error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch event' },
-      { status: 500 }
+      { success: false, error: "Failed to fetch event" },
+      { status: 500 },
     );
   }
 }
@@ -51,17 +55,17 @@ export async function PUT(request, { params }) {
   try {
     if (!verifyAdminKey(request)) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid event ID' },
-        { status: 400 }
+        { success: false, error: "Invalid event ID" },
+        { status: 400 },
       );
     }
 
@@ -71,8 +75,8 @@ export async function PUT(request, { params }) {
     const event = await Event.findById(id);
     if (!event) {
       return NextResponse.json(
-        { success: false, error: 'Event not found' },
-        { status: 404 }
+        { success: false, error: "Event not found" },
+        { status: 404 },
       );
     }
 
@@ -82,20 +86,20 @@ export async function PUT(request, { params }) {
     // Handle cover image update
     if (body.coverImage) {
       // Check if it's a Cloudinary URL or needs to be uploaded
-      const isCloudinaryUrl = body.coverImage.includes('cloudinary.com');
-      
+      const isCloudinaryUrl = body.coverImage.includes("cloudinary.com");
+
       if (!isCloudinaryUrl) {
         try {
           const coverImageResult = await uploadToCloudinary(body.coverImage, {
-            folder: 'cocoa-cherry/events',
+            folder: "cocoa-cherry/events",
           });
           updateData.coverImage = coverImageResult.secure_url;
           updateData.coverImagePublicId = coverImageResult.public_id;
         } catch (uploadError) {
-          console.error('Cloudinary upload error:', uploadError);
+          console.error("Cloudinary upload error:", uploadError);
           return NextResponse.json(
-            { success: false, error: 'Failed to upload cover image' },
-            { status: 500 }
+            { success: false, error: "Failed to upload cover image" },
+            { status: 500 },
           );
         }
       } else {
@@ -110,8 +114,8 @@ export async function PUT(request, { params }) {
       const existingImages = [];
 
       // Separate new images from existing ones
-      body.images.forEach(img => {
-        if (img.includes('cloudinary.com')) {
+      body.images.forEach((img) => {
+        if (img.includes("cloudinary.com")) {
           existingImages.push(img);
         } else {
           newImages.push(img);
@@ -122,26 +126,26 @@ export async function PUT(request, { params }) {
       if (newImages.length > 0) {
         try {
           const imagesResults = await uploadMultipleToCloudinary(newImages, {
-            folder: 'cocoa-cherry/events',
+            folder: "cocoa-cherry/events",
           });
 
           // Combine existing and newly uploaded images
           const allImageUrls = [
             ...existingImages,
-            ...imagesResults.map(r => r.secure_url),
+            ...imagesResults.map((r) => r.secure_url),
           ];
           const allPublicIds = [
             ...(event.imagePublicIds || []),
-            ...imagesResults.map(r => r.public_id),
+            ...imagesResults.map((r) => r.public_id),
           ];
 
           updateData.images = allImageUrls;
           updateData.imagePublicIds = allPublicIds;
         } catch (uploadError) {
-          console.error('Cloudinary upload error:', uploadError);
+          console.error("Cloudinary upload error:", uploadError);
           return NextResponse.json(
-            { success: false, error: 'Failed to upload images' },
-            { status: 500 }
+            { success: false, error: "Failed to upload images" },
+            { status: 500 },
           );
         }
       } else {
@@ -171,50 +175,48 @@ export async function PUT(request, { params }) {
       updateData.date = new Date(body.date);
     }
 
-    if (typeof body.isActive === 'boolean') {
+    if (typeof body.isActive === "boolean") {
       updateData.isActive = body.isActive;
     }
 
     // Handle order swapping
     let swappedWith = null;
-    if (typeof body.order === 'number') {
+    if (typeof body.order === "number") {
       const targetOrder = body.order;
       const currentOrder = event.order;
 
       if (currentOrder !== targetOrder) {
-        const itemWithTargetOrder = await Event.findOne({ 
-          order: targetOrder, 
-          _id: { $ne: id }
+        const itemWithTargetOrder = await Event.findOne({
+          order: targetOrder,
+          _id: { $ne: id },
         });
 
         if (itemWithTargetOrder) {
-          await Event.findByIdAndUpdate(
-            itemWithTargetOrder._id,
-            { order: currentOrder, updatedAt: new Date() }
-          );
-          
+          await Event.findByIdAndUpdate(itemWithTargetOrder._id, {
+            order: currentOrder,
+            updatedAt: new Date(),
+          });
+
           swappedWith = {
             id: itemWithTargetOrder._id,
             title: itemWithTargetOrder.title,
             oldOrder: targetOrder,
             newOrder: currentOrder,
-          }; 
+          };
         }
       }
 
       updateData.order = targetOrder;
     }
 
-    const updatedEvent = await Event.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    );
+    const updatedEvent = await Event.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     if (!updatedEvent) {
       return NextResponse.json(
-        { success: false, error: 'Event not found' },
-        { status: 404 }
+        { success: false, error: "Event not found" },
+        { status: 404 },
       );
     }
 
@@ -222,15 +224,15 @@ export async function PUT(request, { params }) {
       success: true,
       data: updatedEvent,
       swappedWith: swappedWith,
-      message: swappedWith 
-        ? `Order swapped with "${swappedWith.title}"` 
-        : 'Event updated successfully',
+      message: swappedWith
+        ? `Order swapped with "${swappedWith.title}"`
+        : "Event updated successfully",
     });
   } catch (error) {
-    console.error('Event PUT error:', error);
+    console.error("Event PUT error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update event' },
-      { status: 500 }
+      { success: false, error: "Failed to update event" },
+      { status: 500 },
     );
   }
 }
@@ -240,17 +242,17 @@ export async function DELETE(request, { params }) {
   try {
     if (!verifyAdminKey(request)) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid event ID' },
-        { status: 400 }
+        { success: false, error: "Invalid event ID" },
+        { status: 400 },
       );
     }
 
@@ -259,8 +261,8 @@ export async function DELETE(request, { params }) {
     const event = await Event.findById(id);
     if (!event) {
       return NextResponse.json(
-        { success: false, error: 'Event not found' },
-        { status: 404 }
+        { success: false, error: "Event not found" },
+        { status: 404 },
       );
     }
 
@@ -269,7 +271,9 @@ export async function DELETE(request, { params }) {
       try {
         await deleteFromCloudinary(event.coverImagePublicId);
       } catch (cloudinaryError) {
-        console.warn(`⚠️ Failed to delete cover image: ${cloudinaryError.message}`);
+        console.warn(
+          `⚠️ Failed to delete cover image: ${cloudinaryError.message}`,
+        );
       }
     }
 
@@ -288,13 +292,13 @@ export async function DELETE(request, { params }) {
 
     return NextResponse.json({
       success: true,
-      message: 'Event deleted successfully',
+      message: "Event deleted successfully",
     });
   } catch (error) {
-    console.error('Event DELETE error:', error);
+    console.error("Event DELETE error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete event' },
-      { status: 500 }
+      { success: false, error: "Failed to delete event" },
+      { status: 500 },
     );
   }
 }

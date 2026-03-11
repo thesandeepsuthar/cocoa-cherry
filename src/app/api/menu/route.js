@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import { Menu, Category } from '@/lib/models';
-import { verifyAdminKey } from '@/lib/auth';
-import { sanitizeString, validateRequired } from '@/lib/security';
-import { uploadToCloudinary } from '@/lib/cloudinary';
-import mongoose from 'mongoose';
+import { NextResponse } from "next/server";
+import connectDB from "@/lib/mongodb";
+import { Menu, Category } from "@/lib/models";
+import { verifyAdminKey } from "@/lib/auth";
+import { sanitizeString, validateRequired } from "@/lib/security";
+import { uploadToCloudinary } from "@/lib/cloudinary";
+import mongoose from "mongoose";
 
 // In-memory cache for menu items
 let menuCache = null;
@@ -16,7 +16,7 @@ export async function GET() {
   try {
     // Check cache first
     const now = Date.now();
-    if (menuCache && (now - menuCacheTimestamp) < MENU_CACHE_TTL) {
+    if (menuCache && now - menuCacheTimestamp < MENU_CACHE_TTL) {
       return NextResponse.json({
         success: true,
         data: menuCache,
@@ -25,27 +25,29 @@ export async function GET() {
     }
 
     await connectDB();
-    
+
     // Optimized query with projection and lean()
     const menuItems = await Menu.find({ isActive: true })
-      .select('name description category imageData badge price discountPrice priceUnit order createdAt updatedAt')
-      .populate({ path: 'category', select: 'name', strictPopulate: false })
+      .select(
+        "name description category imageData badge price discountPrice priceUnit order createdAt updatedAt",
+      )
+      .populate({ path: "category", select: "name", strictPopulate: false })
       .sort({ order: 1, createdAt: -1 })
       .lean(); // Convert to plain JS objects for better performance
-    
+
     // Update cache
     menuCache = menuItems;
     menuCacheTimestamp = now;
-    
+
     return NextResponse.json({
       success: true,
       data: menuItems,
     });
   } catch (error) {
-    console.error('Menu GET error:', error);
+    console.error("Menu GET error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch menu' },
-      { status: 500 }
+      { success: false, error: "Failed to fetch menu" },
+      { status: 500 },
     );
   }
 }
@@ -66,24 +68,39 @@ export async function POST(request) {
   try {
     if (!verifyAdminKey(request)) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     await connectDB();
     const body = await request.json();
-    
+
     // Validate required fields
-    const required = validateRequired(body, ['name', 'description', 'imageData']);
+    const required = validateRequired(body, [
+      "name",
+      "description",
+      "imageData",
+    ]);
     if (!required.valid) {
       return NextResponse.json(
         { success: false, error: required.error },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const { name, description, imageData, badge, price, discountPrice, priceUnit, order, categoryId, categoryName } = body;
+    const {
+      name,
+      description,
+      imageData,
+      badge,
+      price,
+      discountPrice,
+      priceUnit,
+      order,
+      categoryId,
+      categoryName,
+    } = body;
 
     // Sanitize text inputs
     const sanitizedName = sanitizeString(name);
@@ -92,15 +109,18 @@ export async function POST(request) {
 
     if (sanitizedName.length > 100) {
       return NextResponse.json(
-        { success: false, error: 'Name must be less than 100 characters' },
-        { status: 400 }
+        { success: false, error: "Name must be less than 100 characters" },
+        { status: 400 },
       );
     }
 
     if (sanitizedDescription.length > 500) {
       return NextResponse.json(
-        { success: false, error: 'Description must be less than 500 characters' },
-        { status: 400 }
+        {
+          success: false,
+          error: "Description must be less than 500 characters",
+        },
+        { status: 400 },
       );
     }
 
@@ -108,13 +128,13 @@ export async function POST(request) {
     let cloudinaryResult = null;
     try {
       cloudinaryResult = await uploadToCloudinary(imageData, {
-        folder: 'cocoa-cherry/menu',
+        folder: "cocoa-cherry/menu",
       });
     } catch (uploadError) {
-      console.error('Cloudinary upload error:', uploadError);
+      console.error("Cloudinary upload error:", uploadError);
       return NextResponse.json(
-        { success: false, error: 'Failed to upload image to Cloudinary' },
-        { status: 500 }
+        { success: false, error: "Failed to upload image to Cloudinary" },
+        { status: 500 },
       );
     }
 
@@ -135,13 +155,17 @@ export async function POST(request) {
       imageData: cloudinaryResult.secure_url,
       publicId: cloudinaryResult.public_id,
       badge: sanitizedBadge,
-      price: typeof price === 'number' ? price : null,
-      discountPrice: typeof discountPrice === 'number' ? discountPrice : null,
-      priceUnit: priceUnit || 'per kg',
-      order: typeof order === 'number' ? order : 0,
+      price: typeof price === "number" ? price : null,
+      discountPrice: typeof discountPrice === "number" ? discountPrice : null,
+      priceUnit: priceUnit || "per kg",
+      order: typeof order === "number" ? order : 0,
     });
 
-    const populated = await Menu.findById(newMenuItem._id).populate({ path: 'category', select: 'name', strictPopulate: false });
+    const populated = await Menu.findById(newMenuItem._id).populate({
+      path: "category",
+      select: "name",
+      strictPopulate: false,
+    });
 
     // Invalidate cache
     menuCache = null;
@@ -154,13 +178,13 @@ export async function POST(request) {
         public_id: cloudinaryResult.public_id,
         size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
       },
-      message: 'Menu item added successfully',
+      message: "Menu item added successfully",
     });
   } catch (error) {
-    console.error('Menu POST error:', error);
+    console.error("Menu POST error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to add menu item' },
-      { status: 500 }
+      { success: false, error: "Failed to add menu item" },
+      { status: 500 },
     );
   }
 }

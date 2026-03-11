@@ -85,7 +85,7 @@ export default function Footer() {
           className="mb-12 sm:mb-16"
         >
           <div className="text-center mb-6 sm:mb-8">
-            <h3 
+            <h3
               className="text-lg sm:text-xl font-bold text-cream mb-2"
               style={{ fontFamily: "var(--font-cinzel)" }}
             >
@@ -101,7 +101,7 @@ export default function Footer() {
             {/* Gradient overlays for smooth edges */}
             <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-noir-light to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-noir-light to-transparent z-10 pointer-events-none" />
-            
+
             {/* Scrolling container */}
             <motion.div
               className="flex gap-8 sm:gap-12"
@@ -118,22 +118,24 @@ export default function Footer() {
               }}
             >
               {/* Duplicate brands for seamless loop */}
-              {[...premiumBrands, ...premiumBrands, ...premiumBrands].map((brand, index) => (
-                <div
-                  key={index}
-                  className="flex-shrink-0 flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-xl bg-noir/50 border border-rose/10 min-w-[140px] sm:min-w-[160px]"
-                >
-                  <div className="text-3xl sm:text-4xl">{brand.logo}</div>
-                  <div className="text-center">
-                    <p className="text-cream text-xs sm:text-sm font-medium whitespace-nowrap">
-                      {brand.name}
-                    </p>
-                    <p className="text-cream-muted text-[10px] sm:text-xs whitespace-nowrap">
-                      {brand.description}
-                    </p>
+              {[...premiumBrands, ...premiumBrands, ...premiumBrands].map(
+                (brand, index) => (
+                  <div
+                    key={index}
+                    className="flex-shrink-0 flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-xl bg-noir/50 border border-rose/10 min-w-[140px] sm:min-w-[160px]"
+                  >
+                    <div className="text-3xl sm:text-4xl">{brand.logo}</div>
+                    <div className="text-center">
+                      <p className="text-cream text-xs sm:text-sm font-medium whitespace-nowrap">
+                        {brand.name}
+                      </p>
+                      <p className="text-cream-muted text-[10px] sm:text-xs whitespace-nowrap">
+                        {brand.description}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </motion.div>
           </div>
         </motion.div>
@@ -252,7 +254,9 @@ export default function Footer() {
                   href="/about"
                   className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
                 >
-                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">
+                    chevron_right
+                  </span>
                   About Us
                 </Link>
               </li>
@@ -261,7 +265,9 @@ export default function Footer() {
                   href="/menu"
                   className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
                 >
-                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">
+                    chevron_right
+                  </span>
                   Cake Menu
                 </Link>
               </li>
@@ -270,7 +276,9 @@ export default function Footer() {
                   href="/services"
                   className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
                 >
-                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">
+                    chevron_right
+                  </span>
                   Our Services
                 </Link>
               </li>
@@ -279,7 +287,9 @@ export default function Footer() {
                   href="/gallery"
                   className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
                 >
-                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">
+                    chevron_right
+                  </span>
                   Cake Gallery
                 </Link>
               </li>
@@ -288,16 +298,20 @@ export default function Footer() {
                   href="/events"
                   className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
                 >
-                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">
+                    chevron_right
+                  </span>
                   Events & Stalls
                 </Link>
               </li>
-               <li>
+              <li>
                 <Link
                   href="/blog"
                   className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
                 >
-                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">
+                    chevron_right
+                  </span>
                   Blog
                 </Link>
               </li>
@@ -306,7 +320,9 @@ export default function Footer() {
                   href="/reviews"
                   className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
                 >
-                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">
+                    chevron_right
+                  </span>
                   Customer Reviews
                 </Link>
               </li>
@@ -315,7 +331,9 @@ export default function Footer() {
                   href="/contact"
                   className="text-cream-muted hover:text-rose transition-colors text-sm flex items-center gap-2 group"
                 >
-                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">chevron_right</span>
+                  <span className="material-symbols-outlined text-xs text-rose/50 group-hover:text-rose transition-colors">
+                    chevron_right
+                  </span>
                   Contact Us
                 </Link>
               </li>
@@ -406,7 +424,9 @@ export default function Footer() {
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-cream-muted text-sm text-center md:text-left">
-              © {new Date().getFullYear()} <span className="text-[#c9a86c]">Cocoa&Cherry</span>. All rights reserved.
+              © {new Date().getFullYear()}{" "}
+              <span className="text-[#c9a86c]">Cocoa&Cherry</span>. All rights
+              reserved.
             </p>
 
             <div className="flex items-center gap-2 text-cream-muted text-sm">

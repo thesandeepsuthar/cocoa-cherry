@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,html,json}'",
     "seed:reviews": "node scripts/seed-reviews.mjs"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "prettier": "^3.8.1",
     "tailwindcss": "^4"
   }
 }

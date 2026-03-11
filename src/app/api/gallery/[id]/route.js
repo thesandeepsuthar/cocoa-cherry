@@ -1,10 +1,14 @@
-import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import { Gallery } from '@/lib/models';
-import { verifyAdminKey } from '@/lib/auth';
-import { sanitizeString } from '@/lib/security';
-import { uploadToCloudinary, deleteFromCloudinary, extractPublicId } from '@/lib/cloudinary';
-import mongoose from 'mongoose';
+import { NextResponse } from "next/server";
+import connectDB from "@/lib/mongodb";
+import { Gallery } from "@/lib/models";
+import { verifyAdminKey } from "@/lib/auth";
+import { sanitizeString } from "@/lib/security";
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+  extractPublicId,
+} from "@/lib/cloudinary";
+import mongoose from "mongoose";
 
 // Import cache from route.js (shared module scope)
 let galleryCache = null;
@@ -18,21 +22,21 @@ function isValidObjectId(id) {
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid image ID' },
-        { status: 400 }
+        { success: false, error: "Invalid image ID" },
+        { status: 400 },
       );
     }
 
     await connectDB();
     const image = await Gallery.findById(id);
-    
+
     if (!image) {
       return NextResponse.json(
-        { success: false, error: 'Image not found' },
-        { status: 404 }
+        { success: false, error: "Image not found" },
+        { status: 404 },
       );
     }
 
@@ -41,10 +45,10 @@ export async function GET(request, { params }) {
       data: image,
     });
   } catch (error) {
-    console.error('Gallery GET by ID error:', error);
+    console.error("Gallery GET by ID error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch image' },
-      { status: 500 }
+      { success: false, error: "Failed to fetch image" },
+      { status: 500 },
     );
   }
 }
@@ -54,17 +58,17 @@ export async function PUT(request, { params }) {
   try {
     if (!verifyAdminKey(request)) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid image ID' },
-        { status: 400 }
+        { success: false, error: "Invalid image ID" },
+        { status: 400 },
       );
     }
 
@@ -75,8 +79,8 @@ export async function PUT(request, { params }) {
     const currentImage = await Gallery.findById(id);
     if (!currentImage) {
       return NextResponse.json(
-        { success: false, error: 'Image not found' },
-        { status: 404 }
+        { success: false, error: "Image not found" },
+        { status: 404 },
       );
     }
 
@@ -91,7 +95,10 @@ export async function PUT(request, { params }) {
         try {
           await deleteFromCloudinary(currentImage.publicId);
         } catch (deleteError) {
-          console.error('⚠️ Failed to delete old image from Cloudinary:', deleteError.message);
+          console.error(
+            "⚠️ Failed to delete old image from Cloudinary:",
+            deleteError.message,
+          );
           // Continue with upload even if deletion fails
         }
       }
@@ -99,15 +106,15 @@ export async function PUT(request, { params }) {
       // Upload new image to Cloudinary
       try {
         cloudinaryResult = await uploadToCloudinary(body.imageData, {
-          folder: 'cocoa-cherry/gallery',
+          folder: "cocoa-cherry/gallery",
         });
         updateData.imageData = cloudinaryResult.secure_url;
         updateData.publicId = cloudinaryResult.public_id;
       } catch (uploadError) {
-        console.error('Cloudinary upload error:', uploadError);
+        console.error("Cloudinary upload error:", uploadError);
         return NextResponse.json(
-          { success: false, error: 'Failed to upload image to Cloudinary' },
-          { status: 500 }
+          { success: false, error: "Failed to upload image to Cloudinary" },
+          { status: 500 },
         );
       }
     }
@@ -120,31 +127,31 @@ export async function PUT(request, { params }) {
       updateData.alt = sanitizeString(body.alt).slice(0, 200);
     }
 
-    if (typeof body.isActive === 'boolean') {
+    if (typeof body.isActive === "boolean") {
       updateData.isActive = body.isActive;
     }
 
     // Handle order swapping
     let swappedWith = null;
-    if (typeof body.order === 'number') {
+    if (typeof body.order === "number") {
       const targetOrder = body.order;
       const currentOrder = currentImage.order;
 
       // Only swap if order is actually changing
       if (currentOrder !== targetOrder) {
         // Find the item that currently has the target order
-        const itemWithTargetOrder = await Gallery.findOne({ 
-          order: targetOrder, 
-          _id: { $ne: id } // Exclude current item
+        const itemWithTargetOrder = await Gallery.findOne({
+          order: targetOrder,
+          _id: { $ne: id }, // Exclude current item
         });
 
         if (itemWithTargetOrder) {
           // Swap: Give the other item our current order
-          await Gallery.findByIdAndUpdate(
-            itemWithTargetOrder._id,
-            { order: currentOrder, updatedAt: new Date() }
-          );
-          
+          await Gallery.findByIdAndUpdate(itemWithTargetOrder._id, {
+            order: currentOrder,
+            updatedAt: new Date(),
+          });
+
           swappedWith = {
             id: itemWithTargetOrder._id,
             caption: itemWithTargetOrder.caption,
@@ -157,16 +164,14 @@ export async function PUT(request, { params }) {
       updateData.order = targetOrder;
     }
 
-    const updatedImage = await Gallery.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    );
+    const updatedImage = await Gallery.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     if (!updatedImage) {
       return NextResponse.json(
-        { success: false, error: 'Image not found' },
-        { status: 404 }
+        { success: false, error: "Image not found" },
+        { status: 404 },
       );
     }
 
@@ -176,21 +181,23 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedImage,
-      cloudinary: cloudinaryResult ? {
-        url: cloudinaryResult.url,
-        public_id: cloudinaryResult.public_id,
-        size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
-      } : null,
+      cloudinary: cloudinaryResult
+        ? {
+            url: cloudinaryResult.url,
+            public_id: cloudinaryResult.public_id,
+            size: `${(cloudinaryResult.bytes / 1024).toFixed(1)}KB`,
+          }
+        : null,
       swappedWith: swappedWith,
-      message: swappedWith 
-        ? `Order swapped with "${swappedWith.caption}"` 
-        : 'Image updated successfully',
+      message: swappedWith
+        ? `Order swapped with "${swappedWith.caption}"`
+        : "Image updated successfully",
     });
   } catch (error) {
-    console.error('Gallery PUT error:', error);
+    console.error("Gallery PUT error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update image' },
-      { status: 500 }
+      { success: false, error: "Failed to update image" },
+      { status: 500 },
     );
   }
 }
@@ -200,17 +207,17 @@ export async function DELETE(request, { params }) {
   try {
     if (!verifyAdminKey(request)) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid image ID' },
-        { status: 400 }
+        { success: false, error: "Invalid image ID" },
+        { status: 400 },
       );
     }
 
@@ -220,8 +227,8 @@ export async function DELETE(request, { params }) {
 
     if (!deletedImage) {
       return NextResponse.json(
-        { success: false, error: 'Image not found' },
-        { status: 404 }
+        { success: false, error: "Image not found" },
+        { status: 404 },
       );
     }
 
@@ -230,7 +237,10 @@ export async function DELETE(request, { params }) {
       try {
         await deleteFromCloudinary(deletedImage.publicId);
       } catch (deleteError) {
-        console.error('⚠️ Failed to delete image from Cloudinary:', deleteError.message);
+        console.error(
+          "⚠️ Failed to delete image from Cloudinary:",
+          deleteError.message,
+        );
         // Continue even if Cloudinary deletion fails
       }
     }
@@ -240,13 +250,13 @@ export async function DELETE(request, { params }) {
 
     return NextResponse.json({
       success: true,
-      message: 'Image deleted successfully',
+      message: "Image deleted successfully",
     });
   } catch (error) {
-    console.error('Gallery DELETE error:', error);
+    console.error("Gallery DELETE error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete image' },
-      { status: 500 }
+      { success: false, error: "Failed to delete image" },
+      { status: 500 },
     );
   }
 }

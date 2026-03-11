@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import Slider from 'react-slick';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import Slider from "react-slick";
 
 // ============================================
 // Custom useBreakpoint Hook
@@ -11,16 +11,16 @@ import Slider from 'react-slick';
 // - No memory leaks (cleanup on unmount)
 // ============================================
 function useBreakpoint() {
-  const [breakpoint, setBreakpoint] = useState('desktop');
+  const [breakpoint, setBreakpoint] = useState("desktop");
   const [slidesToShow, setSlidesToShow] = useState(3);
 
   const getBreakpoint = useCallback(() => {
-    if (typeof window === 'undefined') return { bp: 'desktop', slides: 3 };
-    
+    if (typeof window === "undefined") return { bp: "desktop", slides: 3 };
+
     const width = window.innerWidth;
-    if (width < 500) return { bp: 'mobile', slides: 1 };
-    if (width < 768) return { bp: 'tablet', slides: 2 };
-    return { bp: 'desktop', slides: 3 };
+    if (width < 500) return { bp: "mobile", slides: 1 };
+    if (width < 768) return { bp: "tablet", slides: 2 };
+    return { bp: "desktop", slides: 3 };
   }, []);
 
   useEffect(() => {
@@ -52,9 +52,9 @@ function useBreakpoint() {
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [getBreakpoint]);
@@ -63,13 +63,18 @@ function useBreakpoint() {
 }
 
 // Star Rating Component
-function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }) {
+function StarRating({
+  rating,
+  onRatingChange,
+  interactive = false,
+  size = "md",
+}) {
   const [hoverRating, setHoverRating] = useState(0);
-  
+
   const sizeClasses = {
-    sm: 'text-base',
-    md: 'text-xl',
-    lg: 'text-2xl md:text-3xl',
+    sm: "text-base",
+    md: "text-xl",
+    lg: "text-2xl md:text-3xl",
   };
 
   return (
@@ -83,15 +88,18 @@ function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }
           onClick={() => interactive && onRatingChange?.(star)}
           onMouseEnter={() => interactive && setHoverRating(star)}
           onMouseLeave={() => interactive && setHoverRating(0)}
-          className={`${interactive ? 'cursor-pointer' : 'cursor-default'} transition-colors`}
+          className={`${interactive ? "cursor-pointer" : "cursor-default"} transition-colors`}
           disabled={!interactive}
         >
           <span
             className={`material-symbols-outlined ${sizeClasses[size]} ${
-              star <= (hoverRating || rating) ? 'text-gold' : 'text-cream-muted/30'
+              star <= (hoverRating || rating)
+                ? "text-gold"
+                : "text-cream-muted/30"
             }`}
             style={{
-              fontVariationSettings: star <= (hoverRating || rating) ? "'FILL' 1" : "'FILL' 0",
+              fontVariationSettings:
+                star <= (hoverRating || rating) ? "'FILL' 1" : "'FILL' 0",
             }}
           >
             star
@@ -105,15 +113,15 @@ function StarRating({ rating, onRatingChange, interactive = false, size = 'md' }
 // Review Form Component
 function ReviewForm({ onSubmit, menuItems = [] }) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    cakeType: '',
+    name: "",
+    email: "",
+    cakeType: "",
     rating: 0,
-    review: '',
+    review: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -126,22 +134,22 @@ function ReviewForm({ onSubmit, menuItems = [] }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.rating === 0) {
-      setError('Please select a rating');
+      setError("Please select a rating");
       return;
     }
-    
+
     setIsSubmitting(true);
-    setError('');
-    
+    setError("");
+
     try {
-      const res = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      
+
       const data = await res.json();
-      
+
       if (data.success) {
         setSubmitted(true);
         onSubmit?.(data.data);
@@ -149,18 +157,18 @@ function ReviewForm({ onSubmit, menuItems = [] }) {
         setTimeout(() => {
           setSubmitted(false);
           setFormData({
-            name: '',
-            email: '',
-            cakeType: '',
+            name: "",
+            email: "",
+            cakeType: "",
             rating: 0,
-            review: '',
+            review: "",
           });
         }, 3000);
       } else {
-        setError(data.error || 'Failed to submit review');
+        setError(data.error || "Failed to submit review");
       }
     } catch (err) {
-      setError('Failed to submit review. Please try again.');
+      setError("Failed to submit review. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -176,15 +184,22 @@ function ReviewForm({ onSubmit, menuItems = [] }) {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+          transition={{ type: "spring", stiffness: 200, damping: 10 }}
           className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4"
         >
-          <span className="material-symbols-outlined text-4xl text-emerald-400">check_circle</span>
+          <span className="material-symbols-outlined text-4xl text-emerald-400">
+            check_circle
+          </span>
         </motion.div>
-        <h3 className="text-2xl font-bold text-cream mb-2" style={{ fontFamily: 'var(--font-cinzel)' }}>
+        <h3
+          className="text-2xl font-bold text-cream mb-2"
+          style={{ fontFamily: "var(--font-cinzel)" }}
+        >
           Thank You!
         </h3>
-        <p className="text-cream-muted">Your review has been submitted and will be visible after approval.</p>
+        <p className="text-cream-muted">
+          Your review has been submitted and will be visible after approval.
+        </p>
       </motion.div>
     );
   }
@@ -218,11 +233,11 @@ function ReviewForm({ onSubmit, menuItems = [] }) {
               exit={{ opacity: 0 }}
               className="text-rose font-medium mt-3"
             >
-              {formData.rating === 5 && '🎉 Excellent!'}
-              {formData.rating === 4 && '😊 Great!'}
-              {formData.rating === 3 && '👍 Good'}
-              {formData.rating === 2 && '😐 Fair'}
-              {formData.rating === 1 && '😔 Poor'}
+              {formData.rating === 5 && "🎉 Excellent!"}
+              {formData.rating === 4 && "😊 Great!"}
+              {formData.rating === 3 && "👍 Good"}
+              {formData.rating === 2 && "😐 Fair"}
+              {formData.rating === 1 && "😔 Poor"}
             </motion.p>
           )}
         </AnimatePresence>
@@ -277,11 +292,11 @@ function ReviewForm({ onSubmit, menuItems = [] }) {
           className="w-full bg-noir border border-rose/20 rounded-xl px-4 py-3 
                    text-cream focus:border-rose focus:ring-1 focus:ring-rose/30 
                    transition-all appearance-none cursor-pointer"
-          style={{ 
+          style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e4a0a0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 12px center',
-            backgroundSize: '20px'
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 12px center",
+            backgroundSize: "20px",
           }}
         >
           {menuItems.length === 0 ? (
@@ -327,15 +342,15 @@ function ReviewForm({ onSubmit, menuItems = [] }) {
         whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
         className={`w-full py-3 md:py-4 rounded-xl font-bold text-sm md:text-base flex items-center justify-center gap-2 transition-all ${
           isSubmitting
-            ? 'bg-cream-muted/30 cursor-not-allowed'
-            : 'bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30'
+            ? "bg-cream-muted/30 cursor-not-allowed"
+            : "bg-gradient-to-r from-rose to-rose-dark text-noir shadow-lg shadow-rose/30"
         }`}
       >
         {isSubmitting ? (
           <>
             <motion.span
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               className="material-symbols-outlined text-lg md:text-xl"
             >
               progress_activity
@@ -344,7 +359,9 @@ function ReviewForm({ onSubmit, menuItems = [] }) {
           </>
         ) : (
           <>
-            <span className="material-symbols-outlined text-lg md:text-xl">send</span>
+            <span className="material-symbols-outlined text-lg md:text-xl">
+              send
+            </span>
             <span>Submit Review</span>
           </>
         )}
@@ -355,35 +372,49 @@ function ReviewForm({ onSubmit, menuItems = [] }) {
 
 // Helper to truncate text
 const truncateText = (text, maxLength = 120) => {
-  if (!text || text.length <= maxLength) return { text: text || '', isTruncated: false };
-  return { text: text.slice(0, maxLength).trim() + '...', isTruncated: true };
+  if (!text || text.length <= maxLength)
+    return { text: text || "", isTruncated: false };
+  return { text: text.slice(0, maxLength).trim() + "...", isTruncated: true };
 };
 
 // Review Card Component for Slider
 function ReviewCard({ item, onReadMore }) {
   const getAvatar = (item) => {
     if (item.avatarData) {
-      return { type: 'image', value: item.avatarData };
+      return { type: "image", value: item.avatarData };
     }
-    return { type: 'initials', value: item.name.charAt(0).toUpperCase() };
+    return { type: "initials", value: item.name.charAt(0).toUpperCase() };
   };
 
   const avatar = getAvatar(item);
   const { text, isTruncated } = truncateText(item.review, 70);
 
   return (
-    <article className="h-full px-2" itemScope itemType="https://schema.org/Review">
+    <article
+      className="h-full px-2"
+      itemScope
+      itemType="https://schema.org/Review"
+    >
       <div className="card-noir testimonial-card p-4 sm:p-5 md:p-6 relative h-full flex flex-col">
         {/* Featured Badge */}
         {item.isFeatured && (
           <div className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 flex items-center gap-1.5 px-2 py-1 rounded-full bg-gold/20 border border-gold/30 z-10">
-            <span className="material-symbols-outlined text-gold text-xs">star</span>
-            <span className="text-gold text-[10px] sm:text-xs font-medium">Featured</span>
+            <span className="material-symbols-outlined text-gold text-xs">
+              star
+            </span>
+            <span className="text-gold text-[10px] sm:text-xs font-medium">
+              Featured
+            </span>
           </div>
         )}
 
         {/* Rating */}
-        <div className="mb-2 sm:mb-3 md:mb-4" itemProp="reviewRating" itemScope itemType="https://schema.org/Rating">
+        <div
+          className="mb-2 sm:mb-3 md:mb-4"
+          itemProp="reviewRating"
+          itemScope
+          itemType="https://schema.org/Rating"
+        >
           <meta itemProp="ratingValue" content={item.rating || 5} />
           <meta itemProp="bestRating" content="5" />
           <StarRating rating={item.rating || 5} size="sm" />
@@ -391,7 +422,7 @@ function ReviewCard({ item, onReadMore }) {
 
         {/* Review text - Truncated */}
         <div className="mb-3 md:mb-4 flex-1 overflow-hidden">
-          <p 
+          <p
             className="text-cream-muted italic text-xs sm:text-sm md:text-base leading-relaxed line-clamp-2 sm:line-clamp-3"
             itemProp="reviewBody"
           >
@@ -407,14 +438,21 @@ function ReviewCard({ item, onReadMore }) {
                        transition-colors mt-1.5 sm:mt-2 inline-flex items-center gap-1"
             >
               Read more
-              <span className="material-symbols-outlined text-xs">arrow_forward</span>
+              <span className="material-symbols-outlined text-xs">
+                arrow_forward
+              </span>
             </button>
           )}
         </div>
 
         {/* Author */}
-        <div className="flex items-center gap-2 sm:gap-3 mt-auto pt-2 sm:pt-3 border-t border-rose/10" itemProp="author" itemScope itemType="https://schema.org/Person">
-          {avatar.type === 'image' ? (
+        <div
+          className="flex items-center gap-2 sm:gap-3 mt-auto pt-2 sm:pt-3 border-t border-rose/10"
+          itemProp="author"
+          itemScope
+          itemType="https://schema.org/Person"
+        >
+          {avatar.type === "image" ? (
             <div
               className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-cover bg-center 
                        border-2 border-rose/30 flex-shrink-0"
@@ -423,18 +461,33 @@ function ReviewCard({ item, onReadMore }) {
               content={avatar.value}
             />
           ) : (
-            <div className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
-                          flex items-center justify-center text-noir font-bold text-xs sm:text-sm md:text-lg flex-shrink-0">
+            <div
+              className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                          flex items-center justify-center text-noir font-bold text-xs sm:text-sm md:text-lg flex-shrink-0"
+            >
               {avatar.value}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-cream font-bold text-xs sm:text-sm md:text-base truncate" itemProp="name">{item.name}</p>
-            <p className="text-cream-muted text-[10px] sm:text-xs md:text-sm truncate" itemProp="description">{item.cakeType || 'Cake Order'}</p>
+            <p
+              className="text-cream font-bold text-xs sm:text-sm md:text-base truncate"
+              itemProp="name"
+            >
+              {item.name}
+            </p>
+            <p
+              className="text-cream-muted text-[10px] sm:text-xs md:text-sm truncate"
+              itemProp="description"
+            >
+              {item.cakeType || "Cake Order"}
+            </p>
           </div>
         </div>
         {item.createdAt && (
-          <meta itemProp="datePublished" content={new Date(item.createdAt).toISOString()} />
+          <meta
+            itemProp="datePublished"
+            content={new Date(item.createdAt).toISOString()}
+          />
         )}
       </div>
     </article>
@@ -442,30 +495,37 @@ function ReviewCard({ item, onReadMore }) {
 }
 
 // Review Detail Modal
-function ReviewDetailModal({ review, onClose, onPrev, onNext, currentIndex, total }) {
+function ReviewDetailModal({
+  review,
+  onClose,
+  onPrev,
+  onNext,
+  currentIndex,
+  total,
+}) {
   const getAvatar = (review) => {
     if (review.avatarData) {
-      return { type: 'image', value: review.avatarData };
+      return { type: "image", value: review.avatarData };
     }
-    return { type: 'initials', value: review.name.charAt(0).toUpperCase() };
+    return { type: "initials", value: review.name.charAt(0).toUpperCase() };
   };
 
   const avatar = getAvatar(review);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') onNext();
-      if (e.key === 'ArrowLeft') onPrev();
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onNext();
+      if (e.key === "ArrowLeft") onPrev();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, onNext, onPrev]);
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, []);
 
@@ -492,7 +552,9 @@ function ReviewDetailModal({ review, onClose, onPrev, onNext, currentIndex, tota
                  bg-rose/10 hover:bg-rose/20 border border-rose/20 
                  items-center justify-center transition-colors z-10"
       >
-        <span className="material-symbols-outlined text-cream text-2xl">chevron_left</span>
+        <span className="material-symbols-outlined text-cream text-2xl">
+          chevron_left
+        </span>
       </motion.button>
 
       <motion.button
@@ -508,14 +570,16 @@ function ReviewDetailModal({ review, onClose, onPrev, onNext, currentIndex, tota
                  bg-rose/10 hover:bg-rose/20 border border-rose/20 
                  items-center justify-center transition-colors z-10"
       >
-        <span className="material-symbols-outlined text-cream text-2xl">chevron_right</span>
+        <span className="material-symbols-outlined text-cream text-2xl">
+          chevron_right
+        </span>
       </motion.button>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="bg-noir-light max-w-lg w-full rounded-3xl border border-rose/20 
                  shadow-2xl p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -548,20 +612,26 @@ function ReviewDetailModal({ review, onClose, onPrev, onNext, currentIndex, tota
 
         {/* Author */}
         <div className="flex items-center gap-4 pt-4 border-t border-rose/10">
-          {avatar.type === 'image' ? (
+          {avatar.type === "image" ? (
             <div
               className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-cover bg-center border-2 border-rose/30"
               style={{ backgroundImage: `url('${avatar.value}')` }}
             />
           ) : (
-            <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-gradient-to-br from-rose to-rose-dark 
-                          flex items-center justify-center text-noir font-bold text-lg sm:text-xl">
+            <div
+              className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-gradient-to-br from-rose to-rose-dark 
+                          flex items-center justify-center text-noir font-bold text-lg sm:text-xl"
+            >
               {avatar.value}
             </div>
           )}
           <div>
-            <p className="text-cream font-bold text-base sm:text-lg">{review.name}</p>
-            <p className="text-cream-muted text-sm">{review.cakeType || 'Cake Order'}</p>
+            <p className="text-cream font-bold text-base sm:text-lg">
+              {review.name}
+            </p>
+            <p className="text-cream-muted text-sm">
+              {review.cakeType || "Cake Order"}
+            </p>
           </div>
         </div>
 
@@ -573,7 +643,9 @@ function ReviewDetailModal({ review, onClose, onPrev, onNext, currentIndex, tota
             className="px-4 py-2 rounded-full bg-rose/10 hover:bg-rose/20 text-cream 
                      flex items-center gap-1 transition-colors text-sm"
           >
-            <span className="material-symbols-outlined text-lg">chevron_left</span>
+            <span className="material-symbols-outlined text-lg">
+              chevron_left
+            </span>
             Prev
           </motion.button>
           <motion.button
@@ -583,7 +655,9 @@ function ReviewDetailModal({ review, onClose, onPrev, onNext, currentIndex, tota
                      flex items-center gap-1 transition-colors text-sm"
           >
             Next
-            <span className="material-symbols-outlined text-lg">chevron_right</span>
+            <span className="material-symbols-outlined text-lg">
+              chevron_right
+            </span>
           </motion.button>
         </div>
 
@@ -618,7 +692,7 @@ export default function Reviews({ isHomePage = false }) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch('/api/reviews');
+        const res = await fetch("/api/reviews");
         const data = await res.json();
         if (data.success) {
           // Sort: featured first, then by date
@@ -630,7 +704,7 @@ export default function Reviews({ isHomePage = false }) {
           setReviews(sorted);
         }
       } catch (error) {
-        console.error('Error fetching reviews:', error);
+        console.error("Error fetching reviews:", error);
       } finally {
         setLoading(false);
       }
@@ -642,13 +716,13 @@ export default function Reviews({ isHomePage = false }) {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const res = await fetch('/api/menu');
+        const res = await fetch("/api/menu");
         const data = await res.json();
         if (data.success && data.data) {
           setMenuItems(data.data);
         }
       } catch (error) {
-        console.error('Error fetching menu:', error);
+        console.error("Error fetching menu:", error);
       }
     };
     fetchMenu();
@@ -656,21 +730,21 @@ export default function Reviews({ isHomePage = false }) {
 
   useEffect(() => {
     if (selectedReview) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [selectedReview]);
 
   // Navigate to previous/next review
   const navigateReview = (direction) => {
     if (!selectedReview) return;
-    const currentIndex = reviews.findIndex(r => r._id === selectedReview._id);
+    const currentIndex = reviews.findIndex((r) => r._id === selectedReview._id);
     let newIndex;
-    if (direction === 'prev') {
+    if (direction === "prev") {
       newIndex = currentIndex > 0 ? currentIndex - 1 : reviews.length - 1;
     } else {
       newIndex = currentIndex < reviews.length - 1 ? currentIndex + 1 : 0;
@@ -683,7 +757,7 @@ export default function Reviews({ isHomePage = false }) {
     // Refresh reviews after submission
     const fetchReviews = async () => {
       try {
-        const res = await fetch('/api/reviews');
+        const res = await fetch("/api/reviews");
         const data = await res.json();
         if (data.success) {
           const sorted = data.data.sort((a, b) => {
@@ -694,7 +768,7 @@ export default function Reviews({ isHomePage = false }) {
           setReviews(sorted);
         }
       } catch (error) {
-        console.error('Error fetching reviews:', error);
+        console.error("Error fetching reviews:", error);
       }
     };
     fetchReviews();
@@ -721,17 +795,21 @@ export default function Reviews({ isHomePage = false }) {
   if (isHomePage) {
     // For home page, show limited reviews with slider
     return (
-      <section 
+      <section
         ref={sectionRef}
-        className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light overflow-hidden" 
+        className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light overflow-hidden"
         id="reviews"
       >
         {/* Background */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] 
-                        bg-rose/5 rounded-full blur-[100px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] 
-                        bg-gold/5 rounded-full blur-[80px]" />
+          <div
+            className="absolute top-1/4 left-1/4 w-[400px] h-[400px] 
+                        bg-rose/5 rounded-full blur-[100px]"
+          />
+          <div
+            className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] 
+                        bg-gold/5 rounded-full blur-[80px]"
+          />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 md:px-8">
@@ -742,28 +820,31 @@ export default function Reviews({ isHomePage = false }) {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
                        bg-gold/10 border border-gold/20 mb-6"
             >
-              <span className="material-symbols-outlined text-gold text-sm filled">star</span>
+              <span className="material-symbols-outlined text-gold text-sm filled">
+                star
+              </span>
               <span className="text-gold text-xs font-bold uppercase tracking-widest">
                 Customer Reviews
               </span>
             </motion.div>
 
-            <h2 
+            <h2
               className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
-              style={{ fontFamily: 'var(--font-cinzel)' }}
+              style={{ fontFamily: "var(--font-cinzel)" }}
             >
               <span className="text-cream">Love </span>
               <span className="gradient-text">Notes</span>
             </h2>
-            
+
             <p className="text-cream-muted text-lg max-w-md mx-auto">
-              See what our happy customers have to say about their sweet experiences.
+              See what our happy customers have to say about their sweet
+              experiences.
             </p>
           </motion.div>
 
@@ -794,9 +875,9 @@ export default function Reviews({ isHomePage = false }) {
               className="mb-12 testimonials-slider overflow-hidden"
             >
               {isMounted && (
-                <Slider 
+                <Slider
                   ref={sliderRef}
-                  key={`slider-${breakpoint}-${slidesToShow}`} 
+                  key={`slider-${breakpoint}-${slidesToShow}`}
                   {...sliderSettings}
                 >
                   {reviews.map((item) => (
@@ -840,7 +921,9 @@ export default function Reviews({ isHomePage = false }) {
                        text-sm shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
             >
               <span>View All Reviews</span>
-              <span className="material-symbols-outlined text-lg">arrow_forward</span>
+              <span className="material-symbols-outlined text-lg">
+                arrow_forward
+              </span>
             </motion.a>
           </motion.div>
         </div>
@@ -851,9 +934,11 @@ export default function Reviews({ isHomePage = false }) {
             <ReviewDetailModal
               review={selectedReview}
               onClose={() => setSelectedReview(null)}
-              onPrev={() => navigateReview('prev')}
-              onNext={() => navigateReview('next')}
-              currentIndex={reviews.findIndex(r => r._id === selectedReview._id)}
+              onPrev={() => navigateReview("prev")}
+              onNext={() => navigateReview("next")}
+              currentIndex={reviews.findIndex(
+                (r) => r._id === selectedReview._id,
+              )}
               total={reviews.length}
             />
           )}
@@ -864,16 +949,20 @@ export default function Reviews({ isHomePage = false }) {
 
   // Full reviews page with slider and form
   return (
-    <section 
+    <section
       ref={sectionRef}
-      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light min-h-screen" 
+      className="relative py-12 sm:py-16 md:py-24 lg:py-32 bg-noir-light min-h-screen"
     >
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] 
-                      bg-rose/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] 
-                      bg-gold/5 rounded-full blur-[80px]" />
+        <div
+          className="absolute top-1/4 left-1/4 w-[400px] h-[400px] 
+                      bg-rose/5 rounded-full blur-[100px]"
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] 
+                      bg-gold/5 rounded-full blur-[80px]"
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 md:px-8">
@@ -884,32 +973,35 @@ export default function Reviews({ isHomePage = false }) {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full 
                      bg-gold/10 border border-gold/20 mb-6"
           >
-            <span className="material-symbols-outlined text-gold text-sm filled">star</span>
+            <span className="material-symbols-outlined text-gold text-sm filled">
+              star
+            </span>
             <span className="text-gold text-xs font-bold uppercase tracking-widest">
               Customer Reviews
             </span>
           </motion.div>
 
-          <h1 
+          <h1
             className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            style={{ fontFamily: "var(--font-cinzel)" }}
             itemProp="name"
           >
             <span className="text-cream">Love </span>
             <span className="gradient-text">Notes</span>
           </h1>
-          
-          <p 
+
+          <p
             className="text-cream-muted text-lg max-w-2xl mx-auto"
             itemProp="description"
           >
-            Read what our happy customers have to say about their sweet experiences with Cocoa&Cherry.
+            Read what our happy customers have to say about their sweet
+            experiences with Cocoa&Cherry.
           </p>
         </motion.div>
 
@@ -938,7 +1030,9 @@ export default function Reviews({ isHomePage = false }) {
             <span className="material-symbols-outlined text-6xl text-cream-muted/30 mb-4 block">
               rate_review
             </span>
-            <p className="text-cream-muted text-lg">No reviews yet. Be the first to share your experience!</p>
+            <p className="text-cream-muted text-lg">
+              No reviews yet. Be the first to share your experience!
+            </p>
           </div>
         ) : (
           <motion.div
@@ -947,9 +1041,9 @@ export default function Reviews({ isHomePage = false }) {
             className="mb-16 testimonials-slider overflow-hidden"
           >
             {isMounted && (
-              <Slider 
+              <Slider
                 ref={sliderRef}
-                key={`slider-${breakpoint}-${slidesToShow}`} 
+                key={`slider-${breakpoint}-${slidesToShow}`}
                 {...sliderSettings}
               >
                 {reviews.map((item) => (
@@ -961,7 +1055,7 @@ export default function Reviews({ isHomePage = false }) {
                 ))}
               </Slider>
             )}
-            
+
             {/* SSR Fallback */}
             {!isMounted && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -978,10 +1072,7 @@ export default function Reviews({ isHomePage = false }) {
         )}
 
         {/* Review Form Section */}
-        <section
-          aria-label="Submit a review"
-          className="max-w-2xl mx-auto"
-        >
+        <section aria-label="Submit a review" className="max-w-2xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -989,15 +1080,16 @@ export default function Reviews({ isHomePage = false }) {
           >
             <div className="card-noir p-6 sm:p-8 md:p-10">
               <header className="text-center mb-8">
-                <h2 
+                <h2
                   className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3"
-                  style={{ fontFamily: 'var(--font-cinzel)' }}
+                  style={{ fontFamily: "var(--font-cinzel)" }}
                 >
                   <span className="text-cream">Share Your </span>
                   <span className="gradient-text">Experience</span>
                 </h2>
                 <p className="text-cream-muted">
-                  We&apos;d love to hear about your experience with Cocoa&Cherry!
+                  We&apos;d love to hear about your experience with
+                  Cocoa&Cherry!
                 </p>
               </header>
               <ReviewForm onSubmit={handleReviewSubmit} menuItems={menuItems} />
@@ -1012,9 +1104,11 @@ export default function Reviews({ isHomePage = false }) {
           <ReviewDetailModal
             review={selectedReview}
             onClose={() => setSelectedReview(null)}
-            onPrev={() => navigateReview('prev')}
-            onNext={() => navigateReview('next')}
-            currentIndex={reviews.findIndex(r => r._id === selectedReview._id)}
+            onPrev={() => navigateReview("prev")}
+            onNext={() => navigateReview("next")}
+            currentIndex={reviews.findIndex(
+              (r) => r._id === selectedReview._id,
+            )}
             total={reviews.length}
           />
         )}

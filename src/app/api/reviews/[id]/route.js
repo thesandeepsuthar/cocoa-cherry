@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import { Review } from '@/lib/models';
-import { verifyAdminKey } from '@/lib/auth';
-import { sanitizeString, isValidEmail } from '@/lib/security';
-import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
-import mongoose from 'mongoose';
+import { NextResponse } from "next/server";
+import connectDB from "@/lib/mongodb";
+import { Review } from "@/lib/models";
+import { verifyAdminKey } from "@/lib/auth";
+import { sanitizeString, isValidEmail } from "@/lib/security";
+import { uploadToCloudinary, deleteFromCloudinary } from "@/lib/cloudinary";
+import mongoose from "mongoose";
 
 // Validate MongoDB ObjectId
 function isValidObjectId(id) {
@@ -22,27 +22,27 @@ export async function GET(request, { params }) {
   try {
     if (!verifyAdminKey(request)) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid review ID' },
-        { status: 400 }
+        { success: false, error: "Invalid review ID" },
+        { status: 400 },
       );
     }
 
     await connectDB();
     const review = await Review.findById(id);
-    
+
     if (!review) {
       return NextResponse.json(
-        { success: false, error: 'Review not found' },
-        { status: 404 }
+        { success: false, error: "Review not found" },
+        { status: 404 },
       );
     }
 
@@ -51,10 +51,10 @@ export async function GET(request, { params }) {
       data: review,
     });
   } catch (error) {
-    console.error('Review GET by ID error:', error);
+    console.error("Review GET by ID error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch review' },
-      { status: 500 }
+      { success: false, error: "Failed to fetch review" },
+      { status: 500 },
     );
   }
 }
@@ -64,17 +64,17 @@ export async function PUT(request, { params }) {
   try {
     if (!verifyAdminKey(request)) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid review ID' },
-        { status: 400 }
+        { success: false, error: "Invalid review ID" },
+        { status: 400 },
       );
     }
 
@@ -85,8 +85,8 @@ export async function PUT(request, { params }) {
     const currentReview = await Review.findById(id);
     if (!currentReview) {
       return NextResponse.json(
-        { success: false, error: 'Review not found' },
-        { status: 404 }
+        { success: false, error: "Review not found" },
+        { status: 404 },
       );
     }
 
@@ -99,14 +99,14 @@ export async function PUT(request, { params }) {
       const sanitizedName = sanitizeString(body.name);
       if (sanitizedName.length === 0) {
         return NextResponse.json(
-          { success: false, error: 'Name is required' },
-          { status: 400 }
+          { success: false, error: "Name is required" },
+          { status: 400 },
         );
       }
       if (sanitizedName.length > 100) {
         return NextResponse.json(
-          { success: false, error: 'Name must be less than 100 characters' },
-          { status: 400 }
+          { success: false, error: "Name must be less than 100 characters" },
+          { status: 400 },
         );
       }
       updateData.name = sanitizedName;
@@ -117,8 +117,8 @@ export async function PUT(request, { params }) {
       const sanitizedEmail = sanitizeString(body.email).toLowerCase();
       if (!isValidEmail(sanitizedEmail)) {
         return NextResponse.json(
-          { success: false, error: 'Invalid email format' },
-          { status: 400 }
+          { success: false, error: "Invalid email format" },
+          { status: 400 },
         );
       }
       updateData.email = sanitizedEmail;
@@ -134,8 +134,8 @@ export async function PUT(request, { params }) {
       const rating = Number(body.rating);
       if (isNaN(rating) || rating < 1 || rating > 5) {
         return NextResponse.json(
-          { success: false, error: 'Rating must be between 1 and 5' },
-          { status: 400 }
+          { success: false, error: "Rating must be between 1 and 5" },
+          { status: 400 },
         );
       }
       updateData.rating = rating;
@@ -146,14 +146,14 @@ export async function PUT(request, { params }) {
       const sanitizedReview = sanitizeString(body.review);
       if (sanitizedReview.length === 0) {
         return NextResponse.json(
-          { success: false, error: 'Review text is required' },
-          { status: 400 }
+          { success: false, error: "Review text is required" },
+          { status: 400 },
         );
       }
       if (sanitizedReview.length > 1000) {
         return NextResponse.json(
-          { success: false, error: 'Review must be less than 1000 characters' },
-          { status: 400 }
+          { success: false, error: "Review must be less than 1000 characters" },
+          { status: 400 },
         );
       }
       updateData.review = sanitizedReview;
@@ -161,43 +161,52 @@ export async function PUT(request, { params }) {
 
     // Update avatar image
     if (body.avatarData !== undefined) {
-      if (body.avatarData === null || body.avatarData === '') {
+      if (body.avatarData === null || body.avatarData === "") {
         // Remove avatar
         if (currentReview.avatarPublicId) {
           try {
             await deleteFromCloudinary(currentReview.avatarPublicId);
           } catch (deleteError) {
-            console.warn('⚠️ Failed to delete old avatar from Cloudinary:', deleteError.message);
+            console.warn(
+              "⚠️ Failed to delete old avatar from Cloudinary:",
+              deleteError.message,
+            );
           }
         }
         updateData.avatarData = null;
         updateData.avatarPublicId = null;
       } else {
         // Check if it's a Cloudinary URL or needs to be uploaded
-        const isCloudinaryUrl = body.avatarData.includes('cloudinary.com');
-        
+        const isCloudinaryUrl = body.avatarData.includes("cloudinary.com");
+
         if (!isCloudinaryUrl) {
           // Delete old avatar if exists
           if (currentReview.avatarPublicId) {
             try {
               await deleteFromCloudinary(currentReview.avatarPublicId);
             } catch (deleteError) {
-              console.warn('⚠️ Failed to delete old avatar from Cloudinary:', deleteError.message);
+              console.warn(
+                "⚠️ Failed to delete old avatar from Cloudinary:",
+                deleteError.message,
+              );
             }
           }
 
           // Upload new avatar to Cloudinary
           try {
             cloudinaryResult = await uploadToCloudinary(body.avatarData, {
-              folder: 'cocoa-cherry/reviews/avatars',
+              folder: "cocoa-cherry/reviews/avatars",
             });
             updateData.avatarData = cloudinaryResult.secure_url;
             updateData.avatarPublicId = cloudinaryResult.public_id;
           } catch (uploadError) {
-            console.error('Cloudinary upload error:', uploadError);
+            console.error("Cloudinary upload error:", uploadError);
             return NextResponse.json(
-              { success: false, error: 'Failed to upload avatar to Cloudinary' },
-              { status: 500 }
+              {
+                success: false,
+                error: "Failed to upload avatar to Cloudinary",
+              },
+              { status: 500 },
             );
           }
         } else {
@@ -208,32 +217,31 @@ export async function PUT(request, { params }) {
     }
 
     // Update approval status
-    if (typeof body.isApproved === 'boolean') {
+    if (typeof body.isApproved === "boolean") {
       updateData.isApproved = body.isApproved;
     }
-    
+
     // Update featured status
-    if (typeof body.isFeatured === 'boolean') {
+    if (typeof body.isFeatured === "boolean") {
       updateData.isFeatured = body.isFeatured;
     }
 
-    const updatedReview = await Review.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const updatedReview = await Review.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updatedReview) {
       return NextResponse.json(
-        { success: false, error: 'Review not found' },
-        { status: 404 }
+        { success: false, error: "Review not found" },
+        { status: 404 },
       );
     }
 
     const response = {
       success: true,
       data: updatedReview,
-      message: 'Review updated successfully',
+      message: "Review updated successfully",
     };
 
     if (cloudinaryResult) {
@@ -246,10 +254,10 @@ export async function PUT(request, { params }) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Review PUT error:', error);
+    console.error("Review PUT error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update review' },
-      { status: 500 }
+      { success: false, error: "Failed to update review" },
+      { status: 500 },
     );
   }
 }
@@ -259,17 +267,17 @@ export async function DELETE(request, { params }) {
   try {
     if (!verifyAdminKey(request)) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
       );
     }
 
     const { id } = await params;
-    
+
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid review ID' },
-        { status: 400 }
+        { success: false, error: "Invalid review ID" },
+        { status: 400 },
       );
     }
 
@@ -279,20 +287,20 @@ export async function DELETE(request, { params }) {
 
     if (!deletedReview) {
       return NextResponse.json(
-        { success: false, error: 'Review not found' },
-        { status: 404 }
+        { success: false, error: "Review not found" },
+        { status: 404 },
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Review deleted successfully',
+      message: "Review deleted successfully",
     });
   } catch (error) {
-    console.error('Review DELETE error:', error);
+    console.error("Review DELETE error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete review' },
-      { status: 500 }
+      { success: false, error: "Failed to delete review" },
+      { status: 500 },
     );
   }
 }

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
-import { getRandomFallbackImage } from '@/lib/constants';
+import { useState, useCallback, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { getRandomFallbackImage } from "@/lib/constants";
 
 // Configuration
 const INITIAL_DISPLAY_COUNT = 6; // Show 6 images initially
@@ -13,45 +13,58 @@ const LOAD_MORE_COUNT = 6; // Load 6 more each time
 // Default fallback images with SEO-optimized alt text
 const defaultGalleryImages = [
   {
-    _id: '1',
-    imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBm1GWUFEfmswVpFplvqNXgXXyYbgr_zFqCpbwTH0d_9sjbjAqDJnzM6EW6EfH8mMAJt0Ag2LfGzBXZeiog2WK1V4GHdPIU30OIow0qH3Va3DFTGOfM0cTOSckzaTerVoaoM7iy3R2tbl5pUFOm9vMqNPKrjBrVRm_75XkNpqSZcDvVp5eVtNwXM9WF6Hb3NPKfpOp0K5bOYLbLVGOo5vaVFrbtvzO0ZvwoqkCmko7njflC1i-gfFoQlmzC3_MKcF126-ZUJHZSg_1G',
-    alt: 'Two tier pink floral wedding cake with elegant buttercream design - Custom wedding cake Ahmedabad by Cocoa&Cherry',
-    caption: 'Elegant Wedding Cake',
+    _id: "1",
+    imageData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBm1GWUFEfmswVpFplvqNXgXXyYbgr_zFqCpbwTH0d_9sjbjAqDJnzM6EW6EfH8mMAJt0Ag2LfGzBXZeiog2WK1V4GHdPIU30OIow0qH3Va3DFTGOfM0cTOSckzaTerVoaoM7iy3R2tbl5pUFOm9vMqNPKrjBrVRm_75XkNpqSZcDvVp5eVtNwXM9WF6Hb3NPKfpOp0K5bOYLbLVGOo5vaVFrbtvzO0ZvwoqkCmko7njflC1i-gfFoQlmzC3_MKcF126-ZUJHZSg_1G",
+    alt: "Two tier pink floral wedding cake with elegant buttercream design - Custom wedding cake Ahmedabad by Cocoa&Cherry",
+    caption: "Elegant Wedding Cake",
   },
   {
-    _id: '2',
-    imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAah8GVLLzA6nAPXWPUKYmwd-jJIXbqcf0UM8Q0wugH6uMreOVsy_3JzRXSCWcjusY5jLsLicfltmevzrS2NPZZp_aNColSduaRRUTwh-PD7lNQwM19dzl1IAtFIbW_GmwGrlQNSi9Fa22H0FNH5G_hssGWGIJG382R9tdMCv9hqRogr0zH1BAyYuIq6q5_c--O8UIv4FPF8pnevOfosYdHH-RVflnREbvsj5f1UF367ZQ6umTgRVGLgFr-r_iPsvKD5zrPzwGGTRT-',
-    alt: 'Box of assorted premium cupcakes with colorful frosting - Cupcake box order Ahmedabad by Cocoa&Cherry',
-    caption: 'Assorted Cupcake Box',
+    _id: "2",
+    imageData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAah8GVLLzA6nAPXWPUKYmwd-jJIXbqcf0UM8Q0wugH6uMreOVsy_3JzRXSCWcjusY5jLsLicfltmevzrS2NPZZp_aNColSduaRRUTwh-PD7lNQwM19dzl1IAtFIbW_GmwGrlQNSi9Fa22H0FNH5G_hssGWGIJG382R9tdMCv9hqRogr0zH1BAyYuIq6q5_c--O8UIv4FPF8pnevOfosYdHH-RVflnREbvsj5f1UF367ZQ6umTgRVGLgFr-r_iPsvKD5zrPzwGGTRT-",
+    alt: "Box of assorted premium cupcakes with colorful frosting - Cupcake box order Ahmedabad by Cocoa&Cherry",
+    caption: "Assorted Cupcake Box",
   },
   {
-    _id: '3',
-    imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDMBY064JY4sQ6fJegsnLLGZ-TtVvk-_5-IHYqZKP_c_4g6C68OaDQClS_I9CeMb9-sF8fn3_tPO8Vx1S8wmWA6Liy2UCoG6fqacZCFlS3LO0NEQ18uxymres9eG8As1_Wa6A8VOAH_tsqrzH_HeshLpofRSvNRqDkBGXQK669-o1pln_h1OiZpxvUMtfCT-S4L-JGyxQoTE1PcqFPWp1gHnCWw9WlDPe-8GuYWqFQ1WOCCnE0MuvRTVj8vmC9CIWHIbk7CgGb09X21',
-    alt: 'Chocolate drip birthday cake with macarons and Belgian chocolate ganache - Designer cake Ahmedabad by Cocoa&Cherry',
-    caption: 'Chocolate Drip Delight',
+    _id: "3",
+    imageData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDMBY064JY4sQ6fJegsnLLGZ-TtVvk-_5-IHYqZKP_c_4g6C68OaDQClS_I9CeMb9-sF8fn3_tPO8Vx1S8wmWA6Liy2UCoG6fqacZCFlS3LO0NEQ18uxymres9eG8As1_Wa6A8VOAH_tsqrzH_HeshLpofRSvNRqDkBGXQK669-o1pln_h1OiZpxvUMtfCT-S4L-JGyxQoTE1PcqFPWp1gHnCWw9WlDPe-8GuYWqFQ1WOCCnE0MuvRTVj8vmC9CIWHIbk7CgGb09X21",
+    alt: "Chocolate drip birthday cake with macarons and Belgian chocolate ganache - Designer cake Ahmedabad by Cocoa&Cherry",
+    caption: "Chocolate Drip Delight",
   },
   {
-    _id: '4',
-    imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCd3i1U5fM86R101PGUh_dtlxde4PdWy8caNLoNlNrmOCL6ZZ7zJjW2JzBBBun7MkgQkH8LG4m3T-AoTRo5BVLIoOXH_jqzIfNWZq4aviS4ninyxVHBvyxURqBJVSBd1y7jlvWZKKlWc6GWrHvWrPNO65ERsEp9LOH7x3ds_yQ9CEWK3FFZY_w1IQgRtbW1Sk3xISAnkJk5kToVbAfNfqmiUUCy-au9c1jjJY4H9Pkp1vJy5XX5bCU-oYldwn-zoHFL0OCM5u5BkJ0B',
-    alt: 'Minimalist white frosting cake with edible gold leaf decoration - Premium anniversary cake Ahmedabad by Cocoa&Cherry',
-    caption: 'Minimalist Gold Leaf',
+    _id: "4",
+    imageData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCd3i1U5fM86R101PGUh_dtlxde4PdWy8caNLoNlNrmOCL6ZZ7zJjW2JzBBBun7MkgQkH8LG4m3T-AoTRo5BVLIoOXH_jqzIfNWZq4aviS4ninyxVHBvyxURqBJVSBd1y7jlvWZKKlWc6GWrHvWrPNO65ERsEp9LOH7x3ds_yQ9CEWK3FFZY_w1IQgRtbW1Sk3xISAnkJk5kToVbAfNfqmiUUCy-au9c1jjJY4H9Pkp1vJy5XX5bCU-oYldwn-zoHFL0OCM5u5BkJ0B",
+    alt: "Minimalist white frosting cake with edible gold leaf decoration - Premium anniversary cake Ahmedabad by Cocoa&Cherry",
+    caption: "Minimalist Gold Leaf",
   },
   {
-    _id: '5',
-    imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBtz8rv6qGzsLC_gsATHh3oNwSo_zjp2WksS_u3FT-D2Lc9qDYK9fFxvfuM36zA9_UqdUfa9DSkpRkXTYF_K32TW-FnIiRuod_G5pr_Rofi8UqAMqghUcTYuVTOXL8JLLARwZCmsxzDhTt5KKQCLGOa4IuEYOxnwIfazI__Q13B_PtD5-OJrX0oBB0hnvVRwnAH_OYa25qzvup0UQrsEuWmbpvC6xyk_WaFU4bmIhZFILRC2jPRsP9FS606eHd6DkcKbT3b2BOsZMsl',
-    alt: 'Birthday celebration cake with candles and festive decoration - Birthday cake delivery Ahmedabad by Cocoa&Cherry',
-    caption: 'Birthday Celebration',
+    _id: "5",
+    imageData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBtz8rv6qGzsLC_gsATHh3oNwSo_zjp2WksS_u3FT-D2Lc9qDYK9fFxvfuM36zA9_UqdUfa9DSkpRkXTYF_K32TW-FnIiRuod_G5pr_Rofi8UqAMqghUcTYuVTOXL8JLLARwZCmsxzDhTt5KKQCLGOa4IuEYOxnwIfazI__Q13B_PtD5-OJrX0oBB0hnvVRwnAH_OYa25qzvup0UQrsEuWmbpvC6xyk_WaFU4bmIhZFILRC2jPRsP9FS606eHd6DkcKbT3b2BOsZMsl",
+    alt: "Birthday celebration cake with candles and festive decoration - Birthday cake delivery Ahmedabad by Cocoa&Cherry",
+    caption: "Birthday Celebration",
   },
   {
-    _id: '6',
-    imageData: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD36QhPfIBwsBtYj5n7NW5obGhdnZgpmTWp7meScTgRYe0vv9AJaEXGvCYc81tQd3s9DeoCSQK0rrHZbO-QbHk-vDjSNxzPknXpBoVMTuklRE15lFzk8AO6guFs_HJmjZLsXl80aQl0wPtea3DbZFg_DK8-BISDZpFAtCmmdutv2JHTXwaRcMq1025ZXcBA2mxWW_c83wXPddXqf6bsnm8BNRhGoKsSYZW389fNx6_DNeb8tM4tHK2YGzQotgwOlkV7h5GZHSKmF91P',
-    alt: 'Fresh strawberry shortcake with seasonal berries and whipped cream - Fruit cake Ahmedabad by Cocoa&Cherry',
-    caption: 'Fresh Berry Delight',
+    _id: "6",
+    imageData:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuD36QhPfIBwsBtYj5n7NW5obGhdnZgpmTWp7meScTgRYe0vv9AJaEXGvCYc81tQd3s9DeoCSQK0rrHZbO-QbHk-vDjSNxzPknXpBoVMTuklRE15lFzk8AO6guFs_HJmjZLsXl80aQl0wPtea3DbZFg_DK8-BISDZpFAtCmmdutv2JHTXwaRcMq1025ZXcBA2mxWW_c83wXPddXqf6bsnm8BNRhGoKsSYZW389fNx6_DNeb8tM4tHK2YGzQotgwOlkV7h5GZHSKmF91P",
+    alt: "Fresh strawberry shortcake with seasonal berries and whipped cream - Fruit cake Ahmedabad by Cocoa&Cherry",
+    caption: "Fresh Berry Delight",
   },
 ];
 
 // Lightbox Component
-function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentIndex }) {
+function Lightbox({
+  images,
+  currentIndex,
+  onClose,
+  onNext,
+  onPrev,
+  setCurrentIndex,
+}) {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
@@ -71,25 +84,25 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    
+
     if (isLeftSwipe) onNext();
     else if (isRightSwipe) onPrev();
   };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') onNext();
-      if (e.key === 'ArrowLeft') onPrev();
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onNext();
+      if (e.key === "ArrowLeft") onPrev();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, onNext, onPrev]);
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, []);
 
@@ -111,7 +124,9 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         className="absolute top-3 right-3 md:top-4 md:right-4 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors flex items-center justify-center"
         onClick={onClose}
       >
-        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">close</span>
+        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">
+          close
+        </span>
       </motion.button>
 
       {/* Navigation buttons */}
@@ -120,9 +135,14 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
         className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors hidden md:flex items-center justify-center"
-        onClick={(e) => { e.stopPropagation(); onPrev(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onPrev();
+        }}
       >
-        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">chevron_left</span>
+        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">
+          chevron_left
+        </span>
       </motion.button>
 
       <motion.button
@@ -130,9 +150,14 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
         className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-rose/10 border border-rose/20 hover:bg-rose/20 transition-colors hidden md:flex items-center justify-center"
-        onClick={(e) => { e.stopPropagation(); onNext(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onNext();
+        }}
       >
-        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">chevron_right</span>
+        <span className="material-symbols-outlined text-cream text-xl md:text-2xl">
+          chevron_right
+        </span>
       </motion.button>
 
       {/* Main image */}
@@ -174,10 +199,15 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
         transition={{ delay: 0.3 }}
         className="text-center py-4"
       >
-        <p className="text-cream font-bold text-lg" style={{ fontFamily: 'var(--font-cinzel)' }}>
+        <p
+          className="text-cream font-bold text-lg"
+          style={{ fontFamily: "var(--font-cinzel)" }}
+        >
           {currentImage.caption}
         </p>
-        <p className="text-cream-muted text-sm">{currentIndex + 1} / {images.length}</p>
+        <p className="text-cream-muted text-sm">
+          {currentIndex + 1} / {images.length}
+        </p>
       </motion.div>
 
       {/* Thumbnails - Scrollable */}
@@ -197,8 +227,8 @@ function Lightbox({ images, currentIndex, onClose, onNext, onPrev, setCurrentInd
               onClick={() => setCurrentIndex(index)}
               className={`relative w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl overflow-hidden flex-shrink-0 transition-all duration-300 border-2 ${
                 index === currentIndex
-                  ? 'border-rose scale-110 shadow-lg shadow-rose/30'
-                  : 'border-transparent opacity-50 hover:opacity-80'
+                  ? "border-rose scale-110 shadow-lg shadow-rose/30"
+                  : "border-transparent opacity-50 hover:opacity-80"
               }`}
             >
               <Image
@@ -249,20 +279,22 @@ function GalleryCard({ image, index, onClick, isInView }) {
           e.target.src = getRandomFallbackImage();
         }}
       />
-      
+
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
+
       {/* Zoom icon */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
         <motion.div
           whileHover={{ scale: 1.1 }}
           className="w-14 h-14 rounded-full bg-rose/80 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-rose/30"
         >
-          <span className="material-symbols-outlined text-white text-2xl">zoom_in</span>
+          <span className="material-symbols-outlined text-white text-2xl">
+            zoom_in
+          </span>
         </motion.div>
       </div>
-      
+
       {/* Caption */}
       <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
         <p className="text-cream text-sm font-medium">{image.caption}</p>
@@ -284,13 +316,13 @@ export default function Gallery({ isHomePage = false }) {
   useEffect(() => {
     const fetchGallery = async () => {
       try {
-        const res = await fetch('/api/gallery');
+        const res = await fetch("/api/gallery");
         const data = await res.json();
         if (data.success && data.data.length > 0) {
           setGalleryImages(data.data);
         }
       } catch (error) {
-        console.error('Error fetching gallery:', error);
+        console.error("Error fetching gallery:", error);
       } finally {
         setLoading(false);
       }
@@ -307,18 +339,23 @@ export default function Gallery({ isHomePage = false }) {
     setLoadingMore(true);
     // Simulate a slight delay for smooth UX
     setTimeout(() => {
-      setDisplayCount(prev => Math.min(prev + LOAD_MORE_COUNT, galleryImages.length));
+      setDisplayCount((prev) =>
+        Math.min(prev + LOAD_MORE_COUNT, galleryImages.length),
+      );
       setLoadingMore(false);
     }, 300);
   }, [galleryImages.length]);
 
-  const openLightbox = useCallback((index) => {
-    // Find the actual index in the full gallery array
-    const image = displayedImages[index];
-    const fullIndex = galleryImages.findIndex(img => img._id === image._id);
-    setCurrentIndex(fullIndex);
-    setLightboxOpen(true);
-  }, [displayedImages, galleryImages]);
+  const openLightbox = useCallback(
+    (index) => {
+      // Find the actual index in the full gallery array
+      const image = displayedImages[index];
+      const fullIndex = galleryImages.findIndex((img) => img._id === image._id);
+      setCurrentIndex(fullIndex);
+      setLightboxOpen(true);
+    },
+    [displayedImages, galleryImages],
+  );
 
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
@@ -329,14 +366,16 @@ export default function Gallery({ isHomePage = false }) {
   }, [galleryImages.length]);
 
   const goToPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+    setCurrentIndex(
+      (prev) => (prev - 1 + galleryImages.length) % galleryImages.length,
+    );
   }, [galleryImages.length]);
 
   return (
     <>
-      <section 
+      <section
         ref={sectionRef}
-        className={`relative ${isHomePage ? 'py-12 sm:py-16 md:py-24 lg:py-32' : 'pb-12 sm:pb-16 md:pb-24 lg:pb-32 pt-0'} bg-noir-light overflow-hidden`} 
+        className={`relative ${isHomePage ? "py-12 sm:py-16 md:py-24 lg:py-32" : "pb-12 sm:pb-16 md:pb-24 lg:pb-32 pt-0"} bg-noir-light overflow-hidden`}
         id="gallery"
         aria-labelledby="gallery-heading"
       >
@@ -348,51 +387,53 @@ export default function Gallery({ isHomePage = false }) {
 
         <div className="relative max-w-7xl mx-auto px-4 pt-3 md:px-8">
           {/* Section Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose/10 border border-rose/20 mb-6"
             >
-              <span className="material-symbols-outlined text-rose text-sm">photo_library</span>
+              <span className="material-symbols-outlined text-rose text-sm">
+                photo_library
+              </span>
               <span className="text-rose text-xs font-bold uppercase tracking-widest">
                 Our Creations
               </span>
             </motion.div>
 
             {isHomePage ? (
-            <h2 
-              id="gallery-heading"
-              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
-              style={{ fontFamily: 'var(--font-cinzel)' }}
-            >
-              <span className="text-cream">Cake </span>
-              <span className="gradient-text">Gallery</span>
-            </h2>
+              <h2
+                id="gallery-heading"
+                className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+                style={{ fontFamily: "var(--font-cinzel)" }}
+              >
+                <span className="text-cream">Cake </span>
+                <span className="gradient-text">Gallery</span>
+              </h2>
             ) : (
-              <h1 
+              <h1
                 id="gallery-heading"
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4"
-                style={{ fontFamily: 'var(--font-cinzel)' }}
+                style={{ fontFamily: "var(--font-cinzel)" }}
                 itemProp="name"
               >
                 <span className="text-cream">Cake </span>
                 <span className="gradient-text">Gallery</span>
               </h1>
             )}
-            
+
             <p className="text-cream-muted text-lg italic mb-2">
               Real Cakes. Real Celebrations.
             </p>
 
             {/* Image count badge */}
             {!loading && (
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-cream-muted/60 text-sm mb-4"
@@ -401,30 +442,30 @@ export default function Gallery({ isHomePage = false }) {
               </motion.p>
             )}
 
-              <Link
+            <Link
               href="https://www.instagram.com/cocoa_cherry_"
               target="_blank"
               className="inline-flex items-center gap-2 text-rose font-bold hover:text-rose-glow transition-colors group"
-              >
+            >
               <span>Follow us on Instagram</span>
               <motion.span
                 className="material-symbols-outlined text-sm"
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                  arrow_forward
-                </motion.span>
-              </Link>
-            </motion.div>
+                arrow_forward
+              </motion.span>
+            </Link>
+          </motion.div>
 
           {/* Gallery Grid */}
-            {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                {[...Array(6)].map((_, i) => (
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+              {[...Array(6)].map((_, i) => (
                 <div key={i} className="aspect-square rounded-2xl skeleton" />
-                ))}
-              </div>
-            ) : (
+              ))}
+            </div>
+          ) : (
             <>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -435,10 +476,10 @@ export default function Gallery({ isHomePage = false }) {
                 <AnimatePresence>
                   {displayedImages.map((image, index) => (
                     <GalleryCard
-                    key={image._id}
+                      key={image._id}
                       image={image}
                       index={index}
-                    onClick={() => openLightbox(index)}
+                      onClick={() => openLightbox(index)}
                       isInView={isInView}
                     />
                   ))}
@@ -465,12 +506,16 @@ export default function Gallery({ isHomePage = false }) {
                       >
                         {loadingMore ? (
                           <>
-                            <span className="material-symbols-outlined text-lg md:text-xl animate-spin">progress_activity</span>
+                            <span className="material-symbols-outlined text-lg md:text-xl animate-spin">
+                              progress_activity
+                            </span>
                             <span>Loading...</span>
                           </>
                         ) : (
                           <>
-                            <span className="material-symbols-outlined text-lg md:text-xl">add</span>
+                            <span className="material-symbols-outlined text-lg md:text-xl">
+                              add
+                            </span>
                             <span>Load More</span>
                             <span className="px-1.5 py-0.5 md:px-2 rounded-full bg-rose/20 text-rose text-xs md:text-sm">
                               +{Math.min(LOAD_MORE_COUNT, remainingCount)}
@@ -490,7 +535,9 @@ export default function Gallery({ isHomePage = false }) {
                       }}
                       className="inline-flex items-center gap-2 md:gap-3 px-5 py-2.5 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/30 hover:shadow-rose/50 transition-all"
                     >
-                      <span className="material-symbols-outlined text-lg md:text-xl">photo_library</span>
+                      <span className="material-symbols-outlined text-lg md:text-xl">
+                        photo_library
+                      </span>
                       <span>View All ({galleryImages.length})</span>
                     </motion.button>
                   </motion.div>
@@ -506,7 +553,9 @@ export default function Gallery({ isHomePage = false }) {
                         <motion.div
                           className="h-full bg-gradient-to-r from-rose to-gold rounded-full"
                           initial={{ width: 0 }}
-                          animate={{ width: `${(displayCount / galleryImages.length) * 100}%` }}
+                          animate={{
+                            width: `${(displayCount / galleryImages.length) * 100}%`,
+                          }}
                           transition={{ duration: 0.5 }}
                         />
                       </div>
@@ -530,7 +579,9 @@ export default function Gallery({ isHomePage = false }) {
                     href="/gallery"
                     className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/20 hover:shadow-rose/40 transition-all"
                   >
-                    <span className="material-symbols-outlined text-lg md:text-xl">photo_library</span>
+                    <span className="material-symbols-outlined text-lg md:text-xl">
+                      photo_library
+                    </span>
                     <span>View Full Gallery</span>
                   </Link>
                 </motion.div>

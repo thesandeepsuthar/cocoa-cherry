@@ -39,11 +39,11 @@ function StatCard({ icon, label, value, subtitle, color = "rose", trend }) {
         )}
       </div>
       <div>
-        <p className="text-2xl sm:text-3xl font-bold text-cream mb-1">{value}</p>
+        <p className="text-2xl sm:text-3xl font-bold text-cream mb-1">
+          {value}
+        </p>
         <p className="text-sm text-cream-muted">{label}</p>
-        {subtitle && (
-          <p className="text-xs text-cream/40 mt-1">{subtitle}</p>
-        )}
+        {subtitle && <p className="text-xs text-cream/40 mt-1">{subtitle}</p>}
       </div>
     </motion.div>
   );
@@ -75,7 +75,10 @@ function LoadingSkeleton() {
     <div className="space-y-6 animate-pulse">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(8)].map((_, i) => (
-          <div key={i} className="bg-noir-light rounded-xl h-32 border border-cream/10" />
+          <div
+            key={i}
+            className="bg-noir-light rounded-xl h-32 border border-cream/10"
+          />
         ))}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -126,7 +129,8 @@ export default function Dashboard({ adminKey, showToast }) {
   if (loading) return <LoadingSkeleton />;
   if (!stats) return null;
 
-  const { overview, thisMonth, recentActivity, topRated, ratingDistribution } = stats;
+  const { overview, thisMonth, recentActivity, topRated, ratingDistribution } =
+    stats;
 
   return (
     <div className="space-y-6">
@@ -310,7 +314,9 @@ export default function Dashboard({ adminKey, showToast }) {
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-medium text-cream">{review.name}</p>
                   <div className="flex items-center gap-1">
-                    <span className="text-yellow-400 text-sm">{review.rating}</span>
+                    <span className="text-yellow-400 text-sm">
+                      {review.rating}
+                    </span>
                     <span className="material-symbols-outlined text-yellow-400 text-sm">
                       star
                     </span>
@@ -335,7 +341,9 @@ export default function Dashboard({ adminKey, showToast }) {
       {/* Rating Distribution */}
       {ratingDistribution.length > 0 && (
         <div className="bg-noir-light rounded-xl p-4 sm:p-6 border border-cream/10">
-          <h3 className="text-lg font-bold text-cream mb-4">Rating Distribution</h3>
+          <h3 className="text-lg font-bold text-cream mb-4">
+            Rating Distribution
+          </h3>
           <div className="space-y-3">
             {[5, 4, 3, 2, 1].map((rating) => {
               const data = ratingDistribution.find((r) => r.rating === rating);
