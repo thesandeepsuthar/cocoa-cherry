@@ -1,6 +1,9 @@
 import { Cinzel, Work_Sans } from "next/font/google";
 import "./globals.css";
 import PageLoader from "./components/PageLoader";
+import { GlobalModals } from "./components";
+import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -905,7 +908,12 @@ export default function RootLayout({ children }) {
         {/* Page Loader - shows on initial load and navigation */}
         <PageLoader />
 
-        {children}
+        <AuthProvider>
+          <CartProvider>
+            <GlobalModals />
+            {children}
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

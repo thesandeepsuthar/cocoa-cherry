@@ -14,18 +14,24 @@ const navLinks = [
   { href: "/about", label: "About", icon: "info" },
   { href: "/menu", label: "Menu", icon: "restaurant_menu" },
   { href: "/gallery", label: "Gallery", icon: "photo_library" },
-  { href: "/events", label: "Events", icon: "celebration" },
-  { href: "/blog", label: "Blog", icon: "article" },
+  // { href: "/events", label: "Events", icon: "celebration" },
+  // { href: "/blog", label: "Blog", icon: "article" },
   { href: "/reviews", label: "Reviews", icon: "rate_review" },
-  { href: "/services", label: "Services", icon: "room_service" },
-  { href: "/contact", label: "Contact", icon: "mail" },
+  // { href: "/services", label: "Services", icon: "room_service" },
+  // { href: "/contact", label: "Contact", icon: "mail" },
 ];
+
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useCart } from "@/app/contexts/CartContext";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
+  const { user, isAuthenticated, setIsLoginOpen, logout } = useAuth();
+  const { cart, setIsCartOpen } = useCart();
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious();
@@ -168,6 +174,154 @@ export default function Navigation() {
                   <span>Order Now</span>
                 </Link>
               </motion.div>
+
+              {/* Cart Button */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6 }}
+                className="ml-2"
+              >
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative p-2.5 rounded-full text-cream/80 hover:text-rose hover:bg-rose/10 border border-transparent hover:border-rose/20 transition-all group"
+                >
+                  <span className="material-symbols-outlined text-2xl">
+                    shopping_bag
+                  </span>
+                  {cart.totalItems > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-rose text-noir text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-noir">
+                      {cart.totalItems}
+                    </span>
+                  )}
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-rose rounded-full group-hover:w-1/2 transition-all duration-300" />
+                </button>
+              </motion.div>
+
+              {/* User Account Button */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7 }}
+                className="ml-2 relative"
+              >
+                {isAuthenticated ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-noir-light border border-rose/10 hover:border-rose/30 transition-all group shadow-lg shadow-black/20"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose to-gold flex items-center justify-center text-noir font-bold text-sm shadow-inner">
+                        {user.name?.charAt(0).toUpperCase() ||
+                          user.mobile?.charAt(0) ||
+                          "U"}
+                      </div>
+                      <span className="text-sm font-bold text-cream/80 group-hover:text-rose transition-colors">
+                        {user.name?.split(" ")[0] || user.mobile}
+                      </span>
+                      <span
+                        className={`material-symbols-outlined text-sm text-rose/50 group-hover:text-rose transition-transform duration-300 ${showUserMenu ? "rotate-180" : ""}`}
+                      >
+                        expand_more
+                      </span>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      {showUserMenu && (
+                        <>
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-40"
+                            onClick={() => setShowUserMenu(false)}
+                          />
+                          <motion.div
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                            className="absolute right-0 mt-4 w-56 py-3 glass-strong border border-rose/20 rounded-[2rem] shadow-2xl z-50 overflow-hidden"
+                          >
+                            <div className="px-5 py-3 border-b border-rose/10 mb-2 bg-rose/5">
+                              <p className="text-[10px] uppercase tracking-[0.2em] text-rose font-bold mb-1">
+                                Authenticating as
+                              </p>
+                              <p className="text-sm font-bold text-cream truncate">
+                                {user.name || user.mobile}
+                              </p>
+                            </div>
+
+                            <Link
+                              href="/profile"
+                              className="flex items-center gap-3 px-5 py-3 text-cream/70 hover:text-rose hover:bg-rose/5 transition-all group"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">
+                                person
+                              </span>
+                              <span className="text-sm font-bold">
+                                My Sanctuary
+                              </span>
+                            </Link>
+                            <Link
+                              href="/orders"
+                              className="flex items-center gap-3 px-5 py-3 text-cream/70 hover:text-rose hover:bg-rose/5 transition-all group"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">
+                                history
+                              </span>
+                              <span className="text-sm font-bold">
+                                Order History
+                              </span>
+                            </Link>
+                            {user.mobile === "9712752469" && (
+                              <Link
+                                href="/admin"
+                                className="flex items-center gap-3 px-5 py-3 text-gold/70 hover:text-gold hover:bg-gold/5 transition-all group"
+                                onClick={() => setShowUserMenu(false)}
+                              >
+                                <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform text-gold">
+                                  admin_panel_settings
+                                </span>
+                                <span className="text-sm font-black uppercase tracking-widest">
+                                  Admin Control
+                                </span>
+                              </Link>
+                            )}
+                            <div className="h-[1px] bg-rose/10 mx-5 my-2" />
+                            <button
+                              onClick={() => {
+                                logout();
+                                setShowUserMenu(false);
+                              }}
+                              className="w-full flex items-center gap-3 px-5 py-3 text-red-400 hover:text-red-300 hover:bg-red-400/5 transition-all group"
+                            >
+                              <span className="material-symbols-outlined text-xl group-hover:rotate-12 transition-transform">
+                                logout
+                              </span>
+                              <span className="text-sm font-bold text-left">
+                                Terminate Session
+                              </span>
+                            </button>
+                          </motion.div>
+                        </>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setIsLoginOpen(true)}
+                    className="p-2.5 rounded-full text-cream/80 hover:text-rose hover:bg-rose/10 border border-transparent hover:border-rose/20 transition-all group"
+                  >
+                    <span className="material-symbols-outlined text-2xl">
+                      person
+                    </span>
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-rose rounded-full group-hover:w-1/2 transition-all duration-300" />
+                  </button>
+                )}
+              </motion.div>
             </div>
 
             {/* Mobile Menu Button */}
@@ -199,6 +353,22 @@ export default function Navigation() {
                   className="w-4 md:w-5 h-0.5 bg-cream rounded-full origin-center"
                 />
               </div>
+            </motion.button>
+
+            {/* Mobile Cart Button */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setIsCartOpen(true)}
+              className="lg:hidden relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg md:rounded-xl bg-noir-light/50 border border-rose/20 hover:border-rose/40 transition-colors ml-2"
+            >
+              <span className="material-symbols-outlined text-cream/80 text-xl md:text-2xl">
+                shopping_bag
+              </span>
+              {cart.totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose text-noir text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-noir">
+                  {cart.totalItems}
+                </span>
+              )}
             </motion.button>
           </div>
         </div>
@@ -254,11 +424,11 @@ export default function Navigation() {
                       className="text-base md:text-xl font-bold tracking-wide"
                       style={{ fontFamily: "var(--font-cinzel)" }}
                     >
-                      <span className="text-[#c9a86c]">Cocoa</span>
-                      <span className="text-[#c9a86c]">&</span>
-                      <span className="text-[#c9a86c]">Cherry</span>
+                      <span className="text-rose">Cocoa</span>
+                      <span className="text-gold">&</span>
+                      <span className="text-rose">Cherry</span>
                     </motion.h2>
-                    <span className="text-cream-muted text-[9px] md:text-[10px] tracking-[0.2em] uppercase">
+                    <span className="text-cream-muted text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-bold">
                       Artisanal Cakes
                     </span>
                   </div>
@@ -266,35 +436,78 @@ export default function Navigation() {
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsOpen(false)}
-                  className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-rose/10 flex items-center justify-center hover:bg-rose/20 transition-colors"
+                  className="w-10 h-10 rounded-full bg-rose/10 flex items-center justify-center hover:bg-rose/20 transition-colors border border-rose/20"
                 >
-                  <span className="material-symbols-outlined text-rose text-xl md:text-2xl">
+                  <span className="material-symbols-outlined text-rose text-xl md:text-2xl font-bold">
                     close
                   </span>
                 </motion.button>
               </div>
 
+              {/* User Info (Mobile) */}
+              {isAuthenticated && (
+                <div className="p-4 border-b border-rose/10">
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-rose/10 border border-rose/20">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose to-gold flex items-center justify-center text-noir font-bold text-lg shadow-inner">
+                      {user.name?.charAt(0).toUpperCase() ||
+                        user.mobile?.charAt(0) ||
+                        "U"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-cream truncate">
+                        {user.name || user.mobile}
+                      </p>
+                      <p className="text-[10px] text-rose/60 uppercase tracking-wider">
+                        Welcome back
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-center gap-2 p-3 rounded-xl bg-noir/50 border border-rose/10 text-cream/70 hover:text-rose hover:border-rose/30 transition-all text-xs font-bold"
+                    >
+                      <span className="material-symbols-outlined text-base">
+                        person
+                      </span>
+                      Profile
+                    </Link>
+                    <Link
+                      href="/orders"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-center gap-2 p-3 rounded-xl bg-noir/50 border border-rose/10 text-cream/70 hover:text-rose hover:border-rose/30 transition-all text-xs font-bold"
+                    >
+                      <span className="material-symbols-outlined text-base">
+                        history
+                      </span>
+                      Orders
+                    </Link>
+                  </div>
+                </div>
+              )}
+
               {/* Menu Links */}
-              <div className="p-4 md:p-6 space-y-1.5 md:space-y-2">
+              <div className="p-6 space-y-3">
                 {navLinks.map((link, index) => (
                   <motion.div
                     key={link.href}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.05 }}
                   >
                     <Link
                       href={link.href}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl text-cream/80 hover:text-cream hover:bg-rose/10 transition-all group"
+                      className="flex items-center gap-4 p-4 rounded-2xl text-cream/80 hover:text-rose hover:bg-rose/10 border border-transparent hover:border-rose/10 transition-all group"
                     >
-                      <span className="material-symbols-outlined text-rose/60 group-hover:text-rose transition-colors text-xl md:text-2xl">
+                      <span className="material-symbols-outlined text-rose/60 group-hover:text-rose group-hover:scale-110 transition-all text-2xl">
                         {link.icon}
                       </span>
-                      <span className="font-medium text-sm md:text-base">
+                      <span className="font-bold text-base tracking-wide">
                         {link.label}
                       </span>
-                      <span className="material-symbols-outlined ml-auto text-cream/30 group-hover:text-cream/60 group-hover:translate-x-1 transition-all text-lg md:text-xl">
+                      <span className="material-symbols-outlined ml-auto text-cream/20 group-hover:text-rose group-hover:translate-x-1 transition-all">
                         chevron_right
                       </span>
                     </Link>
@@ -306,18 +519,58 @@ export default function Navigation() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="pt-4 md:pt-6"
+                  className="pt-6"
                 >
                   <Link
                     href="#order"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-2 md:gap-3 w-full py-3 md:py-4 rounded-lg md:rounded-xl bg-gradient-to-r from-rose to-rose-dark text-noir font-bold text-sm md:text-base shadow-lg shadow-rose/20"
+                    className="flex items-center justify-center gap-3 w-full py-5 rounded-2xl bg-gradient-to-r from-rose to-rose-dark text-noir font-bold shadow-lg shadow-rose/20 group"
                   >
-                    <span className="material-symbols-outlined text-lg md:text-xl">
+                    <span className="material-symbols-outlined text-xl group-hover:rotate-12 transition-transform">
                       cake
                     </span>
-                    <span>Order Your Cake</span>
+                    <span className="uppercase tracking-widest text-sm">
+                      Order Your Masterpiece
+                    </span>
                   </Link>
+                </motion.div>
+
+                {/* Login/Logout Button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="pt-4"
+                >
+                  {isAuthenticated ? (
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsOpen(false);
+                      }}
+                      className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl border border-red-500/20 text-red-400 hover:bg-red-500/10 font-bold transition-all text-sm"
+                    >
+                      <span className="material-symbols-outlined text-lg">
+                        logout
+                      </span>
+                      <span className="uppercase tracking-widest">Logout</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsLoginOpen(true);
+                        setIsOpen(false);
+                      }}
+                      className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl border border-rose/20 text-rose hover:bg-rose/10 font-bold transition-all text-sm"
+                    >
+                      <span className="material-symbols-outlined text-lg">
+                        login
+                      </span>
+                      <span className="uppercase tracking-widest">
+                        Login / Register
+                      </span>
+                    </button>
+                  )}
                 </motion.div>
               </div>
 

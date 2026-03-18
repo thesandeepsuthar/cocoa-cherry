@@ -150,6 +150,8 @@ function ConfirmationDialog({ isOpen, onClose, onConfirm, title, message }) {
 // Tabs
 const TABS = [
   { id: "dashboard", label: "Dashboard", icon: "dashboard" },
+  { id: "orders", label: "Orders", icon: "shopping_cart" },
+  { id: "customers", label: "Customers", icon: "groups" },
   { id: "hero", label: "Hero", icon: "image" },
   { id: "gallery", label: "Gallery", icon: "photo_library" },
   { id: "events", label: "Events", icon: "celebration" },
@@ -4093,6 +4095,520 @@ function AdminAuthForm({ onSuccess }) {
   );
 }
 
+// Orders Tab Component
+function OrdersTab({ showToast }) {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
+  const [updatingOrder, setUpdatingOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: "20",
+        ...(filterStatus !== "all" && { status: filterStatus }),
+      });
+      const res = await fetch(`/api/admin/orders?${params}`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setOrders(data.data.orders);
+        setPagination((prev) => ({
+          ...prev,
+          totalPages: data.data.pagination.totalPages,
+        }));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [pagination.page, filterStatus]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    setUpdatingOrder(orderId);
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchOrders();
+        showToast(
+          `Order status updated to ${statusLabels[newStatus] || newStatus}`,
+          "success",
+        );
+      } else {
+        showToast(data.error || "Failed to update status", "error");
+      }
+    } catch (error) {
+      showToast("Failed to update status", "error");
+    } finally {
+      setUpdatingOrder(null);
+    }
+  };
+
+  const filteredOrders = orders.filter(
+    (order) =>
+      order.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.shippingAddress?.name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      order.shippingAddress?.mobile?.includes(searchTerm),
+  );
+
+  const statusColors = {
+    pending: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    confirmed: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+    preparing: "bg-sky-500/20 text-sky-400 border-sky-500/30",
+    ready: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+    out_for_delivery: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+    completed: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+    cancelled: "bg-red-500/20 text-red-400 border-red-500/30",
+  };
+
+  const statusLabels = {
+    pending: "Pending",
+    confirmed: "Confirmed",
+    preparing: "Preparing",
+    ready: "Ready",
+    out_for_delivery: "Out for Delivery",
+    completed: "Completed",
+    cancelled: "Cancelled",
+  };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+    }).format(amount);
+  };
+
+  if (loading) return <LoadingSpinner />;
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+        <h2
+          className="text-xl sm:text-2xl font-bold text-cream"
+          style={{ fontFamily: "var(--font-cinzel)" }}
+        >
+          Orders ({filteredOrders.length})
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          <select
+            value={filterStatus}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setPagination((prev) => ({ ...prev, page: 1 }));
+            }}
+            className="h-10 px-3 rounded-lg border border-cream/10 bg-noir-light text-cream text-sm focus:ring-2 focus:ring-rose/20 focus:border-rose"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="preparing">Preparing</option>
+            <option value="ready">Ready</option>
+            <option value="out_for_delivery">Out for Delivery</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by Order ID, Name, or Mobile..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full h-10 px-4 rounded-lg border border-cream/10 bg-noir-light text-cream placeholder:text-cream/40 text-sm focus:ring-2 focus:ring-rose/20 focus:border-rose"
+        />
+      </div>
+
+      {filteredOrders.length === 0 ? (
+        <div className="text-center py-12">
+          <span className="material-symbols-outlined text-5xl text-cream/30 mb-3">
+            shopping_cart
+          </span>
+          <p className="text-cream-muted">No orders found</p>
+        </div>
+      ) : (
+        <>
+          <div className="space-y-3">
+            {filteredOrders.map((order) => (
+              <motion.div
+                key={order._id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-noir-light rounded-xl border border-cream/10 overflow-hidden hover:border-rose/30 transition-colors"
+              >
+                <div
+                  className="p-4 cursor-pointer"
+                  onClick={() =>
+                    setSelectedOrder(
+                      selectedOrder?._id === order._id ? null : order,
+                    )
+                  }
+                >
+                  <div className="flex flex-wrap justify-between items-start gap-2 mb-3">
+                    <div>
+                      <p className="text-rose font-bold text-sm">
+                        {order.orderId}
+                      </p>
+                      <p className="text-cream-muted text-xs">
+                        {formatDate(order.orderDate)}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium border ${statusColors[order.status]}`}
+                    >
+                      {statusLabels[order.status] || order.status}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap justify-between items-center gap-2">
+                    <div>
+                      <p className="text-cream text-sm font-medium">
+                        {order.shippingAddress?.name}
+                      </p>
+                      <p className="text-cream-muted text-xs">
+                        {order.shippingAddress?.mobile}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-rose font-bold">
+                        {formatCurrency(order.totalAmount)}
+                      </p>
+                      <p className="text-cream-muted text-xs">
+                        {order.items?.length || 0} item(s)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {selectedOrder?._id === order._id && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="border-t border-cream/10 p-4 bg-noir/30"
+                  >
+                    <div className="mb-4">
+                      <h4 className="text-cream font-bold text-sm mb-2">
+                        Shipping Address
+                      </h4>
+                      <p className="text-cream-muted text-xs">
+                        {order.shippingAddress?.street},{" "}
+                        {order.shippingAddress?.city},{" "}
+                        {order.shippingAddress?.state} -{" "}
+                        {order.shippingAddress?.pincode}
+                      </p>
+                    </div>
+                    <div className="mb-4">
+                      <h4 className="text-cream font-bold text-sm mb-2">
+                        Items
+                      </h4>
+                      <div className="space-y-2">
+                        {order.items?.map((item, idx) => (
+                          <div
+                            key={idx}
+                            className="flex justify-between text-xs"
+                          >
+                            <span className="text-cream">
+                              {item.name} x{item.quantity}
+                            </span>
+                            <span className="text-cream-muted">
+                              {formatCurrency(item.subtotal)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <select
+                        value={order.status}
+                        onChange={(e) =>
+                          handleUpdateStatus(order._id, e.target.value)
+                        }
+                        disabled={updatingOrder === order._id}
+                        className="h-9 px-3 rounded-lg border border-cream/10 bg-noir-light text-cream text-xs focus:ring-2 focus:ring-rose/20 focus:border-rose"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="ready">Ready</option>
+                        <option value="out_for_delivery">
+                          Out for Delivery
+                        </option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+
+          {pagination.totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-6">
+              <button
+                onClick={() =>
+                  setPagination((prev) => ({ ...prev, page: prev.page - 1 }))
+                }
+                disabled={pagination.page === 1}
+                className="px-4 py-2 rounded-lg border border-cream/10 text-cream text-sm disabled:opacity-50 hover:bg-cream/5"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2 text-cream-muted text-sm">
+                Page {pagination.page} of {pagination.totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
+                }
+                disabled={pagination.page === pagination.totalPages}
+                className="px-4 py-2 rounded-lg border border-cream/10 text-cream text-sm disabled:opacity-50 hover:bg-cream/5"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+// Customers Tab Component
+function CustomersTab({ showToast }) {
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const fetchCustomers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: "20",
+        ...(searchTerm && { search: searchTerm }),
+      });
+      const res = await fetch(`/api/admin/users?${params}`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCustomers(data.data.users);
+        setPagination((prev) => ({
+          ...prev,
+          totalPages: data.data.pagination.totalPages,
+        }));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [pagination.page, searchTerm]);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
+
+  const filteredCustomers = customers.filter(
+    (customer) =>
+      customer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.mobile?.includes(searchTerm) ||
+      customer.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  if (loading) return <LoadingSpinner />;
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+        <h2
+          className="text-xl sm:text-2xl font-bold text-cream"
+          style={{ fontFamily: "var(--font-cinzel)" }}
+        >
+          Customers ({filteredCustomers.length})
+        </h2>
+      </div>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by Name, Mobile, or Email..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPagination((prev) => ({ ...prev, page: 1 }));
+          }}
+          className="w-full h-10 px-4 rounded-lg border border-cream/10 bg-noir-light text-cream placeholder:text-cream/40 text-sm focus:ring-2 focus:ring-rose/20 focus:border-rose"
+        />
+      </div>
+
+      {filteredCustomers.length === 0 ? (
+        <div className="text-center py-12">
+          <span className="material-symbols-outlined text-5xl text-cream/30 mb-3">
+            groups
+          </span>
+          <p className="text-cream-muted">No customers found</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-3">
+            {filteredCustomers.map((customer) => (
+              <motion.div
+                key={customer._id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-noir-light rounded-xl border border-cream/10 overflow-hidden hover:border-rose/30 transition-colors"
+              >
+                <div
+                  className="p-4 cursor-pointer"
+                  onClick={() =>
+                    setSelectedCustomer(
+                      selectedCustomer?._id === customer._id ? null : customer,
+                    )
+                  }
+                >
+                  <div className="flex flex-wrap justify-between items-start gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-rose/20 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-rose">
+                          person
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-cream font-bold text-sm">
+                          {customer.name}
+                        </p>
+                        <p className="text-cream-muted text-xs">
+                          {customer.mobile}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-rose font-bold text-sm">
+                        {customer.totalOrders || 0} orders
+                      </p>
+                      <p className="text-cream-muted text-xs">
+                        ₹{customer.totalSpent?.toFixed(2) || "0.00"} spent
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {selectedCustomer?._id === customer._id && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="border-t border-cream/10 p-4 bg-noir/30"
+                  >
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="text-cream font-bold text-xs mb-2">
+                          Contact Information
+                        </h4>
+                        <p className="text-cream-muted text-xs">
+                          <span className="text-cream/60">Email:</span>{" "}
+                          {customer.email || "N/A"}
+                        </p>
+                        <p className="text-cream-muted text-xs">
+                          <span className="text-cream/60">Mobile:</span>{" "}
+                          {customer.mobile}
+                        </p>
+                      </div>
+                      {customer.address && (
+                        <div>
+                          <h4 className="text-cream font-bold text-xs mb-2">
+                            Address
+                          </h4>
+                          <p className="text-cream-muted text-xs">
+                            {customer.address.street}, {customer.address.city},{" "}
+                            {customer.address.state} -{" "}
+                            {customer.address.pincode}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-cream/10">
+                      <p className="text-cream-muted text-xs">
+                        <span className="text-cream/60">Member since:</span>{" "}
+                        {formatDate(customer.createdAt)}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+
+          {pagination.totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-6">
+              <button
+                onClick={() =>
+                  setPagination((prev) => ({ ...prev, page: prev.page - 1 }))
+                }
+                disabled={pagination.page === 1}
+                className="px-4 py-2 rounded-lg border border-cream/10 text-cream text-sm disabled:opacity-50 hover:bg-cream/5"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2 text-cream-muted text-sm">
+                Page {pagination.page} of {pagination.totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
+                }
+                disabled={pagination.page === pagination.totalPages}
+                className="px-4 py-2 rounded-lg border border-cream/10 text-cream text-sm disabled:opacity-50 hover:bg-cream/5"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 // Admin Content Component
 function AdminContent() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -4321,6 +4837,8 @@ function AdminContent() {
         {activeTab === "dashboard" && (
           <Dashboard adminKey={adminKey || ""} showToast={showToast} />
         )}
+        {activeTab === "orders" && <OrdersTab showToast={showToast} />}
+        {activeTab === "customers" && <CustomersTab showToast={showToast} />}
         {activeTab === "hero" && (
           <HeroTab
             adminKey={adminKey || ""}

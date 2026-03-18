@@ -17,3 +17,6 @@ export { default as SpecialOffer } from "./SpecialOffer";
 export { default as MouseGlow } from "./MouseGlow";
 export { default as Loader, LogoSVG, MiniLoader, CakeLoader } from "./Loader";
 export { default as Blog } from "./Blog";
+export { default as LoginModal } from "./auth/LoginModal";
+export { default as CartDrawer } from "./cart/CartDrawer";
+export { default as GlobalModals } from "./GlobalModals";
