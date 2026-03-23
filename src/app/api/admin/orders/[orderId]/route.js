@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import { Order } from "@/lib/models";
 import { verifyAdminKey } from "@/lib/auth";
+import {
+  sendOrderStatusUpdateMessage,
+  sendOrderDeliveryMessage,
+} from "@/lib/utils/whatsapp";
 
 export async function GET(request, { params }) {
   try {
@@ -100,6 +104,7 @@ export async function PUT(request, { params }) {
     }
 
     // Update order
+    const previousStatus = order.status;
     order.status = status;
     if (deliveryDate) order.deliveryDate = new Date(deliveryDate);
     if (notes) order.notes = notes;
@@ -113,6 +118,23 @@ export async function PUT(request, { params }) {
 
     await order.populate("user", "name mobile email address");
     await order.populate("items.product", "name images");
+
+    // Send WhatsApp notification to user
+    if (order.user?.mobile && status !== previousStatus) {
+      if (status === "completed") {
+        sendOrderDeliveryMessage(order.user.mobile, order).catch((err) =>
+          console.error("WhatsApp delivery notification error:", err),
+        );
+      } else if (status === "cancelled") {
+        sendOrderStatusUpdateMessage(order.user.mobile, order, status).catch(
+          (err) => console.error("WhatsApp order cancellation error:", err),
+        );
+      } else {
+        sendOrderStatusUpdateMessage(order.user.mobile, order, status).catch(
+          (err) => console.error("WhatsApp order status update error:", err),
+        );
+      }
+    }
 
     return NextResponse.json({
       success: true,

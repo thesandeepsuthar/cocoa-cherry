@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Dashboard from "./components/Dashboard";
+import Analytics from "./components/Analytics";
 import SearchFilter from "./components/SearchFilter";
 import { filterAndSort } from "./utils/filterSort";
 
@@ -150,6 +151,7 @@ function ConfirmationDialog({ isOpen, onClose, onConfirm, title, message }) {
 // Tabs
 const TABS = [
   { id: "dashboard", label: "Dashboard", icon: "dashboard" },
+  { id: "analytics", label: "Analytics", icon: "analytics" },
   { id: "orders", label: "Orders", icon: "shopping_cart" },
   { id: "customers", label: "Customers", icon: "groups" },
   { id: "hero", label: "Hero", icon: "image" },
@@ -4836,6 +4838,9 @@ function AdminContent() {
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {activeTab === "dashboard" && (
           <Dashboard adminKey={adminKey || ""} showToast={showToast} />
+        )}
+        {activeTab === "analytics" && (
+          <Analytics adminKey={adminKey || ""} showToast={showToast} />
         )}
         {activeTab === "orders" && <OrdersTab showToast={showToast} />}
         {activeTab === "customers" && <CustomersTab showToast={showToast} />}

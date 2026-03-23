@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
-import { Order, Cart, Product } from "@/lib/models";
+import { Order, Cart, Product, User } from "@/lib/models";
 import { authenticateUser } from "@/lib/middleware/auth";
+import { sendOrderConfirmationMessage } from "@/lib/utils/whatsapp";
 
 export async function GET(request) {
   try {
@@ -199,6 +200,12 @@ export async function POST(request) {
 
     // Populate order for response
     await order.populate("items.product", "name images");
+    await order.populate("user", "name mobile");
+
+    // Send WhatsApp order confirmation
+    sendOrderConfirmationMessage(order.user.mobile, order).catch((err) =>
+      console.error("WhatsApp order confirmation error:", err),
+    );
 
     return NextResponse.json({
       success: true,

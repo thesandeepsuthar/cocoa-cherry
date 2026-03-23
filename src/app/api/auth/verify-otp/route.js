@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import { User, OtpVerification } from "@/lib/models";
 import { generateToken } from "@/lib/utils/jwt";
 import { validateMobile } from "@/lib/utils/otp";
+import { sendWelcomeMessage } from "@/lib/utils/whatsapp";
 
 export async function POST(request) {
   try {
@@ -82,6 +83,13 @@ export async function POST(request) {
         email: email?.trim() || undefined,
       });
       isNewUser = true;
+    }
+
+    // Send WhatsApp welcome message for new users
+    if (isNewUser) {
+      sendWelcomeMessage(mobile, user.name).catch((err) =>
+        console.error("WhatsApp welcome message error:", err),
+      );
     }
 
     // Generate JWT token
