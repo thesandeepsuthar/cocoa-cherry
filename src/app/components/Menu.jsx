@@ -328,10 +328,11 @@ function QuickViewModal({
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base shadow-lg transition-all ${isInOrder
+              className={`flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base shadow-lg transition-all ${
+                isInOrder
                   ? "bg-red-500/20 text-red-400 border-2 border-red-500/30 hover:bg-red-500/30"
                   : "bg-gradient-to-r from-rose to-rose-dark text-white shadow-rose/30 hover:shadow-rose/50"
-                }`}
+              }`}
             >
               <span className="material-symbols-outlined text-base sm:text-lg">
                 {isInOrder ? "remove_shopping_cart" : "add_shopping_cart"}
@@ -350,10 +351,11 @@ function QuickViewModal({
               disabled={!canGoPrev}
               whileHover={canGoPrev ? { scale: 1.02 } : {}}
               whileTap={canGoPrev ? { scale: 0.98 } : {}}
-              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all ${canGoPrev
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                canGoPrev
                   ? "bg-cream/10 text-cream border border-cream/20 hover:bg-cream/20"
                   : "bg-noir/50 text-cream/30 border border-cream/10 cursor-not-allowed"
-                }`}
+              }`}
             >
               <span className="material-symbols-outlined text-base sm:text-lg">
                 chevron_left
@@ -365,10 +367,11 @@ function QuickViewModal({
               disabled={!canGoNext}
               whileHover={canGoNext ? { scale: 1.02 } : {}}
               whileTap={canGoNext ? { scale: 0.98 } : {}}
-              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all ${canGoNext
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                canGoNext
                   ? "bg-cream/10 text-cream border border-cream/20 hover:bg-cream/20"
                   : "bg-noir/50 text-cream/30 border border-cream/10 cursor-not-allowed"
-                }`}
+              }`}
             >
               <span className="hidden sm:inline">Next</span>
               <span className="material-symbols-outlined text-base sm:text-lg">
@@ -638,10 +641,11 @@ function CategorySection({ category, items, onItemClick, orderItems }) {
           <button
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
-            className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${canScrollLeft
+            className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+              canScrollLeft
                 ? "border-rose/30 text-cream hover:bg-rose/10 hover:border-rose"
                 : "border-cream/10 text-cream/20 cursor-not-allowed"
-              }`}
+            }`}
           >
             <span className="material-symbols-outlined text-lg">
               chevron_left
@@ -650,10 +654,11 @@ function CategorySection({ category, items, onItemClick, orderItems }) {
           <button
             onClick={() => scroll("right")}
             disabled={!canScrollRight}
-            className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${canScrollRight
+            className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+              canScrollRight
                 ? "border-rose/30 text-cream hover:bg-rose/10 hover:border-rose"
                 : "border-cream/10 text-cream/20 cursor-not-allowed"
-              }`}
+            }`}
           >
             <span className="material-symbols-outlined text-lg">
               chevron_right
@@ -689,10 +694,11 @@ function CategorySection({ category, items, onItemClick, orderItems }) {
                 className="flex-shrink-0 w-[160px] sm:w-[200px] md:w-[240px] cursor-pointer group"
               >
                 <div
-                  className={`card-noir overflow-hidden h-full transition-all ${inOrder
+                  className={`card-noir overflow-hidden h-full transition-all ${
+                    inOrder
                       ? "ring-2 ring-gold border-gold/30"
                       : "hover:border-rose/30"
-                    }`}
+                  }`}
                 >
                   {/* Image */}
                   <div className="relative h-28 sm:h-36 md:h-44 overflow-hidden">
@@ -718,7 +724,7 @@ function CategorySection({ category, items, onItemClick, orderItems }) {
                       <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold">
                         {Math.round(
                           ((item.price - item.discountPrice) / item.price) *
-                          100,
+                            100,
                         )}
                         % OFF
                       </span>
@@ -794,7 +800,8 @@ function CategorySection({ category, items, onItemClick, orderItems }) {
 
 export default function Menu({ isHomePage = false }) {
   const { user, isAuthenticated, setIsLoginOpen } = useAuth();
-  const { cart, addToCart, removeFromCart, updateCartItem, setIsCartOpen } = useCart();
+  const { cart, addToCart, removeFromCart, updateCartItem, setIsCartOpen } =
+    useCart();
 
   const [allFlavors, setAllFlavors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -919,7 +926,7 @@ export default function Menu({ isHomePage = false }) {
 
   // Update quantity unit for an item
   const updateQuantityUnit = (itemId, unit) => {
-    // Note: Global cart API might not support unit update yet, 
+    // Note: Global cart API might not support unit update yet,
     // but we can pass it if supported or just update local if needed.
     console.log("Unit update not fully implemented in global cart yet", unit);
   };
@@ -1054,10 +1061,11 @@ export default function Menu({ isHomePage = false }) {
               >
                 <button
                   onClick={() => setSelectedCategory("All")}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${selectedCategory === "All"
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
+                    selectedCategory === "All"
                       ? "bg-gradient-to-r from-rose to-rose-dark text-white"
                       : "bg-noir/50 text-cream border border-cream/20 hover:border-rose/50 hover:bg-rose/10"
-                    }`}
+                  }`}
                 >
                   All Items
                 </button>
@@ -1065,10 +1073,11 @@ export default function Menu({ isHomePage = false }) {
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 ${selectedCategory === category
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 ${
+                      selectedCategory === category
                         ? "bg-gradient-to-r from-rose to-rose-dark text-white"
                         : "bg-noir/50 text-cream border border-cream/20 hover:border-rose/50 hover:bg-rose/10"
-                      }`}
+                    }`}
                   >
                     <span className="material-symbols-outlined text-sm">
                       {getCategoryIcon(category)}
@@ -1127,7 +1136,10 @@ export default function Menu({ isHomePage = false }) {
                   setSelectedItem(item);
                   setSelectedItemCategory(cat);
                 }}
-                orderItems={cart.items.map(item => ({ ...item.product, ...item }))}
+                orderItems={cart.items.map((item) => ({
+                  ...item.product,
+                  ...item,
+                }))}
               />
             ))}
           </motion.div>
@@ -1181,7 +1193,9 @@ export default function Menu({ isHomePage = false }) {
               setSelectedItemCategory(null);
             }}
             onAddToOrder={toggleItemInOrder}
-            isInOrder={cart.items.some((o) => o.product._id === selectedItem._id)}
+            isInOrder={cart.items.some(
+              (o) => o.product._id === selectedItem._id,
+            )}
             allItems={allFlavors}
             categoryItems={
               selectedItemCategory
@@ -1197,7 +1211,11 @@ export default function Menu({ isHomePage = false }) {
       <AnimatePresence>
         {cart.items.length > 0 && (
           <FloatingCart
-            items={cart.items.map(item => ({ ...item.product, ...item, _id: item.product._id }))}
+            items={cart.items.map((item) => ({
+              ...item.product,
+              ...item,
+              _id: item.product._id,
+            }))}
             onRemove={removeFromOrder}
             onClearAll={clearOrder}
             onProceed={() => setIsCartOpen(true)}

@@ -7,7 +7,7 @@ import ReactECharts from "echarts-for-react";
 // Loading Skeleton for Charts
 function ChartSkeleton({ height = "300px" }) {
   return (
-    <div 
+    <div
       className="bg-noir-light rounded-xl border border-cream/10 animate-pulse flex items-center justify-center"
       style={{ height }}
     >
@@ -19,7 +19,7 @@ function ChartSkeleton({ height = "300px" }) {
 // Empty State for Charts
 function EmptyChart({ title, height = "300px" }) {
   return (
-    <div 
+    <div
       className="bg-noir-light rounded-xl border border-cream/10 flex flex-col items-center justify-center"
       style={{ height }}
     >
@@ -35,127 +35,133 @@ function EmptyChart({ title, height = "300px" }) {
 // Orders Chart Component
 function OrdersChart({ data, loading }) {
   if (loading) return <ChartSkeleton />;
-  if (!data || data.length === 0) return <EmptyChart title="Orders & Revenue Trend" />;
+  if (!data || data.length === 0)
+    return <EmptyChart title="Orders & Revenue Trend" />;
 
   const option = {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     title: {
-      text: 'Orders & Revenue Trend',
+      text: "Orders & Revenue Trend",
       textStyle: {
-        color: '#F5F1E8',
+        color: "#F5F1E8",
         fontSize: 16,
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     },
     tooltip: {
-      trigger: 'axis',
-      backgroundColor: '#2A2A2A',
-      borderColor: '#D4A574',
+      trigger: "axis",
+      backgroundColor: "#2A2A2A",
+      borderColor: "#D4A574",
       textStyle: {
-        color: '#F5F1E8'
-      }
+        color: "#F5F1E8",
+      },
     },
     legend: {
-      data: ['Orders', 'Revenue'],
+      data: ["Orders", "Revenue"],
       textStyle: {
-        color: '#F5F1E8'
-      }
+        color: "#F5F1E8",
+      },
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
     },
     xAxis: {
-      type: 'category',
+      type: "category",
       boundaryGap: false,
-      data: data.map(item => item._id),
+      data: data.map((item) => item._id),
       axisLine: {
         lineStyle: {
-          color: '#D4A574'
-        }
+          color: "#D4A574",
+        },
       },
       axisLabel: {
-        color: '#F5F1E8'
-      }
+        color: "#F5F1E8",
+      },
     },
     yAxis: [
       {
-        type: 'value',
-        name: 'Orders',
-        position: 'left',
+        type: "value",
+        name: "Orders",
+        position: "left",
         axisLine: {
           lineStyle: {
-            color: '#D4A574'
-          }
+            color: "#D4A574",
+          },
         },
         axisLabel: {
-          color: '#F5F1E8'
-        }
+          color: "#F5F1E8",
+        },
       },
       {
-        type: 'value',
-        name: 'Revenue (₹)',
-        position: 'right',
+        type: "value",
+        name: "Revenue (₹)",
+        position: "right",
         axisLine: {
           lineStyle: {
-            color: '#D4A574'
-          }
+            color: "#D4A574",
+          },
         },
         axisLabel: {
-          color: '#F5F1E8',
-          formatter: '₹{value}'
-        }
-      }
+          color: "#F5F1E8",
+          formatter: "₹{value}",
+        },
+      },
     ],
     series: [
       {
-        name: 'Orders',
-        type: 'line',
+        name: "Orders",
+        type: "line",
         yAxisIndex: 0,
-        data: data.map(item => item.count),
+        data: data.map((item) => item.count),
         smooth: true,
         lineStyle: {
-          color: '#D4A574'
+          color: "#D4A574",
         },
         itemStyle: {
-          color: '#D4A574'
+          color: "#D4A574",
         },
         areaStyle: {
           color: {
-            type: 'linear',
+            type: "linear",
             x: 0,
             y: 0,
             x2: 0,
             y2: 1,
-            colorStops: [{
-              offset: 0, color: 'rgba(212, 165, 116, 0.3)'
-            }, {
-              offset: 1, color: 'rgba(212, 165, 116, 0.1)'
-            }]
-          }
-        }
+            colorStops: [
+              {
+                offset: 0,
+                color: "rgba(212, 165, 116, 0.3)",
+              },
+              {
+                offset: 1,
+                color: "rgba(212, 165, 116, 0.1)",
+              },
+            ],
+          },
+        },
       },
       {
-        name: 'Revenue',
-        type: 'line',
+        name: "Revenue",
+        type: "line",
         yAxisIndex: 1,
-        data: data.map(item => item.revenue || 0),
+        data: data.map((item) => item.revenue || 0),
         smooth: true,
         lineStyle: {
-          color: '#8B4513'
+          color: "#8B4513",
         },
         itemStyle: {
-          color: '#8B4513'
-        }
-      }
-    ]
+          color: "#8B4513",
+        },
+      },
+    ],
   };
 
   return (
     <div className="bg-noir-light rounded-xl p-4 border border-cream/10">
-      <ReactECharts option={option} style={{ height: '300px' }} />
+      <ReactECharts option={option} style={{ height: "300px" }} />
     </div>
   );
 }
@@ -163,143 +169,155 @@ function OrdersChart({ data, loading }) {
 // Order Status Pie Chart
 function OrderStatusChart({ data, loading }) {
   if (loading) return <ChartSkeleton />;
-  if (!data || data.length === 0) return <EmptyChart title="Order Status Distribution" />;
+  if (!data || data.length === 0)
+    return <EmptyChart title="Order Status Distribution" />;
 
   const option = {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     title: {
-      text: 'Order Status Distribution',
+      text: "Order Status Distribution",
       textStyle: {
-        color: '#F5F1E8',
+        color: "#F5F1E8",
         fontSize: 16,
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     },
     tooltip: {
-      trigger: 'item',
-      backgroundColor: '#2A2A2A',
-      borderColor: '#D4A574',
+      trigger: "item",
+      backgroundColor: "#2A2A2A",
+      borderColor: "#D4A574",
       textStyle: {
-        color: '#F5F1E8'
-      }
+        color: "#F5F1E8",
+      },
     },
     legend: {
-      orient: 'vertical',
-      left: 'left',
+      orient: "vertical",
+      left: "left",
       textStyle: {
-        color: '#F5F1E8'
-      }
+        color: "#F5F1E8",
+      },
     },
     series: [
       {
-        name: 'Order Status',
-        type: 'pie',
-        radius: '50%',
-        data: data.map(item => ({
+        name: "Order Status",
+        type: "pie",
+        radius: "50%",
+        data: data.map((item) => ({
           value: item.count,
-          name: item._id || 'Unknown'
+          name: item._id || "Unknown",
         })),
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
             shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
+            shadowColor: "rgba(0, 0, 0, 0.5)",
+          },
         },
         itemStyle: {
           borderRadius: 5,
-          borderColor: '#2A2A2A',
-          borderWidth: 2
-        }
-      }
-    ]
+          borderColor: "#2A2A2A",
+          borderWidth: 2,
+        },
+      },
+    ],
   };
 
   return (
     <div className="bg-noir-light rounded-xl p-4 border border-cream/10">
-      <ReactECharts option={option} style={{ height: '300px' }} />
+      <ReactECharts option={option} style={{ height: "300px" }} />
     </div>
   );
 }
 
 // Simple Bar Chart for various metrics
-function SimpleBarChart({ data, title, loading, dataKey = 'count', labelKey = '_id' }) {
+function SimpleBarChart({
+  data,
+  title,
+  loading,
+  dataKey = "count",
+  labelKey = "_id",
+}) {
   if (loading) return <ChartSkeleton />;
   if (!data || data.length === 0) return <EmptyChart title={title} />;
 
   const option = {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     title: {
       text: title,
       textStyle: {
-        color: '#F5F1E8',
+        color: "#F5F1E8",
         fontSize: 16,
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     },
     tooltip: {
-      trigger: 'axis',
-      backgroundColor: '#2A2A2A',
-      borderColor: '#D4A574',
+      trigger: "axis",
+      backgroundColor: "#2A2A2A",
+      borderColor: "#D4A574",
       textStyle: {
-        color: '#F5F1E8'
-      }
+        color: "#F5F1E8",
+      },
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
     },
     xAxis: {
-      type: 'category',
-      data: data.map(item => item[labelKey]),
+      type: "category",
+      data: data.map((item) => item[labelKey]),
       axisLine: {
         lineStyle: {
-          color: '#D4A574'
-        }
+          color: "#D4A574",
+        },
       },
       axisLabel: {
-        color: '#F5F1E8'
-      }
+        color: "#F5F1E8",
+      },
     },
     yAxis: {
-      type: 'value',
+      type: "value",
       axisLine: {
         lineStyle: {
-          color: '#D4A574'
-        }
+          color: "#D4A574",
+        },
       },
       axisLabel: {
-        color: '#F5F1E8'
-      }
+        color: "#F5F1E8",
+      },
     },
     series: [
       {
-        data: data.map(item => item[dataKey]),
-        type: 'bar',
+        data: data.map((item) => item[dataKey]),
+        type: "bar",
         itemStyle: {
           color: {
-            type: 'linear',
+            type: "linear",
             x: 0,
             y: 0,
             x2: 0,
             y2: 1,
-            colorStops: [{
-              offset: 0, color: '#D4A574'
-            }, {
-              offset: 1, color: '#8B4513'
-            }]
+            colorStops: [
+              {
+                offset: 0,
+                color: "#D4A574",
+              },
+              {
+                offset: 1,
+                color: "#8B4513",
+              },
+            ],
           },
-          borderRadius: [4, 4, 0, 0]
-        }
-      }
-    ]
+          borderRadius: [4, 4, 0, 0],
+        },
+      },
+    ],
   };
 
   return (
     <div className="bg-noir-light rounded-xl p-4 border border-cream/10">
-      <ReactECharts option={option} style={{ height: '300px' }} />
+      <ReactECharts option={option} style={{ height: "300px" }} />
     </div>
   );
 }
@@ -308,7 +326,7 @@ function SimpleBarChart({ data, title, loading, dataKey = 'count', labelKey = '_
 export default function Analytics({ adminKey, showToast }) {
   const [analyticsData, setAnalyticsData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState('30');
+  const [period, setPeriod] = useState("30");
 
   useEffect(() => {
     fetchAnalytics();
@@ -319,7 +337,7 @@ export default function Analytics({ adminKey, showToast }) {
       setLoading(true);
       const res = await fetch(`/api/analytics?period=${period}`);
       const data = await res.json();
-      
+
       if (data.success) {
         setAnalyticsData(data.data);
       } else {
@@ -349,7 +367,7 @@ export default function Analytics({ adminKey, showToast }) {
             Insights and trends for your business
           </p>
         </div>
-        
+
         {/* Period Selector */}
         <div className="flex items-center gap-2">
           <select
@@ -362,7 +380,7 @@ export default function Analytics({ adminKey, showToast }) {
             <option value="90">Last 90 days</option>
             <option value="365">Last year</option>
           </select>
-          
+
           <button
             onClick={fetchAnalytics}
             className="flex items-center gap-2 px-4 py-2 rounded-lg border border-cream/20 text-cream text-sm hover:bg-cream/5 transition-colors"
@@ -376,17 +394,14 @@ export default function Analytics({ adminKey, showToast }) {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Orders & Revenue Chart */}
-        <OrdersChart 
-          data={analyticsData?.orders || []} 
-          loading={loading} 
-        />
-        
+        <OrdersChart data={analyticsData?.orders || []} loading={loading} />
+
         {/* Order Status Chart */}
-        <OrderStatusChart 
-          data={analyticsData?.orderStatus || []} 
-          loading={loading} 
+        <OrderStatusChart
+          data={analyticsData?.orderStatus || []}
+          loading={loading}
         />
-        
+
         {/* Rating Distribution Chart */}
         <SimpleBarChart
           data={analyticsData?.ratingDistribution || []}
@@ -395,7 +410,7 @@ export default function Analytics({ adminKey, showToast }) {
           dataKey="count"
           labelKey="_id"
         />
-        
+
         {/* User Registrations Chart */}
         <SimpleBarChart
           data={analyticsData?.userRegistrations || []}
@@ -424,25 +439,38 @@ export default function Analytics({ adminKey, showToast }) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-rose">
-                {analyticsData.orders?.reduce((sum, item) => sum + item.count, 0) || 0}
+                {analyticsData.orders?.reduce(
+                  (sum, item) => sum + item.count,
+                  0,
+                ) || 0}
               </div>
               <div className="text-sm text-cream-muted">Total Orders</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-rose">
-                ₹{analyticsData.orders?.reduce((sum, item) => sum + (item.revenue || 0), 0) || 0}
+                ₹
+                {analyticsData.orders?.reduce(
+                  (sum, item) => sum + (item.revenue || 0),
+                  0,
+                ) || 0}
               </div>
               <div className="text-sm text-cream-muted">Total Revenue</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-rose">
-                {analyticsData.userRegistrations?.reduce((sum, item) => sum + item.count, 0) || 0}
+                {analyticsData.userRegistrations?.reduce(
+                  (sum, item) => sum + item.count,
+                  0,
+                ) || 0}
               </div>
               <div className="text-sm text-cream-muted">New Users</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-rose">
-                {analyticsData.reviews?.reduce((sum, item) => sum + item.count, 0) || 0}
+                {analyticsData.reviews?.reduce(
+                  (sum, item) => sum + item.count,
+                  0,
+                ) || 0}
               </div>
               <div className="text-sm text-cream-muted">New Reviews</div>
             </div>

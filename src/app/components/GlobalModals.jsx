@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import LoginModal from "./auth/LoginModal";
 import CartDrawer from "./cart/CartDrawer";
 import { useAuth } from "../contexts/AuthContext";

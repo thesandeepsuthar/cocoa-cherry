@@ -1,9 +1,10 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-super-secret-jwt-key-change-in-production";
 
 export function generateToken(payload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 }
 
 export function verifyToken(token) {
@@ -15,19 +16,21 @@ export function verifyToken(token) {
 }
 
 export function getTokenFromRequest(request) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
+  const authHeader = request.headers.get("authorization");
+  if (authHeader && authHeader.startsWith("Bearer ")) {
     return authHeader.substring(7);
   }
-  
+
   // Also check cookies
-  const cookies = request.headers.get('cookie');
+  const cookies = request.headers.get("cookie");
   if (cookies) {
-    const tokenCookie = cookies.split(';').find(c => c.trim().startsWith('token='));
+    const tokenCookie = cookies
+      .split(";")
+      .find((c) => c.trim().startsWith("token="));
     if (tokenCookie) {
-      return tokenCookie.split('=')[1];
+      return tokenCookie.split("=")[1];
     }
   }
-  
+
   return null;
 }

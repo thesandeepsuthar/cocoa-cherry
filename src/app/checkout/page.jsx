@@ -1,45 +1,45 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/contexts/AuthContext';
-import { useCart } from '@/app/contexts/CartContext';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useCart } from "@/app/contexts/CartContext";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
   const { cart, loadCart } = useCart();
-  
+
   const [shippingAddress, setShippingAddress] = useState({
-    name: '',
-    mobile: '',
-    street: '',
-    city: '',
-    state: '',
-    pincode: '',
-    country: 'India'
+    name: "",
+    mobile: "",
+    street: "",
+    city: "",
+    state: "",
+    pincode: "",
+    country: "India",
   });
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/');
+      router.push("/");
       return;
     }
 
     // Pre-fill address from user profile
     if (user) {
-      setShippingAddress(prev => ({
+      setShippingAddress((prev) => ({
         ...prev,
-        name: user.name || '',
-        mobile: user.mobile || '',
-        street: user.address?.street || '',
-        city: user.address?.city || '',
-        state: user.address?.state || '',
-        pincode: user.address?.pincode || '',
-        country: user.address?.country || 'India'
+        name: user.name || "",
+        mobile: user.mobile || "",
+        street: user.address?.street || "",
+        city: user.address?.city || "",
+        state: user.address?.state || "",
+        pincode: user.address?.pincode || "",
+        country: user.address?.country || "India",
       }));
     }
 
@@ -48,26 +48,26 @@ export default function CheckoutPage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setShippingAddress(prev => ({
+    setShippingAddress((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           shippingAddress,
-          paymentMethod: 'cod',
-          notes
-        })
+          paymentMethod: "cod",
+          notes,
+        }),
       });
 
       const data = await response.json();
@@ -78,8 +78,8 @@ export default function CheckoutPage() {
         setError(data.message);
       }
     } catch (error) {
-      console.error('Checkout error:', error);
-      setError('Failed to place order. Please try again.');
+      console.error("Checkout error:", error);
+      setError("Failed to place order. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ export default function CheckoutPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
           >
             Continue Shopping
@@ -108,7 +108,10 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-noir py-12">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-10 text-cream flex items-center gap-3 uppercase tracking-[0.2em]" style={{ fontFamily: 'var(--font-display)' }}>
+        <h1
+          className="text-3xl font-bold mb-10 text-cream flex items-center gap-3 uppercase tracking-[0.2em]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
           <span className="w-10 h-[1px] bg-rose/30" />
           Checkout
         </h1>
@@ -116,12 +119,17 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Shipping Address Form */}
           <div className="card-noir p-8 rounded-[2rem] border-rose/10 shadow-2xl relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-rose/5 blur-[50px] -mr-16 -mt-16 rounded-full" />
-            <h2 className="text-xl font-bold text-cream mb-6 flex items-center gap-2" style={{ fontFamily: 'var(--font-display)' }}>
-              <span className="material-symbols-outlined text-rose">local_shipping</span>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-rose/5 blur-[50px] -mr-16 -mt-16 rounded-full" />
+            <h2
+              className="text-xl font-bold text-cream mb-6 flex items-center gap-2"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              <span className="material-symbols-outlined text-rose">
+                local_shipping
+              </span>
               Shipping Destination
             </h2>
-            
+
             {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 {error}
@@ -240,7 +248,9 @@ export default function CheckoutPage() {
                 ) : (
                   <>
                     <span>Confirm Order</span>
-                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">auto_awesome</span>
+                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+                      auto_awesome
+                    </span>
                   </>
                 )}
               </button>
@@ -249,14 +259,22 @@ export default function CheckoutPage() {
 
           {/* Order Summary */}
           <div className="card-noir p-8 rounded-[2rem] border-rose/10 shadow-2xl h-fit glass-strong">
-            <h2 className="text-xl font-bold text-cream mb-6 flex items-center gap-2" style={{ fontFamily: 'var(--font-display)' }}>
-              <span className="material-symbols-outlined text-rose">fact_check</span>
+            <h2
+              className="text-xl font-bold text-cream mb-6 flex items-center gap-2"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              <span className="material-symbols-outlined text-rose">
+                fact_check
+              </span>
               Selections
             </h2>
-            
+
             <div className="space-y-4 mb-6">
               {cart.items.map((item) => (
-                <div key={item.product._id} className="flex items-center space-x-4">
+                <div
+                  key={item.product._id}
+                  className="flex items-center space-x-4"
+                >
                   {item.product.images?.[0] && (
                     <img
                       src={item.product.images[0].url}
@@ -264,12 +282,18 @@ export default function CheckoutPage() {
                       className="w-16 h-16 object-cover rounded"
                     />
                   )}
-                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-cream truncate">{item.product.name}</h3>
-                    <p className="text-rose text-xs font-bold uppercase tracking-wider">{item.quantity} Unit(s)</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-cream truncate">
+                      {item.product.name}
+                    </h3>
+                    <p className="text-rose text-xs font-bold uppercase tracking-wider">
+                      {item.quantity} Unit(s)
+                    </p>
                   </div>
-                   <div className="text-right">
-                    <p className="font-black text-gold">₹{item.price * item.quantity}</p>
+                  <div className="text-right">
+                    <p className="font-black text-gold">
+                      ₹{item.price * item.quantity}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -277,26 +301,43 @@ export default function CheckoutPage() {
 
             <div className="border-t border-rose/10 pt-6 space-y-4">
               <div className="flex justify-between items-center text-cream/60">
-                <span className="text-xs uppercase tracking-widest font-bold">Base Valuation</span>
+                <span className="text-xs uppercase tracking-widest font-bold">
+                  Base Valuation
+                </span>
                 <span className="font-bold">₹{cart.totalAmount}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs uppercase tracking-widest font-bold text-cream/60">Logistics</span>
-                <span className="text-emerald-500 font-black text-xs uppercase tracking-widest">Complimentary</span>
+                <span className="text-xs uppercase tracking-widest font-bold text-cream/60">
+                  Logistics
+                </span>
+                <span className="text-emerald-500 font-black text-xs uppercase tracking-widest">
+                  Complimentary
+                </span>
               </div>
               <div className="flex justify-between items-center pt-4 border-t border-rose/10">
-                <span className="text-lg font-bold text-cream uppercase tracking-[0.2em]" style={{ fontFamily: 'var(--font-display)' }}>Total</span>
-                <span className="text-2xl font-black text-gold font-display">₹{cart.totalAmount}</span>
+                <span
+                  className="text-lg font-bold text-cream uppercase tracking-[0.2em]"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Total
+                </span>
+                <span className="text-2xl font-black text-gold font-display">
+                  ₹{cart.totalAmount}
+                </span>
               </div>
             </div>
 
             <div className="mt-8 p-5 bg-noir-light rounded-[1.5rem] border border-rose/10 shadow-inner">
               <h3 className="font-bold text-rose text-xs uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">payments</span>
+                <span className="material-symbols-outlined text-base">
+                  payments
+                </span>
                 Payment Protocol
               </h3>
               <p className="text-cream/50 text-xs leading-relaxed uppercase tracking-widest font-medium">
-                Standard Settlement: <span className="text-cream font-bold">Cash on Delivery</span>. Verification completed upon arrival.
+                Standard Settlement:{" "}
+                <span className="text-cream font-bold">Cash on Delivery</span>.
+                Verification completed upon arrival.
               </p>
             </div>
           </div>

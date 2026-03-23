@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function AdminOrdersPage() {
   const router = useRouter();
@@ -10,12 +10,12 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState("all");
   const [pagination, setPagination] = useState({});
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/');
+      router.push("/");
       return;
     }
     loadOrders();
@@ -25,8 +25,8 @@ export default function AdminOrdersPage() {
     try {
       setLoading(true);
       const params = new URLSearchParams({ page: page.toString() });
-      if (filter !== 'all') {
-        params.append('status', filter);
+      if (filter !== "all") {
+        params.append("status", filter);
       }
 
       const response = await fetch(`/api/admin/orders?${params}`);
@@ -37,11 +37,11 @@ export default function AdminOrdersPage() {
         setStats(data.data.stats);
         setPagination(data.data.pagination);
       } else if (response.status === 403) {
-        alert('Access denied. Admin privileges required.');
-        router.push('/');
+        alert("Access denied. Admin privileges required.");
+        router.push("/");
       }
     } catch (error) {
-      console.error('Load orders error:', error);
+      console.error("Load orders error:", error);
     } finally {
       setLoading(false);
     }
@@ -50,9 +50,9 @@ export default function AdminOrdersPage() {
   const updateOrderStatus = async (orderId, status) => {
     try {
       const response = await fetch(`/api/admin/orders/${orderId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
       });
 
       const data = await response.json();
@@ -63,18 +63,23 @@ export default function AdminOrdersPage() {
         alert(data.message);
       }
     } catch (error) {
-      console.error('Update order error:', error);
-      alert('Failed to update order');
+      console.error("Update order error:", error);
+      alert("Failed to update order");
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "processing":
+        return "bg-blue-100 text-blue-800";
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -89,13 +94,13 @@ export default function AdminOrdersPage() {
           <h1 className="text-2xl font-bold">Admin - Order Management</h1>
           <div className="flex space-x-4">
             <button
-              onClick={() => router.push('/admin/users')}
+              onClick={() => router.push("/admin/users")}
               className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
             >
               Manage Users
             </button>
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push("/")}
               className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
             >
               Back to Site
@@ -108,9 +113,13 @@ export default function AdminOrdersPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             {stats.map((stat) => (
               <div key={stat._id} className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold capitalize">{stat._id} Orders</h3>
+                <h3 className="text-lg font-semibold capitalize">
+                  {stat._id} Orders
+                </h3>
                 <p className="text-2xl font-bold text-blue-600">{stat.count}</p>
-                <p className="text-sm text-gray-600">₹{stat.totalAmount.toLocaleString()}</p>
+                <p className="text-sm text-gray-600">
+                  ₹{stat.totalAmount.toLocaleString()}
+                </p>
               </div>
             ))}
           </div>
@@ -119,19 +128,19 @@ export default function AdminOrdersPage() {
         {/* Filter Tabs */}
         <div className="flex space-x-4 mb-6">
           {[
-            { key: 'all', label: 'All Orders' },
-            { key: 'pending', label: 'Pending' },
-            { key: 'processing', label: 'Processing' },
-            { key: 'completed', label: 'Completed' },
-            { key: 'cancelled', label: 'Cancelled' }
+            { key: "all", label: "All Orders" },
+            { key: "pending", label: "Pending" },
+            { key: "processing", label: "Processing" },
+            { key: "completed", label: "Completed" },
+            { key: "cancelled", label: "Cancelled" },
           ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setFilter(tab.key)}
               className={`px-4 py-2 rounded-md ${
                 filter === tab.key
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
               }`}
             >
               {tab.label}
@@ -205,7 +214,8 @@ export default function AdminOrdersPage() {
                         </div>
                         <div className="text-sm text-gray-500">
                           {order.items[0]?.name}
-                          {order.items.length > 1 && ` +${order.items.length - 1} more`}
+                          {order.items.length > 1 &&
+                            ` +${order.items.length - 1} more`}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -214,8 +224,11 @@ export default function AdminOrdersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        <span
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}
+                        >
+                          {order.status.charAt(0).toUpperCase() +
+                            order.status.slice(1)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -224,22 +237,28 @@ export default function AdminOrdersPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => router.push(`/admin/orders/${order.orderId}`)}
+                            onClick={() =>
+                              router.push(`/admin/orders/${order.orderId}`)
+                            }
                             className="text-blue-600 hover:text-blue-900"
                           >
                             View
                           </button>
-                          {order.status === 'pending' && (
+                          {order.status === "pending" && (
                             <button
-                              onClick={() => updateOrderStatus(order.orderId, 'processing')}
+                              onClick={() =>
+                                updateOrderStatus(order.orderId, "processing")
+                              }
                               className="text-green-600 hover:text-green-900"
                             >
                               Process
                             </button>
                           )}
-                          {order.status === 'processing' && (
+                          {order.status === "processing" && (
                             <button
-                              onClick={() => updateOrderStatus(order.orderId, 'completed')}
+                              onClick={() =>
+                                updateOrderStatus(order.orderId, "completed")
+                              }
                               className="text-green-600 hover:text-green-900"
                             >
                               Complete
@@ -277,8 +296,14 @@ export default function AdminOrdersPage() {
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm text-gray-700">
-                      Showing page <span className="font-medium">{pagination.currentPage}</span> of{' '}
-                      <span className="font-medium">{pagination.totalPages}</span>
+                      Showing page{" "}
+                      <span className="font-medium">
+                        {pagination.currentPage}
+                      </span>{" "}
+                      of{" "}
+                      <span className="font-medium">
+                        {pagination.totalPages}
+                      </span>
                     </p>
                   </div>
                   <div>

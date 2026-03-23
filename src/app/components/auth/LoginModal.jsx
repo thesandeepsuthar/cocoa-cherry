@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function LoginModal({ isOpen, onClose }) {
-  const [step, setStep] = useState('mobile'); // 'mobile' or 'otp'
-  const [mobile, setMobile] = useState('');
-  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState("mobile"); // 'mobile' or 'otp'
+  const [mobile, setMobile] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [otpSent, setOtpSent] = useState(false);
 
   const { sendOTP, login } = useAuth();
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!/^[0-9]{10}$/.test(mobile)) {
-      setError('Please enter a valid 10-digit mobile number');
+      setError("Please enter a valid 10-digit mobile number");
       return;
     }
 
@@ -27,7 +27,7 @@ export default function LoginModal({ isOpen, onClose }) {
     const result = await sendOTP(mobile);
 
     if (result.success) {
-      setStep('otp');
+      setStep("otp");
       setOtpSent(true);
     } else {
       setError(result.message);
@@ -37,17 +37,17 @@ export default function LoginModal({ isOpen, onClose }) {
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!/^[0-9]{6}$/.test(otp)) {
-      setError('Please enter a valid 6-digit OTP');
+      setError("Please enter a valid 6-digit OTP");
       return;
     }
 
     setLoading(true);
     // Name and email are no longer collected during OTP verification
     // They will be collected/updated during the order process
-    const result = await login(mobile, otp, '', '');
+    const result = await login(mobile, otp, "", "");
 
     if (result.success) {
       onClose();
@@ -59,10 +59,10 @@ export default function LoginModal({ isOpen, onClose }) {
   };
 
   const resetForm = () => {
-    setStep('mobile');
-    setMobile('');
-    setOtp('');
-    setError('');
+    setStep("mobile");
+    setMobile("");
+    setOtp("");
+    setError("");
     setOtpSent(false);
   };
 
@@ -96,18 +96,25 @@ export default function LoginModal({ isOpen, onClose }) {
             <div className="relative z-10">
               <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-cream to-rose bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-display)' }}>
-                    {step === 'mobile' ? 'Welcome Back' : 'Verify Identity'}
+                  <h2
+                    className="text-2xl font-bold bg-gradient-to-r from-cream to-rose bg-clip-text text-transparent"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {step === "mobile" ? "Welcome Back" : "Verify Identity"}
                   </h2>
                   <p className="text-cream-muted text-sm mt-1">
-                    {step === 'mobile' ? 'Sign in to your account' : `Enter OTP sent to ${mobile}`}
+                    {step === "mobile"
+                      ? "Sign in to your account"
+                      : `Enter OTP sent to ${mobile}`}
                   </p>
                 </div>
                 <button
                   onClick={handleClose}
                   className="w-10 h-10 rounded-full bg-cream/5 flex items-center justify-center text-cream-muted hover:text-rose hover:bg-rose/10 transition-all duration-300"
                 >
-                  <span className="material-symbols-outlined text-xl">close</span>
+                  <span className="material-symbols-outlined text-xl">
+                    close
+                  </span>
                 </button>
               </div>
 
@@ -117,12 +124,14 @@ export default function LoginModal({ isOpen, onClose }) {
                   animate={{ opacity: 1, x: 0 }}
                   className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-2xl mb-6 text-sm flex items-center gap-2"
                 >
-                  <span className="material-symbols-outlined text-lg">error</span>
+                  <span className="material-symbols-outlined text-lg">
+                    error
+                  </span>
                   {error}
                 </motion.div>
               )}
 
-              {step === 'mobile' ? (
+              {step === "mobile" ? (
                 <form onSubmit={handleSendOTP} className="space-y-6">
                   <div className="space-y-2">
                     <label className="text-xs font-semibold text-cream/50 uppercase tracking-widest ml-1">
@@ -157,7 +166,9 @@ export default function LoginModal({ isOpen, onClose }) {
                     ) : (
                       <>
                         <span>Get Started</span>
-                        <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                        <span className="material-symbols-outlined text-lg">
+                          arrow_forward
+                        </span>
                       </>
                     )}
                   </motion.button>
@@ -198,14 +209,16 @@ export default function LoginModal({ isOpen, onClose }) {
                       ) : (
                         <>
                           <span>Verify & Login</span>
-                          <span className="material-symbols-outlined text-lg">verified_user</span>
+                          <span className="material-symbols-outlined text-lg">
+                            verified_user
+                          </span>
                         </>
                       )}
                     </motion.button>
 
                     <button
                       type="button"
-                      onClick={() => setStep('mobile')}
+                      onClick={() => setStep("mobile")}
                       className="w-full text-cream-muted hover:text-rose text-sm font-medium transition-colors"
                     >
                       Use a different number

@@ -1,79 +1,79 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated, updateProfile, logout } = useAuth();
-  
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    name: "",
+    email: "",
     address: {
-      street: '',
-      city: '',
-      state: '',
-      pincode: '',
-      country: 'India'
-    }
+      street: "",
+      city: "",
+      state: "",
+      pincode: "",
+      country: "India",
+    },
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/');
+      router.push("/");
       return;
     }
 
     if (user) {
       setFormData({
-        name: user.name || '',
-        email: user.email || '',
+        name: user.name || "",
+        email: user.email || "",
         address: {
-          street: user.address?.street || '',
-          city: user.address?.city || '',
-          state: user.address?.state || '',
-          pincode: user.address?.pincode || '',
-          country: user.address?.country || 'India'
-        }
+          street: user.address?.street || "",
+          city: user.address?.city || "",
+          state: user.address?.state || "",
+          pincode: user.address?.pincode || "",
+          country: user.address?.country || "India",
+        },
       });
     }
   }, [isAuthenticated, user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
-    if (name.startsWith('address.')) {
-      const addressField = name.split('.')[1];
-      setFormData(prev => ({
+
+    if (name.startsWith("address.")) {
+      const addressField = name.split(".")[1];
+      setFormData((prev) => ({
         ...prev,
         address: {
           ...prev.address,
-          [addressField]: value
-        }
+          [addressField]: value,
+        },
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
     setLoading(true);
 
     const result = await updateProfile(formData);
 
     if (result.success) {
-      setMessage('Profile updated successfully!');
+      setMessage("Profile updated successfully!");
     } else {
       setError(result.message);
     }
@@ -81,9 +81,9 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    if (confirm('Are you sure you want to logout?')) {
+    if (confirm("Are you sure you want to logout?")) {
       await logout();
-      router.push('/');
+      router.push("/");
     }
   };
 
@@ -98,8 +98,15 @@ export default function ProfilePage() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-rose/5 blur-[50px] -mr-16 -mt-16 rounded-full" />
           <div className="flex justify-between items-end mb-10 border-b border-rose/10 pb-6">
             <div>
-              <h1 className="text-3xl font-bold text-cream uppercase tracking-[0.2em]" style={{ fontFamily: 'var(--font-display)' }}>My Profile</h1>
-              <p className="text-rose text-[10px] font-bold uppercase tracking-widest mt-1">Member Distinction</p>
+              <h1
+                className="text-3xl font-bold text-cream uppercase tracking-[0.2em]"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                My Profile
+              </h1>
+              <p className="text-rose text-[10px] font-bold uppercase tracking-widest mt-1">
+                Member Distinction
+              </p>
             </div>
             <button
               onClick={handleLogout}
@@ -128,18 +135,20 @@ export default function ProfilePage() {
               <h2 className="text-lg font-bold text-cream mb-6 flex items-center gap-2 uppercase tracking-widest border-l-2 border-rose pl-4">
                 Basic Credentials
               </h2>
-              
+
               <div className="mb-4">
                 <label className="block text-[10px] font-bold text-cream/40 uppercase tracking-widest mb-3 ml-1">
                   Mobile Identity
                 </label>
                 <input
                   type="tel"
-                  value={user?.mobile || ''}
+                  value={user?.mobile || ""}
                   className="w-full input-noir pl-4 border-rose/5 opacity-60 cursor-not-allowed font-bold"
                   disabled
                 />
-                <p className="text-xs text-gray-500 mt-1">Mobile number cannot be changed</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Mobile number cannot be changed
+                </p>
               </div>
 
               <div className="mb-4">
@@ -177,7 +186,7 @@ export default function ProfilePage() {
               <h2 className="text-lg font-bold text-cream mb-6 flex items-center gap-2 uppercase tracking-widest border-l-2 border-rose pl-4">
                 Arrival Logistics
               </h2>
-              
+
               <div className="mb-4">
                 <label className="block text-[10px] font-bold text-rose uppercase tracking-widest mb-3 ml-1">
                   Street Coordinates
@@ -250,7 +259,7 @@ export default function ProfilePage() {
             <div className="flex flex-col sm:flex-row gap-4 mt-6">
               <button
                 type="button"
-                onClick={() => router.push('/orders')}
+                onClick={() => router.push("/orders")}
                 className="flex-1 px-6 py-4 rounded-xl border border-rose/20 text-cream font-bold uppercase tracking-widest text-xs hover:bg-rose/5 transition-all duration-300"
               >
                 Order History
@@ -265,7 +274,9 @@ export default function ProfilePage() {
                 ) : (
                   <>
                     <span>Confirm Changes</span>
-                    <span className="material-symbols-outlined text-base group-hover:scale-110 transition-transform">verified</span>
+                    <span className="material-symbols-outlined text-base group-hover:scale-110 transition-transform">
+                      verified
+                    </span>
                   </>
                 )}
               </button>
@@ -274,11 +285,17 @@ export default function ProfilePage() {
 
           {/* Account Info */}
           <div className="mt-10 pt-8 border-t border-rose/10">
-            <h2 className="text-xs font-bold text-cream/30 uppercase tracking-[0.3em] mb-4">Registry Information</h2>
+            <h2 className="text-xs font-bold text-cream/30 uppercase tracking-[0.3em] mb-4">
+              Registry Information
+            </h2>
             <div className="grid grid-cols-2 gap-4 text-[10px] text-cream/40 uppercase tracking-widest font-bold">
               <div>
                 <p className="mb-1 text-rose/40">Inception Date</p>
-                <p className="text-cream/60">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
+                <p className="text-cream/60">
+                  {user?.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString()
+                    : "N/A"}
+                </p>
               </div>
               <div>
                 <p className="mb-1 text-rose/40">Distinction ID</p>
