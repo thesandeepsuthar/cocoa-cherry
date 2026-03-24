@@ -10,6 +10,54 @@ import FloatingActions from "@/app/components/FloatingActions";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
+export const metadata = {
+  title:
+    "About Cocoa&Cherry - FSSAI Certified Home Bakery Ahmedabad | Our Story",
+  description:
+    "Learn about Cocoa&Cherry, a premium FSSAI certified home bakery in Ahmedabad. Founded by Jhanvi Thakar, we craft custom cakes with Belgian chocolate and premium ingredients. 2+ years of experience.",
+  keywords: [
+    "about cocoa cherry",
+    "cocoa cherry bakery story",
+    "cake bakery ahmedabad about us",
+    "jhanvi thakar founder",
+    "fssai certified bakery ahmedabad",
+    "home bakery isanpur ahmedabad",
+    "cocoa cherry founder",
+    "best cake bakery ahmedabad about",
+  ],
+  openGraph: {
+    title: "About Cocoa&Cherry - FSSAI Certified Home Bakery Ahmedabad",
+    description:
+      "Learn about Cocoa&Cherry, premium FSSAI certified home bakery in Ahmedabad. Crafting custom cakes with Belgian chocolate.",
+    url: `${siteUrl}/about`,
+    siteName: "Cocoa&Cherry",
+    images: [
+      {
+        url: `${siteUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Cocoa&Cherry - Premium Custom Cakes Ahmedabad",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Cocoa&Cherry - FSSAI Certified Home Bakery",
+    description:
+      "Learn about Cocoa&Cherry, premium FSSAI certified home bakery in Ahmedabad.",
+    images: [`${siteUrl}/og-image.jpg`],
+  },
+  alternates: {
+    canonical: `${siteUrl}/about`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 // SEO Structured Data for About Page
 const aboutPageSchema = {
   "@context": "https://schema.org",

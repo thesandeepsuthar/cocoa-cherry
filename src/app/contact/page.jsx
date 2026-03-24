@@ -9,6 +9,52 @@ import FloatingActions from "@/app/components/FloatingActions";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
+export const metadata = {
+  title: "Contact Cocoa&Cherry - Custom Cakes Ahmedabad | Order Now",
+  description:
+    "Get in touch with Cocoa&Cherry for custom cake orders in Ahmedabad. Call +91 97127 52469, WhatsApp us for instant service, or fill out our contact form. Available 9 AM - 9 PM.",
+  keywords: [
+    "contact cocoa cherry",
+    "cake shop ahmedabad contact",
+    "custom cake order ahmedabad",
+    "cake delivery contact number",
+    "whatsapp cake order ahmedabad",
+    "cocoa cherry phone number",
+    "cake bakery near me contact",
+  ],
+  openGraph: {
+    title: "Contact Cocoa&Cherry - Custom Cakes Ahmedabad",
+    description:
+      "Get in touch with Cocoa&Cherry for custom cake orders. Call +91 97127 52469 or WhatsApp us for instant service.",
+    url: `${siteUrl}/contact`,
+    siteName: "Cocoa&Cherry",
+    images: [
+      {
+        url: `${siteUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Cocoa&Cherry Contact",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Cocoa&Cherry - Custom Cakes Ahmedabad",
+    description:
+      "Get in touch for custom cake orders. Call +91 97127 52469 or WhatsApp us.",
+    images: [`${siteUrl}/og-image.jpg`],
+  },
+  alternates: {
+    canonical: `${siteUrl}/contact`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 // SEO Structured Data for Contact Page
 const contactPageSchema = {
   "@context": "https://schema.org",

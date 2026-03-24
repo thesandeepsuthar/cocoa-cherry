@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#0d0a0b"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#d4af37"/>
+      <stop offset="50%" style="stop-color:#f5d67b"/>
+      <stop offset="100%" style="stop-color:#d4af37"/>
+    </linearGradient>
+    <linearGradient id="rose" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#722F37"/>
+      <stop offset="100%" style="stop-color:#8B3A3A"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="950" cy="150" r="200" fill="#722F37" opacity="0.15"/>
+  <circle cx="200" cy="500" r="150" fill="#d4af37" opacity="0.1"/>
+  
+  <!-- Cake Icon (simplified) -->
+  <g transform="translate(150, 180)">
+    <!-- Cake base -->
+    <rect x="0" y="180" width="300" height="80" rx="10" fill="url(#rose)"/>
+    <rect x="10" y="170" width="280" height="20" rx="5" fill="#8B3A3A"/>
+    <!-- Cake middle -->
+    <rect x="20" y="130" width="260" height="50" rx="8" fill="url(#rose)"/>
+    <rect x="30" y="120" width="240" height="15" rx="4" fill="#8B3A3A"/>
+    <!-- Cake top -->
+    <rect x="40" y="90" width="220" height="40" rx="6" fill="url(#rose)"/>
+    <!-- Icing -->
+    <ellipse cx="150" cy="90" rx="110" ry="25" fill="#faf5f0" opacity="0.9"/>
+    <!-- Cherry on top -->
+    <circle cx="150" cy="65" r="25" fill="#c41e3a"/>
+    <path d="M150 40 Q160 25 175 30" stroke="#2d5016" stroke-width="4" fill="none"/>
+  </g>
+  
+  <!-- Text: Logo -->
+  <text x="600" y="120" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="url(#gold)" text-anchor="middle">Cocoa&amp;Cherry</text>
+  
+  <!-- Text: Tagline -->
+  <text x="600" y="170" font-family="Arial, sans-serif" font-size="28" fill="#faf5f0" text-anchor="middle" opacity="0.8">Premium Custom Cakes in Ahmedabad</text>
+  
+  <!-- Divider -->
+  <rect x="450" y="200" width="300" height="2" fill="url(#gold)" opacity="0.5"/>
+  
+  <!-- Features -->
+  <g transform="translate(200, 250)">
+    <text x="0" y="30" font-family="Arial, sans-serif" font-size="24" fill="#d4af37">✓</text>
+    <text x="40" y="30" font-family="Arial, sans-serif" font-size="22" fill="#faf5f0">FSSAI Certified</text>
+  </g>
+  <g transform="translate(450, 250)">
+    <text x="0" y="30" font-family="Arial, sans-serif" font-size="24" fill="#d4af37">✓</text>
+    <text x="40" y="30" font-family="Arial, sans-serif" font-size="22" fill="#faf5f0">Belgian Chocolate</text>
+  </g>
+  <g transform="translate(750, 250)">
+    <text x="0" y="30" font-family="Arial, sans-serif" font-size="24" fill="#d4af37">✓</text>
+    <text x="40" y="30" font-family="Arial, sans-serif" font-size="22" fill="#faf5f0">Same Day Delivery</text>
+  </g>
+  
+  <!-- Contact Info -->
+  <text x="600" y="350" font-family="Arial, sans-serif" font-size="26" fill="#faf5f0" text-anchor="middle">📍 Ahmedabad, Gujarat</text>
+  <text x="600" y="390" font-family="Arial, sans-serif" font-size="26" fill="#faf5f0" text-anchor="middle">📞 +91 97127 52469</text>
+  
+  <!-- CTA -->
+  <rect x="450" y="430" width="300" height="60" rx="30" fill="url(#gold)"/>
+  <text x="600" y="468" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#0d0a0b" text-anchor="middle">Order Now →</text>
+  
+  <!-- Bottom text -->
+  <text x="600" y="560" font-family="Arial, sans-serif" font-size="18" fill="#faf5f0" text-anchor="middle" opacity="0.6">cocoa-cherry.vercel.app</text>
+</svg>

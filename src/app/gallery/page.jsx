@@ -8,6 +8,35 @@ import FloatingActions from "@/app/components/FloatingActions";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
+export const metadata = {
+  title: "Cake Gallery - Premium Custom Cakes Ahmedabad | Cocoa&Cherry",
+  description:
+    "View our gallery of premium custom cakes, wedding cakes, birthday cakes, and celebration cakes in Ahmedabad. FSSAI certified home bakery.",
+  keywords: [
+    "cake gallery ahmedabad",
+    "custom cake images",
+    "wedding cake gallery",
+    "birthday cake photos",
+    "cocoa cherry gallery",
+  ],
+  openGraph: {
+    title: "Cake Gallery - Premium Custom Cakes Ahmedabad",
+    description: "View our gallery of premium custom cakes.",
+    url: `${siteUrl}/gallery`,
+    siteName: "Cocoa&Cherry",
+    images: [{ url: `${siteUrl}/og-image.jpg`, width: 1200, height: 630 }],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cake Gallery",
+    images: [`${siteUrl}/og-image.jpg`],
+  },
+  alternates: { canonical: `${siteUrl}/gallery` },
+  robots: { index: true, follow: true },
+};
+
 // SEO Structured Data for Gallery Page
 const galleryPageSchema = {
   "@context": "https://schema.org",

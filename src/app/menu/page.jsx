@@ -8,6 +8,55 @@ import FloatingActions from "@/app/components/FloatingActions";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
+export const metadata = {
+  title: "Cake Menu - Premium Custom Cakes Ahmedabad | Cocoa&Cherry",
+  description:
+    "Browse our complete menu of premium custom cakes, brownies, cheesecakes, and desserts in Ahmedabad. All cakes are eggless, made with Belgian chocolate, and FSSAI certified. Starting from ₹850/kg.",
+  keywords: [
+    "cake menu ahmedabad",
+    "custom cake menu",
+    "cake price list ahmedabad",
+    "birthday cake menu",
+    "wedding cake menu",
+    "brownie price list",
+    "cheesecake menu ahmedabad",
+    "eggless cake menu",
+    "cocoa cherry menu",
+    "cake shop menu ahmedabad",
+  ],
+  openGraph: {
+    title: "Cake Menu - Premium Custom Cakes Ahmedabad | Cocoa&Cherry",
+    description:
+      "Browse our menu of premium custom cakes. All eggless, made with Belgian chocolate. Starting from ₹850/kg.",
+    url: `${siteUrl}/menu`,
+    siteName: "Cocoa&Cherry",
+    images: [
+      {
+        url: `${siteUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Cocoa&Cherry Cake Menu",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cake Menu - Premium Custom Cakes Ahmedabad",
+    description:
+      "Browse our menu of premium custom cakes. All eggless, made with Belgian chocolate.",
+    images: [`${siteUrl}/og-image.jpg`],
+  },
+  alternates: {
+    canonical: `${siteUrl}/menu`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 // SEO Structured Data for Menu Page
 const menuPageSchema = {
   "@context": "https://schema.org",

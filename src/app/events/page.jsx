@@ -8,6 +8,37 @@ import FloatingActions from "@/app/components/FloatingActions";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
+export const metadata = {
+  title:
+    "Event Catering Services - Birthday, Wedding Cakes Ahmedabad | Cocoa&Cherry",
+  description:
+    "Book Cocoa&Cherry for your events - birthdays, weddings, anniversaries. Premium custom cake catering in Ahmedabad. FSSAI certified.",
+  keywords: [
+    "event catering ahmedabad",
+    "birthday event cake",
+    "wedding cake service",
+    "cake for events ahmedabad",
+    "party cake service",
+  ],
+  openGraph: {
+    title: "Event Catering Services - Birthday, Wedding Cakes Ahmedabad",
+    description:
+      "Book us for your events - birthdays, weddings, anniversaries.",
+    url: `${siteUrl}/events`,
+    siteName: "Cocoa&Cherry",
+    images: [{ url: `${siteUrl}/og-image.jpg`, width: 1200, height: 630 }],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Event Catering Services",
+    images: [`${siteUrl}/og-image.jpg`],
+  },
+  alternates: { canonical: `${siteUrl}/events` },
+  robots: { index: true, follow: true },
+};
+
 // SEO Structured Data for Events Page
 const eventsPageSchema = {
   "@context": "https://schema.org",

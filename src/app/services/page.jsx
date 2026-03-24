@@ -9,6 +9,55 @@ import FloatingActions from "@/app/components/FloatingActions";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://cocoa-cherry.vercel.app";
 
+export const metadata = {
+  title:
+    "Cake Services in Ahmedabad - Custom Cakes, Wedding Cakes & Same Day Delivery | Cocoa&Cherry",
+  description:
+    "Premium custom cake services including birthday cakes, wedding cakes, designer cakes, same-day delivery, and eggless options in Ahmedabad. FSSAI certified. Starting from ₹850/kg.",
+  keywords: [
+    "cake services ahmedabad",
+    "custom cake services",
+    "birthday cake service ahmedabad",
+    "wedding cake service",
+    "same day cake delivery ahmedabad",
+    "midnight cake delivery",
+    "cake decorating service",
+    "custom cake order ahmedabad",
+    "cake catering service",
+    "corporate cake service ahmedabad",
+  ],
+  openGraph: {
+    title: "Cake Services in Ahmedabad - Custom Cakes & Same Day Delivery",
+    description:
+      "Premium custom cake services including birthday cakes, wedding cakes, same-day delivery. FSSAI certified.",
+    url: `${siteUrl}/services`,
+    siteName: "Cocoa&Cherry",
+    images: [
+      {
+        url: `${siteUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Cocoa&Cherry Cake Services",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cake Services in Ahmedabad - Custom Cakes",
+    description: "Premium custom cake services. Same day delivery available.",
+    images: [`${siteUrl}/og-image.jpg`],
+  },
+  alternates: {
+    canonical: `${siteUrl}/services`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 // SEO Structured Data for Services Page
 const servicesPageSchema = {
   "@context": "https://schema.org",

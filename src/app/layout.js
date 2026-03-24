@@ -97,21 +97,14 @@ export const metadata = {
       "Order premium custom cakes. FSSAI certified home bakery. Birthday, wedding & designer cakes with Belgian chocolate. Same day delivery in Ahmedabad! Call +91 97127 52469",
     images: [
       {
-        url: `${siteUrl}/og-image.jpg`, // TODO: Create this 1200x630px image
+        url: `${siteUrl}/og-image.svg`,
         width: 1200,
         height: 630,
         alt: "Cocoa&Cherry - Premium Custom Cakes in Ahmedabad | FSSAI Certified Home Bakery",
-        type: "image/jpeg",
+        type: "image/svg+xml",
       },
       {
-        url: `${siteUrl}/og-image-square.jpg`, // TODO: Create this 1200x1200px for WhatsApp
-        width: 1200,
-        height: 1200,
-        alt: "Cocoa&Cherry Cakes - Custom Birthday & Wedding Cakes Ahmedabad",
-        type: "image/jpeg",
-      },
-      {
-        url: `${siteUrl}/logo.svg`, // Fallback
+        url: `${siteUrl}/logo.svg`,
         width: 512,
         height: 512,
         alt: "Cocoa&Cherry Logo - Premium Custom Cakes Ahmedabad",
@@ -128,7 +121,7 @@ export const metadata = {
     title: "Custom Cakes Ahmedabad | Cocoa&Cherry ⭐ FSSAI Certified",
     description:
       "Premium custom cakes from FSSAI certified home bakery. Birthday, wedding & designer cakes. Same day delivery! Call +91 97127 52469",
-    images: [`${siteUrl}/og-image.jpg`],
+    images: [`${siteUrl}/og-image.svg`],
   },
 
   // Robots
